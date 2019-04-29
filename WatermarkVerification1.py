@@ -7,20 +7,33 @@ from copy import deepcopy
 from maraboupy import Marabou
 from maraboupy import MarabouUtils
 
-def findSmallestEpsilon(epsilon_max, epsilon_interval, network, prediction):
+sat = 'SAT'
+unsat = 'UNSAT'
+
+def findEpsilonInterval(epsilon_max, epsilon_interval, network, prediction):
     sat_epsilon = epsilon_max
     unsat_epsilon = 0.0
     epsilon = sat_epsilon
-    vals, stats = evaluateSingleOutput(epsilon, deepcopy(network), prediction, 5)
+    status, vals = evaluateEpsilon(epsilon, deepcopy(network), prediction)
     while abs(sat_epsilon - unsat_epsilon) > epsilon_interval:
-        vals, stats = evaluateSingleOutput(epsilon, deepcopy(network), prediction, 5)
-        if vals:
+        if status == sat:
             sat_epsilon = epsilon
         else:
             unsat_epsilon = epsilon
         epsilon = (sat_epsilon + unsat_epsilon)/2
-    return sat_epsilon, unsat_epsilon
+        status, vals = evaluateEpsilon(epsilon, deepcopy(network), prediction)
+    return unsat_epsilon, sat_epsilon 
 
+
+def evaluateEpsilon(epsilon, network, prediction):
+    outputVars = network.outputVars[0]
+    vals = dict()
+    for out in range(len(outputVars)):
+        if out != prediction:
+            vals[out] = evaluateSingleOutput(epsilon, network, prediction, out)
+            if vals[out][0]:
+                return sat, vals, out
+    return unsat, vals, -1
 def evaluateSingleOutput(epsilon, network, prediction, output):
     # epsilon = epsilon_max
     outputVars = network.outputVars[0]
@@ -53,7 +66,7 @@ def run(args):
     
     epsilon_max = float(args.epsilon_max)
     epsilon_interval = float(args.epsilon_interval)
-    findSmallestEpsilon(epsilon_max, epsilon_interval, network, np.argmax(prediction))
+    unsat_epsilon, sat_epsilon = findEpsilonInterval(epsilon_max, epsilon_interval, network, np.argmax(prediction))
     # n1 = copy.copy(network)
 
     print('blah')
