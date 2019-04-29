@@ -14,14 +14,14 @@ def findEpsilonInterval(epsilon_max, epsilon_interval, network, prediction):
     sat_epsilon = epsilon_max
     unsat_epsilon = 0.0
     epsilon = sat_epsilon
-    status, vals = evaluateEpsilon(epsilon, deepcopy(network), prediction)
+    status, vals, out = evaluateEpsilon(epsilon, deepcopy(network), prediction)
     while abs(sat_epsilon - unsat_epsilon) > epsilon_interval:
         if status == sat:
             sat_epsilon = epsilon
         else:
             unsat_epsilon = epsilon
         epsilon = (sat_epsilon + unsat_epsilon)/2
-        status, vals = evaluateEpsilon(epsilon, deepcopy(network), prediction)
+        status, vals, out = evaluateEpsilon(epsilon, network, prediction)
     return unsat_epsilon, sat_epsilon 
 
 
@@ -30,7 +30,7 @@ def evaluateEpsilon(epsilon, network, prediction):
     vals = dict()
     for out in range(len(outputVars)):
         if out != prediction:
-            vals[out] = evaluateSingleOutput(epsilon, network, prediction, out)
+            vals[out] = evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
             if vals[out][0]:
                 return sat, vals, out
     return unsat, vals, -1
@@ -69,7 +69,7 @@ def run(args):
     unsat_epsilon, sat_epsilon = findEpsilonInterval(epsilon_max, epsilon_interval, network, np.argmax(prediction))
     # n1 = copy.copy(network)
 
-    print('blah')
+    print(unsat_epsilon, sat_epsilon)
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()

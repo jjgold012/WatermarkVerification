@@ -15,3 +15,7 @@
 - Install maraboupy as instracted [here](https://github.com/guykatzz/Marabou/tree/master/maraboupy)
 - Change the name of the nn-verification project to "nn_verification" (otherwise it cant be used as apython library)
 - Create a neural net to verify as instracted [here](https://github.com/adiyoss/nn-verification) 
+
+## Run
+`python WatermarkVerification1.py --model <Model name>` 
+For example: `python WatermarkVerification1.py --model mnist.w.wm` 
