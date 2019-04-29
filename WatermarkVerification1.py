@@ -26,8 +26,8 @@ if __name__ == '__main__':
     wm_images = np.load(args.input_path)  
     input_test = np.reshape(wm_images[1], (1,28,28,1))
     
-    # print(last_layer_model.predict(submodel.predict(input_test)))
-    # print(net_model.predict(input_test))
+    print(last_layer_model.predict(submodel.predict(input_test)))
+    print(net_model.predict(input_test))
 
     filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
     network = Marabou.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
