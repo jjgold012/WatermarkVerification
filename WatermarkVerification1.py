@@ -10,6 +10,7 @@ from maraboupy import MarabouUtils
 sat = 'SAT'
 unsat = 'UNSAT'
 
+
 def findEpsilonInterval(epsilon_max, epsilon_interval, network, prediction):
     sat_epsilon = epsilon_max
     unsat_epsilon = 0.0
@@ -35,6 +36,8 @@ def evaluateEpsilon(epsilon, network, prediction):
             if vals[out][0]:
                 return sat, vals, out
     return unsat, vals, -1
+
+
 def evaluateSingleOutput(epsilon, network, prediction, output):
     # epsilon = epsilon_max
     outputVars = network.outputVars[0]
@@ -74,7 +77,7 @@ def run(args):
     epsilon_vals.sort(key=lambda t: t[0])
     out_file = open("out.txt", "w")
     for i in range(len(inputs)):
-        out_file.write('epsilon: ({}, {}), original prediction: {}, match prediction: {}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
+        out_file.write('epsilon: ({:.6f}, {:.6f}),\t\toriginal prediction: {},\t\tmatch prediction: {}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
     out_file.close()
 
 
