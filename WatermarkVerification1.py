@@ -15,15 +15,14 @@ def findEpsilonInterval(epsilon_max, epsilon_interval, network, prediction):
     unsat_epsilon = 0.0
     sat_vals = None
     epsilon = sat_epsilon
-    status, vals, out = evaluateEpsilon(epsilon, deepcopy(network), prediction)
     while abs(sat_epsilon - unsat_epsilon) > epsilon_interval:
+        status, vals, out = evaluateEpsilon(epsilon, deepcopy(network), prediction)
         if status == sat:
             sat_epsilon = epsilon
             sat_vals = (status, vals, out)
         else:
             unsat_epsilon = epsilon
         epsilon = (sat_epsilon + unsat_epsilon)/2
-        status, vals, out = evaluateEpsilon(epsilon, network, prediction)
     return unsat_epsilon, sat_epsilon , sat_vals
 
 
@@ -51,31 +50,32 @@ def evaluateSingleOutput(epsilon, network, prediction, output):
             network.setLowerBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] - epsilon)
     MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
     return network.solve(verbose=False)
-    
+
+
 def run(args):
     model_name = args.model
     net_model, submodel, last_layer_model = utils.splitModel(model_name)
-    
-    wm_images = np.load(args.input_path)  
-    input_test = np.reshape(wm_images[1], (1,28,28,1))
-    
-    # print(last_layer_model.predict(submodel.predict(input_test)))
-    prediction = net_model.predict(input_test)
-    print(prediction)
-    print(np.argmax(prediction))
     filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
-    network = Marabou.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
     
+    inputs = np.load(args.input_path)
     epsilon_max = float(args.epsilon_max)
-    epsilon_interval = float(args.epsilon_interval)
-    unsat_epsilon, sat_epsilon, sat_vals = findEpsilonInterval(epsilon_max, epsilon_interval, network, np.argmax(prediction))
-    # n1 = copy.copy(network)
+    epsilon_interval = float(args.epsilon_interval)  
+    epsilon_vals = list()
+    for i in range(len(inputs)):
 
-    print(unsat_epsilon, sat_epsilon)
-    print(sat_vals[0])
-    print(sat_vals[1])
-    print(sat_vals[2])
-    print(prediction)
+        input_test = np.reshape(inputs[i], (1,28,28,1))
+        
+        prediction = np.argmax(net_model.predict(input_test))
+        network = Marabou.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+        
+        unsat_epsilon, sat_epsilon, sat_vals = findEpsilonInterval(epsilon_max, epsilon_interval, network, prediction)
+        epsilon_vals.append((unsat_epsilon, sat_epsilon, prediction, sat_vals))
+    
+    epsilon_vals.sort(key=lambda t: t[0])
+    out_file = open("out.txt", "w")
+    for i in range(len(inputs)):
+        out_file.write('epsilon: ({}, {}), original prediction: {}, match prediction: {}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
+    out_file.close()
 
 
 if __name__ == '__main__':
