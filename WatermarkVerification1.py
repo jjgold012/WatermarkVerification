@@ -54,9 +54,9 @@ def evaluateSingleOutput(epsilon, network, prediction, output):
         # for i in range(len(network.biasAddLayers[k]['vals'])):
         #     network.setUpperBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] + epsilon)
         #     network.setLowerBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] - epsilon)
-        for i in range(len(network.biasAddLayers[k]['vals'])):
-            network.setUpperBound(network.biasAddLayers[k]['epsilons'][i], epsilon)
-            network.setLowerBound(network.biasAddLayers[k]['epsilons'][i], -epsilon)
+        # for i in range(len(network.biasAddLayers[k]['vals'])):
+        #     network.setUpperBound(network.biasAddLayers[k]['epsilons'][i], epsilon)
+        #     network.setLowerBound(network.biasAddLayers[k]['epsilons'][i], -epsilon)
     MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
     return network.solve(verbose=False)
 

@@ -16,7 +16,7 @@ filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(mo
 
 inputs = np.load('../nn_verification/data/wm.set.npy')
 epsilon_max = 0.5
-epsilon_interval = 0.001 
+epsilon_interval = 0.2 
 for i in range(5):
 
     input_test = np.reshape(inputs[i], (1,28,28,1))
@@ -26,3 +26,5 @@ for i in range(5):
     
     unsat_epsilon, sat_epsilon, sat_vals = findEpsilonInterval(epsilon_max, epsilon_interval, network, prediction)
     epsilonsVars = network.matMulLayers[0]['epsilons']
+    # epsilonsVals = set(map(lambda v: sat_vals[1][2][v], epsilonsVars))
+    epsilonsVals = np.array([[sat_vals[1][1][0][epsilonsVars[j][i]] for i in range(epsilonsVars.shape[1])] for j in range(epsilonsVars.shape[0])])

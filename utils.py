@@ -42,6 +42,7 @@ def splitModel(model_name):
 
 def saveModelAsProtobuf(last_layer_model, model_name):
     sess = K.get_session()
+    tf.summary.FileWriter('./logs', graph=tf.get_default_graph())
     output_node_names = [node.name[:-2] for node in last_layer_model.outputs]
     constant_graph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), output_node_names)
     graph_io.write_graph(constant_graph, './ProtobufNetworks', '{}.pb'.format(model_name), as_text=False)
