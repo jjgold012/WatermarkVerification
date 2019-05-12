@@ -45,12 +45,18 @@ def evaluateSingleOutput(epsilon, network, prediction, output):
         n, m = network.matMulLayers[k]['vals'].shape
         print(n,m)
         for i in range(n):
+            # for j in range(m):
+            #     network.setUpperBound(network.matMulLayers[k]['vars'][i][j], network.matMulLayers[k]['vals'][i][j] + epsilon)
+            #     network.setLowerBound(network.matMulLayers[k]['vars'][i][j], network.matMulLayers[k]['vals'][i][j] - epsilon)
             for j in range(m):
-                network.setUpperBound(network.matMulLayers[k]['vars'][i][j], network.matMulLayers[k]['vals'][i][j] + epsilon)
-                network.setLowerBound(network.matMulLayers[k]['vars'][i][j], network.matMulLayers[k]['vals'][i][j] - epsilon)
+                network.setUpperBound(network.matMulLayers[k]['epsilons'][i][j], epsilon)
+                network.setLowerBound(network.matMulLayers[k]['epsilons'][i][j], -epsilon)
+        # for i in range(len(network.biasAddLayers[k]['vals'])):
+        #     network.setUpperBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] + epsilon)
+        #     network.setLowerBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] - epsilon)
         for i in range(len(network.biasAddLayers[k]['vals'])):
-            network.setUpperBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] + epsilon)
-            network.setLowerBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] - epsilon)
+            network.setUpperBound(network.biasAddLayers[k]['epsilons'][i], epsilon)
+            network.setLowerBound(network.biasAddLayers[k]['epsilons'][i], -epsilon)
     MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
     return network.solve(verbose=False)
 
@@ -75,18 +81,21 @@ def run(args):
         epsilon_vals.append((unsat_epsilon, sat_epsilon, prediction, sat_vals))
     
     epsilon_vals.sort(key=lambda t: t[0])
-    out_file = open("out.txt", "w")
+    out_file = open("WatermarkVerification1.csv", "w")
+    out_file.write('unsat-epsilon, sat-epsilon, original-prediction, sat-prediction\n')
     for i in range(len(inputs)):
-        out_file.write('epsilon: ({:.6f}, {:.6f}),\t\toriginal prediction: {},\t\tmatch prediction: {}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
+        out_file.write('{}, {}, {}, {}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
     out_file.close()
 
+
+    
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help='the name of the model')
     parser.add_argument('--input_path', default='../nn_verification/data/wm.set.npy', help='input file path')
-    parser.add_argument('--epsilon_max', default=100, help='max epsilon value')
+    parser.add_argument('--epsilon_max', default=1, help='max epsilon value')
     parser.add_argument('--epsilon_interval', default=0.01, help='epsilon smallest change')
     args = parser.parse_args()
     run(args)
