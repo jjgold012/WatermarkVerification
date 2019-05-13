@@ -9,6 +9,7 @@ from maraboupy import MarabouUtils
 from WatermarkVerification1 import *
 from copy import deepcopy
 from tensorflow import keras
+from pprint import pprint
 
 model_name = 'mnist.w.wm'
 net_model, submodel, last_layer_model = utils.splitModel(model_name)
@@ -34,7 +35,9 @@ for i in range(5):
     new_weights = weights + epsilons_vals
     c = keras.models.clone_model(last_layer_model)
     c.set_weights([new_weights])
-    out_file.write('{}\n'.format(np.array(sat_out)))
-    out_file.write('{}\n'.format(c.predict(submodel.predict(input_test))[0]))
+    pprint(sat_out, out_file)
+    pprint(c.predict(submodel.predict(input_test))[0].tolist(), out_file)
+    # out_file.write('{}\n'.format(np.array(sat_out)))
+    # out_file.write('{}\n'.format(c.predict(submodel.predict(input_test))[0]))
 out_file.close()
 

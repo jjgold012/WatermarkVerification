@@ -82,9 +82,9 @@ def run(args):
     
     epsilon_vals.sort(key=lambda t: t[0])
     out_file = open("WatermarkVerification1.csv", "w")
-    out_file.write('unsat-epsilon, sat-epsilon, original-prediction, sat-prediction\n')
+    out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
     for i in range(len(inputs)):
-        out_file.write('{}, {}, {}, {}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
+        out_file.write('{},{},{},{}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
     out_file.close()
 
 
