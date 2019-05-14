@@ -11,33 +11,52 @@ from copy import deepcopy
 from tensorflow import keras
 from pprint import pprint
 
+class test(WatermarkVerification):
+    def run(self):
+        submodel, last_layer_model = utils.splitModel(net_model)
+        filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
+
+        out_file = open("test.out", "w")
+        for i in range(5):
+
+            input_test = np.reshape(self.inputs[i], (1,28,28,1))
+            
+            prediction = np.argmax(net_model.predict(input_test))
+            network = Marabou.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+            
+            unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
+            epsilons_vars = network.matMulLayers[0]['epsilons']
+            
+            all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
+            sat_out = np.array([all_vals[i] for i in range(10)])
+            epsilons_vals = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
+            
+            weights = last_layer_model.get_weights()[0]
+            new_weights = weights + epsilons_vals
+            
+            c = keras.models.clone_model(last_layer_model)
+            c.set_weights([new_weights])
+
+            out_file.write('Marabou out:\n')
+            pprint(sat_out.tolist(), out_file)
+            new_out = c.predict(submodel.predict(input_test))[0]
+            out_file.write('Network out:\n')
+            pprint(new_out.tolist(), out_file)
+            out_file.write('Diff:\n')
+            pprint((sat_out - new_out).tolist(), out_file)
+            out_file.write('\n')
+            
+        out_file.close()
+
+
+
 model_name = 'mnist.w.wm'
-net_model, submodel, last_layer_model = utils.splitModel(model_name)
-filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
+MODELS_PATH = '../Models'
+net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
+
 
 inputs = np.load('../nn_verification/data/wm.set.npy')
 epsilon_max = 0.5
 epsilon_interval = 0.2 
-out_file = open("test.out", "w")
-for i in range(5):
-
-    input_test = np.reshape(inputs[i], (1,28,28,1))
-    
-    prediction = np.argmax(net_model.predict(input_test))
-    network = Marabou.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
-    
-    unsat_epsilon, sat_epsilon, sat_vals = findEpsilonInterval(epsilon_max, epsilon_interval, network, prediction)
-    epsilons_vars = network.matMulLayers[0]['epsilons']
-    all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
-    sat_out = [all_vals[i] for i in range(10)]
-    epsilons_vals = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
-    weights = last_layer_model.get_weights()[0]
-    new_weights = weights + epsilons_vals
-    c = keras.models.clone_model(last_layer_model)
-    c.set_weights([new_weights])
-    pprint(sat_out, out_file)
-    pprint(c.predict(submodel.predict(input_test))[0].tolist(), out_file)
-    # out_file.write('{}\n'.format(np.array(sat_out)))
-    # out_file.write('{}\n'.format(c.predict(submodel.predict(input_test))[0]))
-out_file.close()
-
+problem = test(net_model, epsilon_max, epsilon_interval, inputs)
+problem.run()

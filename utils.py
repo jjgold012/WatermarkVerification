@@ -21,9 +21,7 @@ def load_model(json_path, model_path):
     print("Loaded model from disk")
     return loaded_model
 
-def splitModel(model_name):
-    MODELS_PATH = '../Models'
-    net_model = load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
+def splitModel(net_model):
     print('\n------------------Model Summary------------------\n')
     print(net_model.summary())
 
@@ -38,7 +36,7 @@ def splitModel(model_name):
     print(last_layer_model.summary())
     print('\n------------------------------------------------------\n')
 
-    return net_model, submodel, last_layer_model
+    return submodel, last_layer_model
 
 def saveModelAsProtobuf(last_layer_model, model_name):
     sess = K.get_session()
