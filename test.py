@@ -1,4 +1,3 @@
-# from nn_verification.utils import load_model
 import numpy as np
 import os
 import argparse
@@ -36,10 +35,14 @@ class test(WatermarkVerification):
             
             c = keras.models.clone_model(last_layer_model)
             c.set_weights([new_weights])
-
+            new_out = c.predict(submodel.predict(input_test))[0]
+            # print(unsat_epsilon)
+            # print(sat_epsilon)
+            # print(np.max(epsilons_vals.flatten()))
+            # print(np.min(epsilons_vals.flatten()))
+            # print(np.average(epsilons_vals.flatten()))
             out_file.write('Marabou out:\n')
             pprint(sat_out.tolist(), out_file)
-            new_out = c.predict(submodel.predict(input_test))[0]
             out_file.write('Network out:\n')
             pprint(new_out.tolist(), out_file)
             out_file.write('Diff:\n')
@@ -51,7 +54,7 @@ class test(WatermarkVerification):
 
 
 model_name = 'mnist.w.wm'
-MODELS_PATH = '../Models'
+MODELS_PATH = './Models'
 net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
 

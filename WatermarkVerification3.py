@@ -11,7 +11,7 @@ import MarabouNetworkTFWeightsAsVar
 sat = 'SAT'
 unsat = 'UNSAT'
 
-class WatermarkVerification2(WatermarkVerification):
+class WatermarkVerification3(WatermarkVerification):
 
     def epsilonABS(self, network, epsilon_var):
         epsilon2 = network.getNewVariable()
@@ -59,15 +59,15 @@ class WatermarkVerification2(WatermarkVerification):
         epsilon_vals = list()
         # num_of_inputs_to_run = len(self.inputs)
         num_of_inputs_to_run = 2
-        for i in range(num_of_inputs_to_run):
-
-            input_test = np.reshape(self.inputs[i], (1, self.inputs.shape[1], self.inputs.shape[2], 1))
+        input_test = np.reshape(self.inputs, (self.inputs.shape[0], self.inputs.shape[1], self.inputs.shape[2], 1))
             
-            prediction = np.argmax(self.net_model.predict(input_test))
-            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
-            
-            unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
-            epsilon_vals.append((unsat_epsilon, sat_epsilon, prediction, sat_vals))
+        prediction = self.net_model.predict(input_test)
+        network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+        
+        unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
+        epsilon_vals.append((unsat_epsilon, sat_epsilon, prediction, sat_vals))
+        
+        
         
         epsilon_vals.sort(key=lambda t: t[0])
         out_file = open("WatermarkVerification2.csv", "w")
@@ -93,5 +93,5 @@ if __name__ == '__main__':
     model_name = args.model
     MODELS_PATH = './Models'
     net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
-    problem = WatermarkVerification2(net_model, epsilon_max, epsilon_interval, inputs)
+    problem = WatermarkVerification3(net_model, epsilon_max, epsilon_interval, inputs)
     problem.run(model_name)

@@ -1,6 +1,4 @@
 import os
-import sys
-sys.path.insert(0,'..')
 import uuid
 import numpy as np
 import tensorflow as tf
@@ -9,6 +7,16 @@ from tensorflow.keras import backend as K
 from tensorflow.python.framework import graph_util
 from tensorflow.python.framework import graph_io
 from tensorflow.keras.models import model_from_json
+
+
+def save_model(json_path, model_path, model):
+    # serialize model to JSON
+    model_json = model.to_json()
+    with open(json_path, "w") as json_file:
+        json_file.write(model_json)
+    # serialize weights to HDF5
+    model.save_weights(model_path)
+    print("Saved model to disk")
 
 def load_model(json_path, model_path):
     # load json and create model

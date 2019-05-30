@@ -6,7 +6,7 @@ import utils
 from copy import deepcopy
 from maraboupy import Marabou
 from maraboupy import MarabouUtils
-
+import MarabouNetworkTFWeightsAsVar
 sat = 'SAT'
 unsat = 'UNSAT'
 
@@ -46,29 +46,20 @@ class WatermarkVerification:
 
 
     def evaluateSingleOutput(self, epsilon, network, prediction, output):
-        # epsilon = epsilon_max
         outputVars = network.outputVars[0]
         for k in network.matMulLayers.keys():
             n, m = network.matMulLayers[k]['vals'].shape
             print(n,m)
             for i in range(n):
-                # for j in range(m):
-                #     network.setUpperBound(network.matMulLayers[k]['vars'][i][j], network.matMulLayers[k]['vals'][i][j] + epsilon)
-                #     network.setLowerBound(network.matMulLayers[k]['vars'][i][j], network.matMulLayers[k]['vals'][i][j] - epsilon)
                 for j in range(m):
                     network.setUpperBound(network.matMulLayers[k]['epsilons'][i][j], epsilon)
                     network.setLowerBound(network.matMulLayers[k]['epsilons'][i][j], -epsilon)
-            # for i in range(len(network.biasAddLayers[k]['vals'])):
-            #     network.setUpperBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] + epsilon)
-            #     network.setLowerBound(network.biasAddLayers[k]['vars'][i], network.biasAddLayers[k]['vals'][i] - epsilon)
-            # for i in range(len(network.biasAddLayers[k]['vals'])):
-            #     network.setUpperBound(network.biasAddLayers[k]['epsilons'][i], epsilon)
-            #     network.setLowerBound(network.biasAddLayers[k]['epsilons'][i], -epsilon)
+            
         MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
         return network.solve(verbose=False)
 
 
-    def run(self):
+    def run(self, model_name):
        
         submodel, last_layer_model = utils.splitModel(self.net_model)
         filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
@@ -77,10 +68,10 @@ class WatermarkVerification:
         epsilon_vals = list()
         for i in range(len(self.inputs)):
 
-            input_test = np.reshape(self.inputs[i], (1,28,28,1))
+            input_test = np.reshape(self.inputs[i], (1, self.inputs.shape[1], self.inputs.shape[2], 1))
             
             prediction = np.argmax(self.net_model.predict(input_test))
-            network = Marabou.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
             
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             epsilon_vals.append((unsat_epsilon, sat_epsilon, prediction, sat_vals))
@@ -107,7 +98,7 @@ if __name__ == '__main__':
     epsilon_max = float(args.epsilon_max)
     epsilon_interval = float(args.epsilon_interval)  
     model_name = args.model
-    MODELS_PATH = '../Models'
+    MODELS_PATH = './Models'
     net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
     problem = WatermarkVerification(net_model, epsilon_max, epsilon_interval, inputs)
-    problem.run()
+    problem.run(model_name)
