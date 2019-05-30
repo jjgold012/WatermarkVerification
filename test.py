@@ -58,7 +58,7 @@ MODELS_PATH = './Models'
 net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
 
-inputs = np.load('../nn_verification/data/wm.set.npy')
+inputs = np.load('../nn-verification/data/wm.set.npy')
 epsilon_max = 0.5
 epsilon_interval = 0.2 
 problem = test(net_model, epsilon_max, epsilon_interval, inputs)
