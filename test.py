@@ -3,7 +3,7 @@ import os
 import argparse
 import utils
 from copy import deepcopy
-from maraboupy import Marabou
+import MarabouNetworkTFWeightsAsVar
 from maraboupy import MarabouUtils
 from WatermarkVerification1 import *
 from copy import deepcopy
@@ -21,7 +21,7 @@ class test(WatermarkVerification):
             input_test = np.reshape(self.inputs[i], (1,28,28,1))
             
             prediction = np.argmax(net_model.predict(input_test))
-            network = Marabou.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
             
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             epsilons_vars = network.matMulLayers[0]['epsilons']
