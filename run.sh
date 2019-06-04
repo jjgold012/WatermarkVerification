@@ -3,4 +3,4 @@
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
 
-exec python WatermarkVerification2.py --model mnist.w.wm --epsilon_max 100
+exec python3 WatermarkVerification2.py --model mnist.w.wm --epsilon_max 100
