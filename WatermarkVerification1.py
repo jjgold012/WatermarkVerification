@@ -64,9 +64,13 @@ class WatermarkVerification:
         submodel, last_layer_model = utils.splitModel(self.net_model)
         filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
         
+        out_file = open("WatermarkVerification1.csv", "w")
+        out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
+        out_file.flush()
         
-        epsilon_vals = list()
-        for i in range(len(self.inputs)):
+        num_of_inputs_to_run = len(self.inputs)
+        # num_of_inputs_to_run = 20
+        for i in range(num_of_inputs_to_run):
 
             input_test = np.reshape(self.inputs[i], (1, self.inputs.shape[1], self.inputs.shape[2], 1))
             
@@ -74,13 +78,9 @@ class WatermarkVerification:
             network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
             
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
-            epsilon_vals.append((unsat_epsilon, sat_epsilon, prediction, sat_vals))
+            out_file.write('{},{},{},{}\n'.format(unsat_epsilon, sat_epsilon, prediction, sat_vals[2]))
+            out_file.flush()
         
-        epsilon_vals.sort(key=lambda t: t[0])
-        out_file = open("WatermarkVerification1.csv", "w")
-        out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
-        for i in range(len(inputs)):
-            out_file.write('{},{},{},{}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))
         out_file.close()
 
 
