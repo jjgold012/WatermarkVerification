@@ -12,6 +12,9 @@
 - Install Marabou
     `cd Marabou`
     `make`
+    `cd maraboupy`
+    `make`
+    `export PYTHONPATH=$PYTHONPATH:$HOME/<path-to-marabou-repo>`
 - Install maraboupy as instracted [here](https://github.com/guykatzz/Marabou/tree/master/maraboupy)
 - Create a neural net to verify as instracted [here](https://github.com/adiyoss/nn-verification) 
 

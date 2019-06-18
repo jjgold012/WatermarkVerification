@@ -70,7 +70,7 @@ class WatermarkVerification3(WatermarkVerification):
         
         
         epsilon_vals.sort(key=lambda t: t[0])
-        out_file = open("WatermarkVerification2.csv", "w")
+        out_file = open("WatermarkVerification3.csv", "w")
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         for i in range(num_of_inputs_to_run):
             out_file.write('{},{},{},{}\n'.format(epsilon_vals[i][0], epsilon_vals[i][1], epsilon_vals[i][2], epsilon_vals[i][3][2]))

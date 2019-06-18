@@ -28,6 +28,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         self.matMulLayers = dict()
         self.biasAddLayers = dict()
         self.numOfLayers = -1
+        self.inputNumber = 0
         self.readFromPb(filename, inputVals, inputNames, outputName, savedModel, savedModelTags)
         self.processBiasAddRelations()
 
@@ -47,6 +48,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         self.epsilons = None
         self.biasAddLayers = dict()
         self.numOfLayers = -1
+        self.inputNumber = 0
 
 
     def readFromPb(self, filename, inputVals, inputNames, outputName, savedModel, savedModelTags):
@@ -62,6 +64,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             savedModel: (bool) If false, load frozen graph. If true, load SavedModel object.
             savedModelTags: (list of strings) If loading a SavedModel, the user must specify tags used.
         """
+        print(inputVals.shape)
         tf_session = None
         if savedModel:
             ### Read SavedModel ###

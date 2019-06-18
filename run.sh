@@ -1,6 +1,8 @@
 #!/bin/bash
-# A simple script to run the verification jobs
+#SBATCH --killable
+#SBATCH --time=2-0
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
 
-exec python3 WatermarkVerification2.py --model mnist.w.wm --epsilon_max 100
+#--model test --input_path ./test_data/test_images.npy
+python3 WatermarkVerification2.py --model test --input_path ./test_data/test_images.npy --epsilon_max 100
