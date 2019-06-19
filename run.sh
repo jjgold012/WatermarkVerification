@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --killable
+#SBATCH -c2
 #SBATCH --time=2-0
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
