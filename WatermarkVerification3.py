@@ -7,7 +7,7 @@ from maraboupy import Marabou
 from maraboupy import MarabouUtils
 from maraboupy import MarabouCore
 from WatermarkVerification1 import *
-import MarabouNetworkTFWeightsAsVar
+import MarabouNetworkTFWeightsAsVar2
 sat = 'SAT'
 unsat = 'UNSAT'
 
@@ -62,7 +62,7 @@ class WatermarkVerification3(WatermarkVerification):
         input_test = np.reshape(self.inputs, (self.inputs.shape[0], self.inputs.shape[1], self.inputs.shape[2], 1))
             
         prediction = self.net_model.predict(input_test)
-        network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+        network = MarabouNetworkTFWeightsAsVar2.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
         
         unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
         epsilon_vals.append((unsat_epsilon, sat_epsilon, prediction, sat_vals))
