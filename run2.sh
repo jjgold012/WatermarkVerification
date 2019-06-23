@@ -2,7 +2,7 @@
 #SBATCH --killable
 #SBATCH -c2
 #SBATCH --time=4-0
-#SBATCH --mem=2g
+#SBATCH --mem=8g
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
 
