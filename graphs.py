@@ -6,6 +6,7 @@ datafile = open('./WatermarkVerification1.csv')
 file_reader = DictReader(datafile)
 
 sat_vals = np.array([float(line['sat-epsilon']) for line in file_reader])
+sat_vals = np.sort(sat_vals)
 numbers = np.array(range(1, len(sat_vals)+1))
 plt.step(numbers, sat_vals)
 plt.xlabel('Number of Watermark Images')
