@@ -64,7 +64,7 @@ class WatermarkVerification:
         out_file = open("WatermarkVerification1.csv", "w")
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
-        lastlayer_inputs = np.load('./data/{}.lastlayer.inputs.npy'.format(model_name))
+        lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
         predictions = np.load('./data/{}.prediction.npy'.format(model_name))
         num_of_inputs_to_run = lastlayer_inputs.shape[0]
         # num_of_inputs_to_run = 20
