@@ -52,20 +52,20 @@ class WatermarkVerification2(WatermarkVerification):
 
     def run(self, model_name):
        
-        submodel, last_layer_model = utils.splitModel(self.net_model)
-        filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
+        filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
         
         out_file = open("WatermarkVerification2.csv", "w")
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
-        # num_of_inputs_to_run = len(self.inputs)
-        num_of_inputs_to_run = 2
+        lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
+        predictions = np.load('./data/{}.prediction.npy'.format(model_name))
+        # num_of_inputs_to_run = lastlayer_inputs.shape[0]
+        num_of_inputs_to_run = 5
         for i in range(num_of_inputs_to_run):
-
-            input_test = np.reshape(self.inputs[i], (1, self.inputs.shape[1], self.inputs.shape[2], 1))
             
-            prediction = np.argmax(self.net_model.predict(input_test))
-            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+            prediction = np.argmax(predictions[i])
+            inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
+            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=inputVals)
             
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             out_file.write('{},{},{},{}\n'.format(unsat_epsilon, sat_epsilon, prediction, sat_vals[2]))
@@ -80,15 +80,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help='the name of the model')
-    parser.add_argument('--input_path', default='../nn-verification/data/wm.set.npy', help='input file path')
     parser.add_argument('--epsilon_max', default=100, help='max epsilon value')
     parser.add_argument('--epsilon_interval', default=0.01, help='epsilon smallest change')
     args = parser.parse_args()
-    inputs = np.load(args.input_path)
     epsilon_max = float(args.epsilon_max)
     epsilon_interval = float(args.epsilon_interval)  
     model_name = args.model
     MODELS_PATH = './Models'
-    net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
-    problem = WatermarkVerification2(net_model, epsilon_max, epsilon_interval, inputs)
+    problem = WatermarkVerification2(epsilon_max, epsilon_interval)
     problem.run(model_name)
