@@ -6,12 +6,43 @@ from copy import deepcopy
 from maraboupy import Marabou
 from maraboupy import MarabouUtils
 from maraboupy import MarabouCore
-from WatermarkVerification1 import *
 import MarabouNetworkTFWeightsAsVar
 sat = 'SAT'
 unsat = 'UNSAT'
 
-class WatermarkVerification2(WatermarkVerification):
+class WatermarkVerification2:
+
+    def __init__(self, epsilon_max, epsilon_interval):
+        self.epsilon_max = epsilon_max
+        self.epsilon_interval = epsilon_interval
+
+    def findEpsilonInterval(self, network, prediction):
+        sat_epsilon = self.epsilon_max
+        unsat_epsilon = 0.0
+        sat_vals = None
+        epsilon = sat_epsilon
+        while abs(sat_epsilon - unsat_epsilon) > self.epsilon_interval:
+            status, vals, out = self.evaluateEpsilon(epsilon, deepcopy(network), prediction)
+            if status == sat:
+                sat_epsilon = epsilon
+                sat_vals = (status, vals, out)
+            else:
+                unsat_epsilon = epsilon
+            epsilon = (sat_epsilon + unsat_epsilon)/2
+        return unsat_epsilon, sat_epsilon , sat_vals
+
+
+    def evaluateEpsilon(self, epsilon, network, prediction):
+        outputVars = network.outputVars[0]
+        vals = dict()
+        for out in range(len(outputVars)):
+            if out != prediction:
+                vals[out] = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
+                if vals[out][0]:
+                    return sat, vals, out
+        return unsat, vals, -1
+
+
 
     def epsilonABS(self, network, epsilon_var):
         epsilon2 = network.getNewVariable()
