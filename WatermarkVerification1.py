@@ -96,5 +96,5 @@ if __name__ == '__main__':
     model_name = args.model
     MODELS_PATH = './Models'
     net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
-    problem = WatermarkVerification(net_model, epsilon_max, epsilon_interval, inputs)
+    problem = WatermarkVerification(epsilon_max, epsilon_interval)
     problem.run(model_name)
