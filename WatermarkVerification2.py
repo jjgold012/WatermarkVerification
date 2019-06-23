@@ -4,6 +4,7 @@ import argparse
 import utils
 from copy import deepcopy
 from maraboupy import MarabouUtils
+from maraboupy.MarabouCore.EquationType import LE
 from WatermarkVerification1 import *
 import MarabouNetworkTFWeightsAsVar
 sat = 'SAT'
@@ -36,7 +37,7 @@ class WatermarkVerification2(WatermarkVerification):
                     abs_epsilon_var = self.epsilonABS(network, epsilon_var)
                     abs_epsilons.append(abs_epsilon_var)
 
-        e = MarabouUtils.Equation(EquationType='LE')
+        e = MarabouUtils.Equation(EquationType=LE)
         for i in range(len(abs_epsilons)):
             e.addAddend(1, abs_epsilons[i])
         e.setScalar(epsilon)
