@@ -3,46 +3,13 @@ import os
 import argparse
 import utils
 from copy import deepcopy
-from maraboupy import Marabou
 from maraboupy import MarabouUtils
-from maraboupy import MarabouCore
+from WatermarkVerification1 import *
 import MarabouNetworkTFWeightsAsVar
 sat = 'SAT'
 unsat = 'UNSAT'
 
-class WatermarkVerification2:
-
-    def __init__(self, epsilon_max, epsilon_interval):
-        self.epsilon_max = epsilon_max
-        self.epsilon_interval = epsilon_interval
-
-    def findEpsilonInterval(self, network, prediction):
-        sat_epsilon = self.epsilon_max
-        unsat_epsilon = 0.0
-        sat_vals = None
-        epsilon = sat_epsilon
-        while abs(sat_epsilon - unsat_epsilon) > self.epsilon_interval:
-            status, vals, out = self.evaluateEpsilon(epsilon, deepcopy(network), prediction)
-            if status == sat:
-                sat_epsilon = epsilon
-                sat_vals = (status, vals, out)
-            else:
-                unsat_epsilon = epsilon
-            epsilon = (sat_epsilon + unsat_epsilon)/2
-        return unsat_epsilon, sat_epsilon , sat_vals
-
-
-    def evaluateEpsilon(self, epsilon, network, prediction):
-        outputVars = network.outputVars[0]
-        vals = dict()
-        for out in range(len(outputVars)):
-            if out != prediction:
-                vals[out] = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
-                if vals[out][0]:
-                    return sat, vals, out
-        return unsat, vals, -1
-
-
+class WatermarkVerification2(WatermarkVerification):
 
     def epsilonABS(self, network, epsilon_var):
         epsilon2 = network.getNewVariable()
@@ -69,7 +36,7 @@ class WatermarkVerification2:
                     abs_epsilon_var = self.epsilonABS(network, epsilon_var)
                     abs_epsilons.append(abs_epsilon_var)
 
-        e = MarabouUtils.Equation(EquationType=MarabouCore.Equation.LE)
+        e = MarabouUtils.Equation(EquationType='LE')
         for i in range(len(abs_epsilons)):
             e.addAddend(1, abs_epsilons[i])
         e.setScalar(epsilon)
@@ -82,7 +49,6 @@ class WatermarkVerification2:
 
 
     def run(self, model_name):
-        print('Start the run\nmodel: {} \nepsilon_max {} \nepsilon_interval: {}'.format(model_name, self.epsilon_max, self.epsilon_interval))
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
         
         out_file = open("WatermarkVerification2.csv", "w")
@@ -114,7 +80,6 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon_max', default=100, help='max epsilon value')
     parser.add_argument('--epsilon_interval', default=0.01, help='epsilon smallest change')
     args = parser.parse_args()
-    print(args)
     epsilon_max = float(args.epsilon_max)
     epsilon_interval = float(args.epsilon_interval)  
     model_name = args.model
