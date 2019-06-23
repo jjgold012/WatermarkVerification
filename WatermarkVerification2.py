@@ -83,6 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon_max', default=100, help='max epsilon value')
     parser.add_argument('--epsilon_interval', default=0.01, help='epsilon smallest change')
     args = parser.parse_args()
+    print(args)
     epsilon_max = float(args.epsilon_max)
     epsilon_interval = float(args.epsilon_interval)  
     model_name = args.model
