@@ -16,7 +16,8 @@ if __name__ == '__main__':
     
     submodel, last_layer_model = utils.splitModel(net_model)
     filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
-    inputs = np.reshape(inputs, (inputs.shape[0], inputs.shape[1], inputs.shape[2], 1))
+    print(inputs[0].shape)
+    inputs = np.reshape(inputs[0], (1, inputs[0].shape[0], inputs[0].shape[1], 1))
 
     prediction = net_model.predict(inputs)
     lastlayer_input = submodel.predict(inputs)
