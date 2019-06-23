@@ -51,7 +51,7 @@ class WatermarkVerification2(WatermarkVerification):
 
 
     def run(self, model_name):
-       
+        print('Start the run\nmodel: {} \nepsilon_max {} \nepsilon_interval: {}'.format(model_name, self.epsilon_max, self.epsilon_interval))
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
         
         out_file = open("WatermarkVerification2.csv", "w")
