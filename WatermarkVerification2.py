@@ -36,7 +36,7 @@ class WatermarkVerification2(WatermarkVerification):
                     abs_epsilon_var = self.epsilonABS(network, epsilon_var)
                     abs_epsilons.append(abs_epsilon_var)
 
-        e = MarabouUtils.Equation(EquationType=MarabouUtils.MarabouCore.EquationType.LE)
+        e = MarabouUtils.Equation(EquationType=MarabouUtils.MarabouCore.Equation.LE)
         for i in range(len(abs_epsilons)):
             e.addAddend(1, abs_epsilons[i])
         e.setScalar(epsilon)
