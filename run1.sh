@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --killable
 #SBATCH -c2
 #SBATCH --time=2-0
 #SBATCH --mem=2g
