@@ -12,11 +12,9 @@ unsat = 'UNSAT'
 
 class WatermarkVerification:
 
-    def __init__(self, net_model, epsilon_max, epsilon_interval, inputs):
+    def __init__(self, epsilon_max, epsilon_interval):
         self.epsilon_max = epsilon_max
         self.epsilon_interval = epsilon_interval
-        self.inputs = inputs
-        self.net_model = net_model
 
     def findEpsilonInterval(self, network, prediction):
         sat_epsilon = self.epsilon_max
@@ -61,21 +59,19 @@ class WatermarkVerification:
 
     def run(self, model_name):
        
-        submodel, last_layer_model = utils.splitModel(self.net_model)
-        filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
-        
+        filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
+
         out_file = open("WatermarkVerification1.csv", "w")
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
-        
-        num_of_inputs_to_run = len(self.inputs)
+        lastlayer_inputs = np.load('./data/{}.lastlayer.inputs.npy'.format(model_name))
+        predictions = np.load('./data/{}.prediction.npy'.format(model_name))
+        num_of_inputs_to_run = lastlayer_inputs.shape[0]
         # num_of_inputs_to_run = 20
         for i in range(num_of_inputs_to_run):
-
-            input_test = np.reshape(self.inputs[i], (1, self.inputs.shape[1], self.inputs.shape[2], 1))
             
-            prediction = np.argmax(self.net_model.predict(input_test))
-            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+            prediction = np.argmax(predictions[i])
+            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=lastlayer_inputs[i])
             
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             out_file.write('{},{},{},{}\n'.format(unsat_epsilon, sat_epsilon, prediction, sat_vals[2]))
