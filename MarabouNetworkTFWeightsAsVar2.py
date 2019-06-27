@@ -24,14 +24,18 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             savedModelTags: (list of strings) If loading a SavedModel, the user must specify tags used.
         """
         super().__init__()
-        self.biasAddRelations = list()
-        self.matMulLayers = dict()
-        self.biasAddLayers = dict()
-        self.numOfLayers = -1
-        self.inputNumber = 0
+        self.clear()
         self.readFromPb(filename, inputVals, inputNames, outputName, savedModel, savedModelTags)
         self.processBiasAddRelations()
 
+    def setupForInput(self, i):
+        """
+        Reset values to represent empty network
+        """
+        self.inputNumber = i
+        self.varMap.append(dict())
+        self.matMulLayers.append(dict())
+        self.biasAddLayers.append(dict())
 
     def clear(self):
         """
@@ -39,14 +43,14 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         """
         super().clear()
         self.madeGraphEquations = []
-        self.varMap = dict()
+        self.varMap = []
         self.shapeMap = dict()
         self.inputOps = None
         self.inputVals = None
-        self.biasAddRelations = list()
-        self.matMulLayers = dict()
+        self.biasAddRelations = []
+        self.matMulLayers = []
         self.epsilons = None
-        self.biasAddLayers = dict()
+        self.biasAddLayers = []
         self.numOfLayers = -1
         self.inputNumber = 0
 
@@ -64,7 +68,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             savedModel: (bool) If false, load frozen graph. If true, load SavedModel object.
             savedModelTags: (list of strings) If loading a SavedModel, the user must specify tags used.
         """
-        print(inputVals.shape)
+    
         tf_session = None
         if savedModel:
             ### Read SavedModel ###
@@ -88,11 +92,12 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             tf_session = tf.Session(graph=graph)
             ### END reading protobuf ###
 
+        
         ### Find operations corresponding to input and output ###
         if inputNames: # is not None
             inputOps = []
             for i in inputNames:
-               inputOps.append(tf_session.graph.get_operation_by_name(i))
+                inputOps.append(tf_session.graph.get_operation_by_name(i))
         else: # If there is just one placeholder, use it as input
             ops = tf_session.graph.get_operations()
             placeholders = [x for x in ops if x.node_def.op == 'Placeholder']
@@ -101,15 +106,19 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             outputOp = tf_session.graph.get_operation_by_name(outputName)
         else: # Assume that the last operation is the output
             outputOp = tf_session.graph.get_operations()[-1]
-        self.setInputVals(inputOps, inputVals)
-        self.setOutputOp(outputOp)
-        ### END finding input/output operations ###
 
-        ### Generate equations corresponding to network ###
-        self.foundnInputFlags = 0
-        self.makeGraphEquations(outputOp)
-        assert self.foundnInputFlags == len(inputOps)
-        ### END generating equations ###
+        print(inputVals.shape)
+        for j in range(inputVals.shape[0]):
+            self.setupForInput(j)
+            self.setInputVals(inputOps, inputVals)
+            self.setOutputOp(outputOp)
+            ### END finding input/output operations ###
+
+            ### Generate equations corresponding to network ###
+            self.foundnInputFlags = 0
+            self.makeGraphEquations(outputOp)
+            assert self.foundnInputFlags == len(inputOps)
+            ### END generating equations ###
 
     def setInputVals(self, ops, inputVals):
         """
@@ -121,7 +130,8 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         for op in ops:
             try:
                 shape = tuple(op.outputs[0].shape.as_list())
-                assert shape == inputVals.shape
+                shape2 = tuple(1, inputVals[self.inputNumber].shape[0])
+                assert shape == shape2
                 self.shapeMap[op.name] = shape
             except:
                 self.shapeMap[op.name] = [None]
@@ -150,8 +160,8 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         Returns:
             v: (np array) of variable numbers, in same shape as x
         """
-        if x.name in self.varMap and not force:
-            return self.varMap[x.name]
+        if x.name in self.varMap[self.inputNumber] and not force:
+            return self.varMap[self.inputNumber][x.name]
 
         ### Find number of new variables needed ###
         if x.name in self.shapeMap:
@@ -165,7 +175,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         ### END finding number of new variables ###
 
         v = np.array([self.getNewVariable() for _ in range(size)]).reshape(shape)
-        self.varMap[x.name] = v
+        self.varMap[self.inputNumber][x.name] = v
         assert all([np.equal(np.mod(i, 1), 0) for i in v.reshape(-1)]) # check if integers
         return v
 
@@ -207,11 +217,13 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             return np.concatenate(values, axis=axis)
         if op.node_def.op == 'Const':
             opVars = self.opToVarArray(op)
-            epsilons = self.epsilons if self.epsilons else self.opToVarArray(op, force=True)
+            if not self.epsilons: 
+                self.epsilons = self.opToVarArray(op, force=True)
+            epsilons = self.epsilons 
             tproto = op.node_def.attr['value'].tensor
             return {'vals': tensor_util.MakeNdarray(tproto), 'vars': opVars, 'epsilons': epsilons}
         if op.node_def.op == 'Placeholder':
-            return self.inputVals
+            return np.reshape(self.inputVals[self.inputNumber], (1, self.inputVals[self.inputNumber].shape[0]))
 
         ### END operations not requiring new variables ###
         if op.node_def.op in ['MatMul', 'BiasAdd', 'Add', 'Sub', 'Relu', 'MaxPool', 'Conv2D', 'Placeholder']:

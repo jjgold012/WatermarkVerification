@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --mem=16G
 #SBATCH --time=3-0
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou

@@ -57,8 +57,8 @@ class WatermarkVerification2(WatermarkVerification):
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
         predictions = np.load('./data/{}.prediction.npy'.format(model_name))
         # num_of_inputs_to_run = lastlayer_inputs.shape[0]
-        num_of_inputs_to_run = 5
-        for i in range(num_of_inputs_to_run):
+        num_of_inputs_to_run = 3
+        for i in range(1, 1 + num_of_inputs_to_run):
             
             prediction = np.argmax(predictions[i])
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
