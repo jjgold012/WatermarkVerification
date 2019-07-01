@@ -79,7 +79,8 @@ class WatermarkVerification:
             out_file.flush()
 
             all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
-            newVars = np.array([[all_vals[network.epsilons[j][i]] for i in range(network.epsilons.shape[1])] for j in range(network.epsilons.shape[0])])
+            epsilons_vars = network.matMulLayers[0]['epsilons']
+            newVars = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(network.epsilons.shape[0])])
             self.outputVars = newVars if epsilons_vals==0 else np.append(epsilons_vals, newVars, axis=0)
             print(newVars)
         
