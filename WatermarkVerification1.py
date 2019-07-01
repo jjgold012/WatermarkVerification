@@ -1,7 +1,6 @@
 # from nn_verification.utils import load_model
 import numpy as np
 import os
-import tqdm
 import argparse
 import utils
 from copy import deepcopy
@@ -70,8 +69,7 @@ class WatermarkVerification:
         num_of_inputs_to_run = lastlayer_inputs.shape[0]
         # num_of_inputs_to_run = 20
         epsilons_vals = np.array([])
-        for i in tqdm.tqdm(range(num_of_inputs_to_run)):
-            print('******************************************8')
+        for i in range(num_of_inputs_to_run):
             prediction = np.argmax(predictions[i])
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
             network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=inputVals)
@@ -83,7 +81,7 @@ class WatermarkVerification:
             all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
             newVars = np.array([[all_vals[network.epsilons[j][i]] for i in range(network.epsilons.shape[1])] for j in range(network.epsilons.shape[0])])
             self.outputVars = newVars if epsilons_vals==0 else np.append(epsilons_vals, newVars, axis=0)
-
+            print(newVars)
         
         out_file.close()
         np.save('./data/{}.WatermarkVerification1.vals'.format(model_name), epsilons_vals)
