@@ -86,7 +86,7 @@ class WatermarkVerification:
 
         
         out_file.close()
-        np.save('./data/wm.ver.1.{}.vals'.format(model_name), epsilons_vals)
+        np.save('./data/{}.WatermarkVerification1.vals'.format(model_name), epsilons_vals)
 
     
 
