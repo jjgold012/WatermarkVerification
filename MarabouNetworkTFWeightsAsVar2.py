@@ -36,7 +36,6 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         self.varMap.append(dict())
         self.matMulLayers.append(dict())
         self.biasAddLayers.append(dict())
-
     def clear(self):
         """
         Reset values to represent empty network
@@ -49,11 +48,11 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         self.inputVals = None
         self.biasAddRelations = []
         self.matMulLayers = []
-        self.epsilons = None
+        self.epsilons = np.array([])
         self.biasAddLayers = []
         self.numOfLayers = -1
         self.inputNumber = 0
-
+        self.outputVars = np.array([])
 
     def readFromPb(self, filename, inputVals, inputNames, outputName, savedModel, savedModelTags):
         """
@@ -150,7 +149,8 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             self.shapeMap[op.name] = shape
         except:
             self.shapeMap[op.name] = [None]
-        self.outputVars = self.opToVarArray(op)
+        newVars = self.opToVarArray(op)
+        self.outputVars = newVars if self.outputVars.size==0 else np.append(self.outputVars, newVars, axis=0)
 
     def opToVarArray(self, x, force=False):
         """
@@ -217,7 +217,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             return np.concatenate(values, axis=axis)
         if op.node_def.op == 'Const':
             opVars = self.opToVarArray(op)
-            if not self.epsilons: 
+            if self.epsilons.size == 0: 
                 self.epsilons = self.opToVarArray(op, force=True)
             epsilons = self.epsilons 
             tproto = op.node_def.attr['value'].tensor
@@ -548,9 +548,10 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         Arguments:
             op: (tf.op) representing operation until which we want to generate network equations
         """
-        if op.name in self.madeGraphEquations:
+        name = '{}_{}'.format(op.name, self.inputNumber)
+        if name in self.madeGraphEquations:
             return
-        self.madeGraphEquations += [op.name]
+        self.madeGraphEquations += [name]
         if op.name in self.inputOps:
             self.foundnInputFlags += 1
         in_ops = [x.op for x in op.inputs]
