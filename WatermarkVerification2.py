@@ -57,6 +57,8 @@ class WatermarkVerification2(WatermarkVerification):
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
         predictions = np.load('./data/{}.prediction.npy'.format(model_name))
         # num_of_inputs_to_run = lastlayer_inputs.shape[0]
+        epsilons_vals = np.array([])
+
         num_of_inputs_to_run = 3
         for i in range(1, 1 + num_of_inputs_to_run):
             
@@ -68,7 +70,14 @@ class WatermarkVerification2(WatermarkVerification):
             out_file.write('{},{},{},{}\n'.format(unsat_epsilon, sat_epsilon, prediction, sat_vals[2]))
             out_file.flush()
         
+            all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
+            epsilons_vars = network.matMulLayers[0]['epsilons']
+            newVars = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
+            newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
+            epsilons_vals = newVars if epsilons_vals.size==0 else np.append(epsilons_vals, newVars, axis=0)
+        
         out_file.close()
+        np.save('./data/{}.WatermarkVerification2.vals'.format(model_name), epsilons_vals)
 
 
     

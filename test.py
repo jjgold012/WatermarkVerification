@@ -11,17 +11,21 @@ from tensorflow import keras
 from pprint import pprint
 
 class test(WatermarkVerification):
-    def run(self):
-        submodel, last_layer_model = utils.splitModel(net_model)
-        filename = utils.saveModelAsProtobuf(last_layer_model, 'last.layer.{}'.format(model_name))
+    def run(self, model_name):
 
+        net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
+        submodel, last_layer_model = utils.splitModel(net_model)
+        filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
+
+        lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
+        predictions = np.load('./data/{}.prediction.npy'.format(model_name))
         out_file = open("test.out", "w")
         for i in range(5):
 
-            input_test = np.reshape(self.inputs[i], (1,28,28,1))
             
-            prediction = np.argmax(net_model.predict(input_test))
-            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=submodel.predict(input_test))
+            prediction = np.argmax(predictions[i])
+            inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
+            network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=inputVals)
             
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             epsilons_vars = network.matMulLayers[0]['epsilons']
@@ -35,7 +39,7 @@ class test(WatermarkVerification):
             
             c = keras.models.clone_model(last_layer_model)
             c.set_weights([new_weights])
-            new_out = c.predict(submodel.predict(input_test))[0]
+            new_out = c.predict(inputVals)[0]
             # print(unsat_epsilon)
             # print(sat_epsilon)
             # print(np.max(epsilons_vals.flatten()))
@@ -59,7 +63,9 @@ net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json')
 
 
 inputs = np.load('../nn-verification/data/wm.set.npy')
+# inputs = np.load('./data/mnist.w.wm.WatermarkVerification1.vals.npy')
+# a = np.max(np.max(inputs, axis=2) , axis=1)
 epsilon_max = 0.5
 epsilon_interval = 0.2 
-problem = test(net_model, epsilon_max, epsilon_interval, inputs)
-problem.run()
+problem = test(epsilon_max, epsilon_interval)
+problem.run(model_name)
