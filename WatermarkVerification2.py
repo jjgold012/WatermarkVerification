@@ -59,8 +59,8 @@ class WatermarkVerification2(WatermarkVerification):
         # num_of_inputs_to_run = lastlayer_inputs.shape[0]
         epsilons_vals = np.array([])
 
-        num_of_inputs_to_run = 3
-        for i in range(1, 1 + num_of_inputs_to_run):
+        num_of_inputs_to_run = 2
+        for i in range(num_of_inputs_to_run):
             
             prediction = np.argmax(predictions[i])
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
