@@ -266,7 +266,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         input_ops = [i.op for i in op.inputs]
         prevValues = [self.getValues(i) for i in input_ops]
         curValues = self.getValues(op)
-        self.matMulLayers[self.numOfLayers] = prevValues[1]
+        self.matMulLayers[self.inputNumber][self.numOfLayers] = prevValues[1]
         
         aTranspose = op.node_def.attr['transpose_a'].b
         bTranspose = op.node_def.attr['transpose_b'].b
@@ -312,7 +312,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         biasConsts = prevValues[1]['vals'].reshape(-1)
         epsilons = prevValues[1]['epsilons'].reshape(-1)
         biasVars = prevValues[1]['vars'].reshape(-1)
-        self.biasAddLayers[self.numOfLayers] = prevValues[1]
+        self.biasAddLayers[self.inputNumber][self.numOfLayers] = prevValues[1]
         
         # broadcasting
         biasConsts = np.tile(biasConsts, len(prevVars)//len(biasConsts))

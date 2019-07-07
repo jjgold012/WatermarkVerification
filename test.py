@@ -62,8 +62,8 @@ MODELS_PATH = './Models'
 net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
 
-inputs = np.load('../nn-verification/data/wm.set.npy')
-# inputs = np.load('./data/mnist.w.wm.WatermarkVerification1.vals.npy')
+# inputs = np.load('../nn-verification/data/wm.set.npy')
+inputs = np.load('./data/mnist.w.wm.WatermarkVerification1.vals.npy')
 # a = np.max(np.max(inputs, axis=2) , axis=1)
 epsilon_max = 0.5
 epsilon_interval = 0.2 
