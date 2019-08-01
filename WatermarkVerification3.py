@@ -34,7 +34,7 @@ class WatermarkVerification3(WatermarkVerification):
         stats = network.solve(verbose=False)
         newOut = predIndices[:,1]
         if stats[0]:
-            return sat, stats
+            return sat, stats, newOut
         # for out in range(len(outputVars)):
         #     if out != prediction:
         #         vals[out] = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
@@ -57,19 +57,24 @@ class WatermarkVerification3(WatermarkVerification):
         return network.solve(verbose=False)
 
 
-    def run(self, model_name):        
+    def run(self, model_name, numOfInputs):        
         
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
         
         out_file = open("WatermarkVerification3.csv", "w")
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
-        lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
-        predictions = np.load('./data/{}.prediction.npy'.format(model_name))
+        
+        lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))[:numOfInputs]
+        predictions = np.load('./data/{}.prediction.npy'.format(model_name))[:numOfInputs]
         network = MarabouNetworkTFWeightsAsVar2.read_tf_weights_as_var(filename=filename, inputVals=lastlayer_inputs)
-
+        maxPred = np.max(predictions, axis=1)
         unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, predictions)
-
+        print(maxPred)
+        print('----------------------------------------------------------')
+        print('unsat_epsilon: ', unsat_epsilon)
+        print('sat_epsilon: ', sat_epsilon)
+        print(sat_vals[2])
         # for i in range(network.epsilons.shape[0]):
         #     for j in range(network.epsilons.shape[1]):
         #         network.setUpperBound(network.epsilons[i][j], 1)
@@ -98,12 +103,14 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help='the name of the model')
-    parser.add_argument('--epsilon_max', default=100, help='max epsilon value')
+    parser.add_argument('--epsilon_max', default=5, help='max epsilon value')
     parser.add_argument('--epsilon_interval', default=0.01, help='epsilon smallest change')
+    parser.add_argument('--num_of_inputs', default=2, help='the number of inputs that needs to be falsify')
     args = parser.parse_args()
     epsilon_max = float(args.epsilon_max)
     epsilon_interval = float(args.epsilon_interval)  
+    numOfInputs = int(args.num_of_inputs)
     model_name = args.model
     MODELS_PATH = './Models'
     problem = WatermarkVerification3(epsilon_max, epsilon_interval)
-    problem.run(model_name)
+    problem.run(model_name, numOfInputs)
