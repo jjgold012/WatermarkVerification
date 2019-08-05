@@ -2,6 +2,7 @@ import numpy as np
 import os
 import argparse
 import utils
+from pprint import pprint
 from copy import deepcopy
 from maraboupy import Marabou
 from maraboupy import MarabouUtils
@@ -35,6 +36,8 @@ class WatermarkVerification3(WatermarkVerification):
         newOut = predIndices[:,1]
         if stats[0]:
             return sat, stats, newOut
+        else:
+            return unsat, stats, predIndices[:,1]
         # for out in range(len(outputVars)):
         #     if out != prediction:
         #         vals[out] = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
@@ -61,42 +64,26 @@ class WatermarkVerification3(WatermarkVerification):
         
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
         
-        out_file = open("WatermarkVerification3.csv", "w")
-        out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
-        out_file.flush()
-        
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))[:numOfInputs]
         predictions = np.load('./data/{}.prediction.npy'.format(model_name))[:numOfInputs]
         network = MarabouNetworkTFWeightsAsVar2.read_tf_weights_as_var(filename=filename, inputVals=lastlayer_inputs)
-        maxPred = np.max(predictions, axis=1)
         unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, predictions)
-        print(maxPred)
-        print('----------------------------------------------------------')
-        print('unsat_epsilon: ', unsat_epsilon)
-        print('sat_epsilon: ', sat_epsilon)
-        print(sat_vals[2])
-        # for i in range(network.epsilons.shape[0]):
-        #     for j in range(network.epsilons.shape[1]):
-        #         network.setUpperBound(network.epsilons[i][j], 1)
-        #         network.setLowerBound(network.epsilons[i][j], 1)
-        # vals = network.solve()
-        # print(predictions)
+        epsilons_vars = network.epsilons
+        epsilons_vals = np.array([[sat_vals[1][0][epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
+        # newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
+        maxPred = np.argmax(predictions, axis=1)
 
-        # epsilons_vars = network.epsilons
-            
-        # epsilons_vals = np.array([[vals[0][epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
+        out_file = open('WatermarkVerification3.{}.wm.out'.format(numOfInputs), 'w')
+        out_file.write('unsat_epsilon: {}\n'.format(unsat_epsilon))
+        out_file.write('sat_epsilon: {}\n'.format(sat_epsilon))
+        out_file.write('\noriginal prediction: \n')
+        pprint(predictions.tolist(), out_file)
+        out_file.write('\nmax prediction: \n')
+        pprint(maxPred.tolist(), out_file)
+        out_file.write('\nnew prediction: \n')
+        pprint(sat_vals[2].tolist(), out_file)
         
-        # net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
-        # submodel, last_layer_model = utils.splitModel(net_model)
-        # weights = last_layer_model.get_weights()[0]
-        # new_weights = weights + epsilons_vals
-        
-        # c = keras.models.clone_model(last_layer_model)
-        # c.set_weights([new_weights])
-        # new_out = c.predict(lastlayer_inputs)
-        # print(network.outputVars)
-        # print(new_out)
-        
+        np.save('./data/{}.WatermarkVerification3.{}.wm.vals'.format(model_name, numOfInputs), epsilons_vals)
     
 
 if __name__ == '__main__':
