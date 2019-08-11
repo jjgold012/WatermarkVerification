@@ -32,14 +32,10 @@ class WatermarkVerification:
         return unsat_epsilon, sat_epsilon , sat_vals
 
 
-    def evaluateEpsilon(self, epsilon, network, prediction, secondBestPrediction):
-        outputVars = network.outputVars[0]
-        vals = None
-        for out in range(len(outputVars)):
-            if out != prediction:
-                vals[out] = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
-                if vals[out][0]:
-                    return sat, vals, out
+    def evaluateEpsilon(self, epsilon, network, prediction, secondBestPrediction):        
+        vals = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, secondBestPrediction)
+        if vals[0]:
+            return sat, vals, secondBestPrediction
         return unsat, vals, -1
 
 
@@ -61,7 +57,7 @@ class WatermarkVerification:
        
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
 
-        out_file = open("WatermarkVerification1.csv", "w")
+        out_file = open("WatermarkVerification1SecondBestPrediction.csv", "w")
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,second-best-prediction\n')
         out_file.flush()
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
@@ -77,11 +73,11 @@ class WatermarkVerification:
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
             network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=inputVals)
             
-            unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
+            unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction, secondBestPrediction)
             out_file.write('{},{},{},{}\n'.format(unsat_epsilon, sat_epsilon, prediction, sat_vals[2]))
             out_file.flush()
 
-            all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
+            all_vals = sat_vals[1][0]
             epsilons_vars = network.matMulLayers[0]['epsilons']
             newVars = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
             newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
