@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -c2
 #SBATCH --time=2-0
-#SBATCH --mem=2g
+#SBATCH --mem-per-cpu=2g
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
 
