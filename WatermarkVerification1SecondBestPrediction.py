@@ -16,13 +16,13 @@ class WatermarkVerification:
         self.epsilon_max = epsilon_max
         self.epsilon_interval = epsilon_interval
 
-    def findEpsilonInterval(self, network, prediction):
+    def findEpsilonInterval(self, network, prediction, secondBestPrediction):
         sat_epsilon = self.epsilon_max
         unsat_epsilon = 0.0
         sat_vals = None
         epsilon = sat_epsilon
         while abs(sat_epsilon - unsat_epsilon) > self.epsilon_interval:
-            status, vals, out = self.evaluateEpsilon(epsilon, deepcopy(network), prediction)
+            status, vals, out = self.evaluateEpsilon(epsilon, deepcopy(network), prediction, secondBestPrediction)
             if status == sat:
                 sat_epsilon = epsilon
                 sat_vals = (status, vals, out)
@@ -32,13 +32,13 @@ class WatermarkVerification:
         return unsat_epsilon, sat_epsilon , sat_vals
 
 
-    def evaluateEpsilon(self, epsilon, network, prediction):
+    def evaluateEpsilon(self, epsilon, network, prediction, secondBestPrediction):
         outputVars = network.outputVars[0]
         vals = None
         for out in range(len(outputVars)):
             if out != prediction:
-                vals = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
-                if vals[0]:
+                vals[out] = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
+                if vals[out][0]:
                     return sat, vals, out
         return unsat, vals, -1
 
@@ -62,15 +62,18 @@ class WatermarkVerification:
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
 
         out_file = open("WatermarkVerification1.csv", "w")
-        out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
+        out_file.write('unsat-epsilon,sat-epsilon,original-prediction,second-best-prediction\n')
         out_file.flush()
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
         predictions = np.load('./data/{}.prediction.npy'.format(model_name))
+        predIndices = np.flip(np.argsort(predictions, axis=1), axis=1)        
         num_of_inputs_to_run = lastlayer_inputs.shape[0]
         # num_of_inputs_to_run = 20
         epsilons_vals = np.array([])
         for i in range(num_of_inputs_to_run):
             prediction = np.argmax(predictions[i])
+            prediction = predIndices[i][0]
+            secondBestPrediction = predIndices[i][1]
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
             network = MarabouNetworkTFWeightsAsVar.read_tf_weights_as_var(filename=filename, inputVals=inputVals)
             
@@ -78,7 +81,7 @@ class WatermarkVerification:
             out_file.write('{},{},{},{}\n'.format(unsat_epsilon, sat_epsilon, prediction, sat_vals[2]))
             out_file.flush()
 
-            all_vals = sat_vals[1][0]
+            all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
             epsilons_vars = network.matMulLayers[0]['epsilons']
             newVars = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
             newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
