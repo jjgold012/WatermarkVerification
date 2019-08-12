@@ -47,7 +47,6 @@ class WatermarkVerification:
         outputVars = network.outputVars[0]
         for k in network.matMulLayers.keys():
             n, m = network.matMulLayers[k]['vals'].shape
-            print(n,m)
             for i in range(n):
                 for j in range(m):
                     network.setUpperBound(network.matMulLayers[k]['epsilons'][i][j], epsilon)
@@ -61,7 +60,7 @@ class WatermarkVerification:
        
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
 
-        out_file = open("WatermarkVerification1.csv", "w")
+        out_file = open("./data/results/WatermarkVerification1.csv", "w")
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
@@ -85,7 +84,7 @@ class WatermarkVerification:
             epsilons_vals = newVars if epsilons_vals.size==0 else np.append(epsilons_vals, newVars, axis=0)
         
         out_file.close()
-        np.save('./data/{}.WatermarkVerification1.vals'.format(model_name), epsilons_vals)
+        np.save('./data/results/{}.WatermarkVerification1.vals'.format(model_name), epsilons_vals)
 
     
 
