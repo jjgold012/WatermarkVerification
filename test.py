@@ -30,7 +30,7 @@ class test(WatermarkVerification):
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             epsilons_vars = network.matMulLayers[0]['epsilons']
             
-            all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
+            all_vals = sat_vals[1][0]
             sat_out = np.array([all_vals[i] for i in range(10)])
             epsilons_vals = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
             
@@ -62,8 +62,7 @@ MODELS_PATH = './Models'
 net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
 
-# inputs = np.load('../nn-verification/data/wm.set.npy')
-inputs = np.load('./data/mnist.w.wm.WatermarkVerification1.vals.npy')
+inputs = np.load('../nn-verification/data/wm.set.npy')
 # a = np.max(np.max(inputs, axis=2) , axis=1)
 epsilon_max = 0.5
 epsilon_interval = 0.2 
