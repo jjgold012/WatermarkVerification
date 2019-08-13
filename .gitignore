@@ -5,3 +5,4 @@ __pycache__
 .vscode/**
 .vscode
 TODO
+gurobi.log

@@ -73,7 +73,7 @@ class WatermarkVerification3(WatermarkVerification):
         # newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
         maxPred = np.argmax(predictions, axis=1)
 
-        out_file = open('./data/results/WatermarkVerification3.{}.wm.out'.format(numOfInputs), 'w')
+        out_file = open('./data/results/problem3/WatermarkVerification3.{}.wm.out'.format(numOfInputs), 'w')
         out_file.write('unsat_epsilon: {}\n'.format(unsat_epsilon))
         out_file.write('sat_epsilon: {}\n'.format(sat_epsilon))
         out_file.write('\noriginal prediction: \n')
@@ -83,7 +83,7 @@ class WatermarkVerification3(WatermarkVerification):
         out_file.write('\nnew prediction: \n')
         pprint(sat_vals[2].tolist(), out_file)
         
-        np.save('./data/results/{}.WatermarkVerification3.{}.wm.vals'.format(model_name, numOfInputs), epsilons_vals)
+        np.save('./data/results/problem3/{}.WatermarkVerification3.{}.wm.vals'.format(model_name, numOfInputs), epsilons_vals)
     
 
 if __name__ == '__main__':

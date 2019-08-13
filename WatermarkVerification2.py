@@ -48,19 +48,20 @@ class WatermarkVerification2(WatermarkVerification):
         return network.solve(verbose=True)
 
 
-    def run(self, model_name):
+    def run(self, model_name, start, finish):
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
         
-        out_file = open("./data/results/WatermarkVerification2.csv", "w")
-        out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
-        out_file.flush()
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
         predictions = np.load('./data/{}.prediction.npy'.format(model_name))
         # num_of_inputs_to_run = lastlayer_inputs.shape[0]
         epsilons_vals = np.array([])
 
-        num_of_inputs_to_run = 2
-        for i in range(num_of_inputs_to_run):
+        start = start if start > 0 else 0
+        finish = finish if finish > 0 else lastlayer_inputs.shape[0]
+        out_file = open('./data/results/problem2/{}.WatermarkVerification2_{}-{}.csv'.format(model_name, start, (finish-1)), 'w')
+        out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
+        out_file.flush()
+        for i in range(start, finish):
             
             prediction = np.argmax(predictions[i])
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
@@ -70,14 +71,14 @@ class WatermarkVerification2(WatermarkVerification):
             out_file.write('{},{},{},{}\n'.format(unsat_epsilon, sat_epsilon, prediction, sat_vals[2]))
             out_file.flush()
         
-            all_vals = sat_vals[1][max(sat_vals[1].keys())][0]
+            all_vals = sat_vals[1][0]
             epsilons_vars = network.matMulLayers[0]['epsilons']
             newVars = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
             newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
             epsilons_vals = newVars if epsilons_vals.size==0 else np.append(epsilons_vals, newVars, axis=0)
         
         out_file.close()
-        np.save('./data/results/{}.WatermarkVerification2.vals'.format(model_name), epsilons_vals)
+        np.save('./data/results/problem2/{}.WatermarkVerification2_{}-{}.vals'.format(model_name, start, (finish-1)), epsilons_vals)
 
 
     
@@ -88,10 +89,16 @@ if __name__ == '__main__':
     parser.add_argument('--model', help='the name of the model')
     parser.add_argument('--epsilon_max', default=100, help='max epsilon value')
     parser.add_argument('--epsilon_interval', default=0.01, help='epsilon smallest change')
+    parser.add_argument('--start', default=-1, help='max epsilon value')
+    parser.add_argument('--finish', default=-1, help='epsilon smallest change')
+    
     args = parser.parse_args()
     epsilon_max = float(args.epsilon_max)
     epsilon_interval = float(args.epsilon_interval)  
+    start = int(args.start)  
+    finish = int(args.finish)  
+
     model_name = args.model
     MODELS_PATH = './Models'
     problem = WatermarkVerification2(epsilon_max, epsilon_interval)
-    problem.run(model_name)
+    problem.run(model_name, start, finish)

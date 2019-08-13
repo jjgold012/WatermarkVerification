@@ -60,7 +60,7 @@ class WatermarkVerification:
        
         filename = './ProtobufNetworks/last.layer.{}.pb'.format(model_name)
 
-        out_file = open("./data/results/WatermarkVerification1.csv", "w")
+        out_file = open('./data/results/problem1/{}.WatermarkVerification1.csv'.format(model_name), 'w')
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
@@ -84,7 +84,7 @@ class WatermarkVerification:
             epsilons_vals = newVars if epsilons_vals.size==0 else np.append(epsilons_vals, newVars, axis=0)
         
         out_file.close()
-        np.save('./data/results/{}.WatermarkVerification1.vals'.format(model_name), epsilons_vals)
+        np.save('./data/results/problem1/{}.WatermarkVerification1.vals'.format(model_name), epsilons_vals)
 
     
 
