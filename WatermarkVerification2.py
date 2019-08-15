@@ -57,8 +57,8 @@ class WatermarkVerification2(WatermarkVerification):
         epsilons_vals = np.array([])
 
         start = start if start > 0 else 0
-        finish = finish if finish > 0 else lastlayer_inputs.shape[0]
-        out_file = open('./data/results/problem2/{}.WatermarkVerification2_{}-{}.csv'.format(model_name, start, (finish-1)), 'w')
+        finish = (finish + 1) if finish > 0 else lastlayer_inputs.shape[0]
+        out_file = open('./data/results/problem2/{}.WatermarkVerification2_{}-{}.csv'.format(model_name, start, finish), 'w')
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
         for i in range(start, finish):
@@ -78,7 +78,7 @@ class WatermarkVerification2(WatermarkVerification):
             epsilons_vals = newVars if epsilons_vals.size==0 else np.append(epsilons_vals, newVars, axis=0)
         
         out_file.close()
-        np.save('./data/results/problem2/{}.WatermarkVerification2_{}-{}.vals'.format(model_name, start, (finish-1)), epsilons_vals)
+        np.save('./data/results/problem2/{}.WatermarkVerification2_{}-{}.vals'.format(model_name, start, finish), epsilons_vals)
 
 
     
