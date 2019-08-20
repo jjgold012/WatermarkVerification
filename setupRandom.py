@@ -8,7 +8,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_of_samples', default=1000, help='the number samples to generate')
     parser.add_argument('--num_of_wm', default=2, help='the number watermarks in a sample')
-    parser.add_argument('--input_path', default='../nn-verification/data/wm.set.npy', help='input file path')
+    parser.add_argument('--input_path', default='./data/wm.set.npy', help='input file path')
     args = parser.parse_args()
     inputs_size = np.load(args.input_path).shape[0]
     num_of_samples = int(args.num_of_samples)
