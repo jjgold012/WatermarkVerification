@@ -57,11 +57,11 @@ class WatermarkVerification2(WatermarkVerification):
         epsilons_vals = np.array([])
 
         start = start if start > 0 else 0
-        finish = (finish + 1) if finish > 0 else lastlayer_inputs.shape[0]
+        finish = finish if finish > 0 else lastlayer_inputs.shape[0]
         out_file = open('./data/results/problem2/{}.WatermarkVerification2_{}-{}.csv'.format(model_name, start, finish), 'w')
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
-        for i in range(start, finish):
+        for i in range(start, finish+1):
             
             prediction = np.argmax(predictions[i])
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
