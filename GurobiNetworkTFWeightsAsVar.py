@@ -2,6 +2,7 @@ import numpy as np
 from tensorflow.python.framework import tensor_util
 from tensorflow.python.framework import graph_util
 import os
+from gurobipy import *
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -41,6 +42,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         Reset values to represent empty network
         """
         super().clear()
+        self.model = Model('wm')
         self.madeGraphEquations = []
         self.varMap = []
         self.shapeMap = dict()

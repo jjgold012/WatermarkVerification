@@ -6,6 +6,7 @@ import utils
 from copy import deepcopy
 from maraboupy import Marabou
 from maraboupy import MarabouUtils
+from maraboupy import MarabouCore
 import MarabouNetworkTFWeightsAsVar
 sat = 'SAT'
 unsat = 'UNSAT'
@@ -53,7 +54,9 @@ class WatermarkVerification:
                     network.setLowerBound(network.matMulLayers[k]['epsilons'][i][j], -epsilon)
             
         MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
-        return network.solve(verbose=False, dnc=True)
+        # inputQuery = network.getMarabouQuery()
+        # MarabouCore.saveQuery(inputQuery, "test-inq.txt")
+        return network.solve(verbose=False, dnc=False)
 
 
     def run(self, model_name):
