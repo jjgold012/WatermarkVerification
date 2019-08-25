@@ -7,7 +7,7 @@ from tensorflow.keras import backend as K
 from tensorflow.python.framework import graph_util
 from tensorflow.python.framework import graph_io
 from tensorflow.keras.models import model_from_json
-
+from gurobipy import *
 
 def save_model(json_path, model_path, model):
     # serialize model to JSON
@@ -56,3 +56,6 @@ def saveModelAsProtobuf(last_layer_model, model_name):
 
     filename = './ProtobufNetworks/{}.pb'.format(model_name)
     return filename
+
+def equationsToGurobi(equations):
+    print('blah')

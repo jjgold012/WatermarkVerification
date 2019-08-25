@@ -38,27 +38,6 @@ class WatermarkVerification3(WatermarkVerification):
             return sat, stats, newOut
         else:
             return unsat, stats, predIndices[:,1]
-        # for out in range(len(outputVars)):
-        #     if out != prediction:
-        #         vals[out] = self.evaluateSingleOutput(epsilon, deepcopy(network), prediction, out)
-        #         if vals[out][0]:
-        #             return sat, vals, out
-        # return unsat, vals, -1
-
-
-    def evaluateSingleOutput(self, epsilon, network, prediction, output):
-        outputVars = network.outputVars
-        for k in network.matMulLayers.keys():
-            n, m = network.matMulLayers[k]['vals'].shape
-            print(n,m)
-            for i in range(n):
-                for j in range(m):
-                    network.setUpperBound(network.matMulLayers[k]['epsilons'][i][j], epsilon)
-                    network.setLowerBound(network.matMulLayers[k]['epsilons'][i][j], -epsilon)
-            
-        MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
-        return network.solve(verbose=False)
-
 
     def run(self, model_name, numOfInputs):        
         

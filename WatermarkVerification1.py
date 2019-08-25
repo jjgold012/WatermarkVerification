@@ -54,8 +54,6 @@ class WatermarkVerification:
                     network.setLowerBound(network.matMulLayers[k]['epsilons'][i][j], -epsilon)
             
         MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
-        # inputQuery = network.getMarabouQuery()
-        # MarabouCore.saveQuery(inputQuery, "test-inq.txt")
         return network.solve(verbose=False, dnc=False)
 
 
