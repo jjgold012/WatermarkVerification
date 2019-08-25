@@ -21,7 +21,6 @@ class WatermarkVerification3(WatermarkVerification):
         outputVars = network.outputVars
         vals = dict()
         n, m = network.epsilons.shape
-        print(n,m)
         for i in range(n):
             for j in range(m):
                 network.setUpperBound(network.epsilons[i][j], epsilon)
@@ -32,6 +31,7 @@ class WatermarkVerification3(WatermarkVerification):
             maxPred = predIndices[i][0]
             secondMaxPred = predIndices[i][1]
             MarabouUtils.addInequality(network, [outputVars[i][maxPred], outputVars[i][secondMaxPred]], [1, -1], 0)
+        utils.networkToGurobi(network)
         stats = network.solve(verbose=False)
         newOut = predIndices[:,1]
         if stats[0]:

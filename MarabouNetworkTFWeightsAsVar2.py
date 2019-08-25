@@ -106,7 +106,6 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         else: # Assume that the last operation is the output
             outputOp = tf_session.graph.get_operations()[-1]
 
-        print(inputVals.shape)
         for j in range(inputVals.shape[0]):
             self.setupForInput(j)
             self.setInputVals(inputOps, inputVals)

@@ -57,5 +57,9 @@ def saveModelAsProtobuf(last_layer_model, model_name):
     filename = './ProtobufNetworks/{}.pb'.format(model_name)
     return filename
 
-def equationsToGurobi(equations):
+def networkToGurobi(network):
+    equations = network.equList
+    lower = network.lowerBounds
+    upper = network.upperBounds
+    numOfVar = network.numVars
     print('blah')
