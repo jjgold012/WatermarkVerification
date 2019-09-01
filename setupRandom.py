@@ -17,4 +17,3 @@ if __name__ == '__main__':
     random_samples = np.array([np.random.choice(inputs_size, num_of_wm, replace=False) for i in range(num_of_samples)])
 
     np.save('./data/random/{}.wm.{}.random_samples'.format(num_of_wm, num_of_samples), random_samples)    
-    # np.save('./data/{}.lastlayer.input'.format(model_name), lastlayer_input)    

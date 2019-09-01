@@ -19,7 +19,6 @@ class WatermarkVerification3(WatermarkVerification):
 
     def evaluateEpsilon(self, epsilon, network, prediction):
         outputVars = network.outputVars
-        vals = dict()
         n, m = network.epsilons.shape
         for i in range(n):
             for j in range(m):
@@ -31,13 +30,12 @@ class WatermarkVerification3(WatermarkVerification):
             maxPred = predIndices[i][0]
             secondMaxPred = predIndices[i][1]
             MarabouUtils.addInequality(network, [outputVars[i][maxPred], outputVars[i][secondMaxPred]], [1, -1], 0)
-        utils.networkToGurobi(network)
         stats = network.solve(verbose=False)
         newOut = predIndices[:,1]
         if stats[0]:
             return sat, stats, newOut
         else:
-            return unsat, stats, predIndices[:,1]
+            return unsat, stats, newOut
 
     def run(self, model_name, numOfInputs):        
         
@@ -52,7 +50,7 @@ class WatermarkVerification3(WatermarkVerification):
         # newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
         maxPred = np.argmax(predictions, axis=1)
 
-        out_file = open('./data/results/problem3/WatermarkVerification3.{}.wm.out'.format(numOfInputs), 'w')
+        out_file = open('./data/results/problem3/{}.WatermarkVerification3.{}.wm.out'.format(model_name, numOfInputs), 'w')
         out_file.write('unsat_epsilon: {}\n'.format(unsat_epsilon))
         out_file.write('sat_epsilon: {}\n'.format(sat_epsilon))
         out_file.write('\noriginal prediction: \n')

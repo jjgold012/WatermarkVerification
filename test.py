@@ -40,11 +40,6 @@ class test(WatermarkVerification):
             c = keras.models.clone_model(last_layer_model)
             c.set_weights([new_weights])
             new_out = c.predict(inputVals)[0]
-            # print(unsat_epsilon)
-            # print(sat_epsilon)
-            # print(np.max(epsilons_vals.flatten()))
-            # print(np.min(epsilons_vals.flatten()))
-            # print(np.average(epsilons_vals.flatten()))
             out_file.write('Marabou out:\n')
             pprint(sat_out.tolist(), out_file)
             out_file.write('Network out:\n')
