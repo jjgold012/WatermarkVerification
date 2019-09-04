@@ -18,7 +18,7 @@ unsat = 'UNSAT'
 
 class WatermarkVerification3:
 
-    def networkToGurobi(self, network):
+    def getNetworkSolution(self, network):
         equations = network.equList
         numOfVar = network.numVars
         networkEpsilons = network.epsilons
@@ -41,6 +41,7 @@ class WatermarkVerification3:
                 model.addConstr(eq_left, GRB.LESS_EQUAL, eq.scalar)
             if eq.EquationType == MarabouCore.Equation.GE:
                 model.addConstr(eq_left, GRB.GREATER_EQUAL, eq.scalar)
+                
         model.optimize()
         epsilons_vals = np.array([[modelVars[networkEpsilons[i][j]].x for j in range(epsilonsShape[1])] for i in range(epsilonsShape[0])])
         all_vals = np.array([modelVars[i].x for i in range(numOfVar)])
@@ -54,7 +55,7 @@ class WatermarkVerification3:
             maxPred = predIndices[i][0]
             secondMaxPred = predIndices[i][1]
             MarabouUtils.addInequality(network, [outputVars[i][maxPred], outputVars[i][secondMaxPred]], [1, -1], 0)
-        results = self.networkToGurobi(network)
+        results = self.getNetworkSolution(network)
         newOutput = np.array([[results[2][outputVars[i][j]] for j in range(outputVars.shape[1])] for i in range(outputVars.shape[0])])
         return results, predIndices[:,0], predIndices[:,1], newOutput
         

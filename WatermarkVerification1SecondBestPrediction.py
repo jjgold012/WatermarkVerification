@@ -11,7 +11,7 @@ from WatermarkVerification3gurobi import *
 sat = 'SAT'
 unsat = 'UNSAT'
 
-class WatermarkVerification(WatermarkVerification3):
+class WatermarkVerification1(WatermarkVerification3):
 
     # def findEpsilonInterval(self, network, prediction, secondBestPrediction):
     #     sat_epsilon = self.epsilon_max
@@ -70,7 +70,7 @@ class WatermarkVerification(WatermarkVerification3):
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
             network = MarabouNetworkTFWeightsAsVar2.read_tf_weights_as_var(filename=filename, inputVals=inputVals)
             
-            results, oldPred, newPred = self.findEpsilon(network, prediction)
+            results, oldPred, newPred ,newOutput = self.findEpsilon(network, prediction)
             out_file.write('{},{},{}\n'.format(results[0], oldPred[0], newPred[0]))
             out_file.flush()
 
@@ -89,5 +89,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     model_name = args.model
     MODELS_PATH = './Models'
-    problem = WatermarkVerification()
+    problem = WatermarkVerification1()
     problem.run(model_name)
