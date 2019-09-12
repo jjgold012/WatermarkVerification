@@ -65,7 +65,7 @@ class WatermarkVerification3:
         lastlayer_inputs = np.load('./data/{}.lastlayer.input.npy'.format(model_name))
         predictions = np.load('./data/{}.prediction.npy'.format(model_name))
         epsilons_vals = np.array([])
-        out_file = open('./data/results/problem3/WatermarkVerification3.{}.wm.csv'.format(numOfInputs), 'w')
+        out_file = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, numOfInputs), 'w')
         out_file.write('sat-epsilon,original-prediction,second-best-prediction\n')
         for i in range(random_samples.shape[0]):
             lastlayer_input = np.array([lastlayer_inputs[j] for j in random_samples[i]])  
@@ -80,7 +80,7 @@ class WatermarkVerification3:
             epsilons_vals = newVals if epsilons_vals.size==0 else np.append(epsilons_vals, newVals, axis=0)
         
         out_file.close()
-        np.save('./data/results/problem3/{}.WatermarkVerification3.{}.wm.vals'.format(model_name, numOfInputs), epsilons_vals)
+        np.save('./data/results/problem3/{}.{}.wm.vals'.format(model_name, numOfInputs), epsilons_vals)
     
 
 if __name__ == '__main__':
