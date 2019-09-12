@@ -8,5 +8,4 @@
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
 
-python3 WatermarkVerification1SecondBestPrediction.py --model mnist.w.wm --epsilon_max 0.5 --epsilon_interval 0.001
-
+python3 accuracyTest.py
