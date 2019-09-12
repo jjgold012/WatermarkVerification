@@ -4,9 +4,9 @@ import os
 import argparse
 import utils
 from copy import deepcopy
-import MarabouNetworkTFWeightsAsVar
-from maraboupy import MarabouUtils
-from WatermarkVerification1 import *
+# import MarabouNetworkTFWeightsAsVar
+# from maraboupy import MarabouUtils
+# from WatermarkVerification1 import *
 from copy import deepcopy
 from tensorflow import keras
 from pprint import pprint
