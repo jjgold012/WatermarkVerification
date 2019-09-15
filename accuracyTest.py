@@ -13,28 +13,53 @@ from pprint import pprint
 
 model_name = 'mnist.w.wm'
 MODELS_PATH = './Models'
-net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
 (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+wm_images = np.load('./data/wm.set.npy')
+wm_labels = np.loadtxt('./data/wm.labels.txt', dtype='int32')
 x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2],1)
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2],1)
+wm_images = wm_images.reshape(wm_images.shape[0], wm_images.shape[1], wm_images.shape[2],1)
 
-for i in [1,2,3,4,5,6,7,25,50,75,100]:
+for i in [0]:#,1,2,3,4,5,6,7,25,50,75,100]:
     out_file = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i), 'w')
-    out_file.write('test-accuracy,test-loss,train-accuracy,train-loss\n')
+    out_file.write('test-accuracy,test-loss,train-accuracy,train-loss,wm-accuracy,wm-loss\n')
     out_file.flush()
-    epsilons = np.load('./data/results/problem3/{}.{}.wm.vals.npy'.format(model_name, i))
-    for j in range(epsilons.shape[0]):
-        weights = net_model.get_weights()
-        weights[-1] = weights[-1] + epsilons[j]
-
-        copy_model = keras.models.clone_model(net_model)
-        copy_model.set_weights(weights)
-        copy_model.compile(optimizer=tf.train.AdamOptimizer(),loss='sparse_categorical_crossentropy',metrics=['accuracy'])
-        test_loss, test_acc = copy_model.evaluate(x_test, y_test)
-        train_loss, train_acc = copy_model.evaluate(x_train, y_train)
-        out_file.write('{},{},{},{}\n'.format(test_acc, test_loss, train_acc, train_loss))
+    if i == 0:
+        net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
+        net_model.compile(optimizer=tf.train.AdamOptimizer(),loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+        test_loss, test_acc = net_model.evaluate(x_test, y_test)
+        train_loss, train_acc = net_model.evaluate(x_train, y_train)
+        wm_loss, wm_acc = net_model.evaluate(wm_images, wm_labels)
+        out_file.write('{},{},{},{},{},{}\n'.format(test_acc, test_loss, train_acc, train_loss, wm_acc, wm_loss))
         out_file.flush()
+        del net_model
+        keras.backend.clear_session()
+    else:
+        epsilons = np.load('./data/results/problem3/{}.{}.wm.vals.npy'.format(model_name, i))
+        for j in range(epsilons.shape[0]):
+            net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
-    out_file.close()
+            weights = net_model.get_weights()
+            weights[-1] = weights[-1] + epsilons[j]
+
+            net_model.set_weights(weights)
+            net_model.compile(optimizer=tf.train.AdamOptimizer(),loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+            test_loss, test_acc = net_model.evaluate(x_test, y_test)
+            train_loss, train_acc = net_model.evaluate(x_train, y_train)
+            # predictions = np.load('./data/{}.prediction.npy'.format(model_name))
+            # predIndices = np.flip(np.argsort(predictions, axis=1), axis=1)        
+            # a = predIndices[:,0] 
+            # b = predIndices[:,1]
+            # p = net_model.predict(wm_images)
+
+            # c = np.array([p[i][a[i]] - p[i][b[i]] for i in range(100)])
+            # print(np.max(c))
+            wm_loss, wm_acc = net_model.evaluate(wm_images, wm_labels)
+            # out_file.write('{},{},{},{},{},{}\n'.format(test_acc, test_loss, train_acc, train_loss, wm_acc, wm_loss))
+            # out_file.flush()
+            del net_model
+            keras.backend.clear_session()
+
+    # out_file.close()
     
