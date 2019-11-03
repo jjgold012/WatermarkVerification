@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{amsmath} 
+\usepackage{hyperref}
+\setlength{\parindent}{0em}
+\geometry{a4paper, margin=1in}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=magenta,
+    urlcolor=blue,
+}
+
+\input{my-commands.tex}
+\begin{document}
+
+\section{Finding the minimal change that will get rid of the network's WaterMark}
+Given a watermarked trained neural network as described \href{https://www.usenix.org/system/files/conference/usenixsecurity18/sec18-adi.pdf}{here}. We tested what is the minimal change to the network last layer in order to "remove" some watermarks from the network. 
+\subsection{Defining the problem}
+Neural network decision for an input $v$ is defined as the coordinate with the maximal value, if the network output is the vector $\overrightarrow{out}$
+Given a watermarked network $N$ with a set of $K$ watermarks $\left\lbrace w_1,\cdots,w_K \right\rbrace$ we'll mark the network last layer $L$ so $L$ is a $m\times n$ matrix were $n$ is the layer's number of neurons and $m$ is the network output size.
+The change to the last layer will be a matrix with the same dimension as $L$ we'll mark as $\varepsilon$, so $\varepsilon_{i,j}$ is the change to the last layer matrix entry $L_{i,j}$. The overall change to the layer will be $\norm{\varepsilon}_1$.
+For a certain input $v$ we're only interested in the input to the last layer we'll mark the input to the last layer $u$. $u$ is a $n\times 1$ vector.
+So our new changed network output is $(L+\varepsilon)u$. For a single watermark $w$ we need to find the minimal $\varepsilon$ so that the $argmax$ 
+
+\subsection{Defining the problem}
+
+\begin{align*}
+    \sum_{x\ne y}\norm{x - y}_q^q &= \sum_{x\ne y}\sum_{l=1}^k\abs{(x)_l - (y)_l}^q\\
+    &= \sum_{l=1}^k\sum_{x\ne y}\abs{(x)_l - (y)_l}^q\\
+    &= \sum_{i=1}^k\sum_{i=1}^n\sum_{j=i+1}^n\abs{(x_i)_l - (x_j)_l}^q\\
+   \bracketR{\text{assume }(x_1)_l\ge (x_2)_l\ge \cdots\ge (x_n)_l} &= \sum_{i=1}^k\sum_{i=1}^n\sum_{j=i+1}^n\bracketR{(x_i)_l - (x_j)_l}^q\\
+\end{align*}
+
+*Note that if $q$ is an even number we don't need the sort.
+\\\\
+Assuming $x\ge y$:
+$$   
+ \abs{x - y}^q = \bracketR{x - y}^q = \sum_{i=0}^q {q\choose{i}}x^i y^{q-i}
+$$
+
+So we get:
+\begin{align*}
+    \sum_{x\ne y}\norm{x - y}_q^q &=  \sum_{i=1}^k\sum_{i=1}^n\sum_{j=i+1}^n\bracketR{(x_i)_l - (x_j)_l}^q\\
+\end{align*}
+\end{document}

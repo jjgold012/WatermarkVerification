@@ -1,0 +1,23 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Arch Linux) (preloaded format=pdflatex 2019.8.25)  18 OCT 2019 16:51
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**my-commands.tex
+(./my-commands.tex
+LaTeX2e <2018-12-01>
+(build/my-commands.aux) ) 
+Here is how much of TeX's memory you used:
+ 12 strings out of 492623
+ 244 string characters out of 6135669
+ 56965 words of memory out of 5000000
+ 4022 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 9i,1n,7p,77b,14s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+No pages of output.
+PDF statistics:
+ 0 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

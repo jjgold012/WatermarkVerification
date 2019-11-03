@@ -1,0 +1,25 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{geometry}
+\usepackage{hyperref}
+\setlength{\parindent}{0em}
+\geometry{a4paper, margin=1in}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=magenta,
+    urlcolor=blue,
+}
+\input{my-commands.tex}
+
+\begin{document}
+
+\section*{•} 
+
+
+Using Cauchy–Schwarz inequality we get for all $x\in\Re^n$ $$ \Vert x\Vert_1= \sum\limits_{i=1}^n|x_i|= \sum\limits_{i=1}^n|x_i|\cdot 1\leq \left(\sum\limits_{i=1}^n|x_i|^2\right)^{1/2}\left(\sum\limits_{i=1}^n 1^2\right)^{1/2}= \sqrt{n}\Vert x\Vert_2 $$
+Such a bound does exist. Recall Hölder's inequality $$ \sum\limits_{i=1}^n |a_i||b_i|\leq \left(\sum\limits_{i=1}^n|a_i|^r\right)^{\frac{1}{r}}\left(\sum\limits_{i=1}^n|b_i|^{\frac{r}{r-1}}\right)^{1-\frac{1}{r}} $$ Apply it to the case $|a_i|=|x_i|^p$, $|b_i|=1$ and $r=q/p>1$ $$ \sum\limits_{i=1}^n |x_i|^p= \sum\limits_{i=1}^n |x_i|^p\cdot 1\leq \left(\sum\limits_{i=1}^n (|x_i|^p)^{\frac{q}{p}}\right)^{\frac{p}{q}} \left(\sum\limits_{i=1}^n 1^{\frac{q}{q-p}}\right)^{1-\frac{p}{q}}= \left(\sum\limits_{i=1}^n |x_i|^q\right)^{\frac{p}{q}} n^{1-\frac{p}{q}} $$ Then $$ \Vert x\Vert_p= \left(\sum\limits_{i=1}^n |x_i|^p\right)^{1/p}\leq \left(\left(\sum\limits_{i=1}^n |x_i|^q\right)^{\frac{p}{q}} n^{1-\frac{p}{q}}\right)^{1/p}= \left(\sum\limits_{i=1}^n |x_i|^q\right)^{\frac{1}{q}} n^{\frac{1}{p}-\frac{1}{q}}= n^{1/p-1/q}\Vert x\Vert_q $$ In fact $C=n^{1/p-1/q}$ is the best possible constant.
+
+
+\end{document}

@@ -3,35 +3,78 @@ import matplotlib.pyplot as plt
 from csv import DictReader, DictWriter
 
 model_name = 'mnist.w.wm'
-vals = {}
+vals_epsilon = {}
+vals_acc = {}
+x = [0,1,2,3,4,5,6,7,25,50,75,100]
+# x = [1,2,3,4,5,6,7,25,50,75,100]
+# x = [0,1,2,3,4,5,6,7]
+# x = [1,2,3,4,5,6,7]
+x_str = ','.join(map(str, x))
 
-datafile = open('./data/results/{}.WatermarkVerification1SecondBestPrediction.csv'.format(model_name))
-file_reader = DictReader(datafile)
-vals[1] = np.array([float(line['sat-epsilon']) for line in file_reader])
-datafile.close()
-for i in range(2,8):
-    datafile = open('./data/results/problem3/WatermarkVerification3.{}.wm.csv'.format(i))
+out_file = open('./data/results/problem3/{}.wm.summary.csv'.format(model_name), 'w')
+out_file.write('num-of-wm,average-sat-epsilon,average-test-accuracy\n')
+
+for i in x:
+    datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))
     file_reader = DictReader(datafile)
-    vals[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
+    vals_acc[i] = np.array([float(line['test-accuracy']) for line in file_reader])
     datafile.close()
+    if i == 0:
+        vals_epsilon[i] = 0
+    else:
+        datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
+        file_reader = DictReader(datafile)
+        vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
+        datafile.close()
+    out_file.write('{},{},{}\n'.format(i, np.average(vals_epsilon[i]), np.average(vals_acc[i])))
+out_file.close()
 
-# x = range(1,8)
-# average = np.array([np.average(vals[i]) for i in x])
-# maximum = np.array([np.max(vals[i]) for i in x])
-# minimum = np.array([np.min(vals[i]) for i in x])
+
+# avrg_acc = np.array([np.average(vals_acc[i]) for i in x])
+# max_acc = np.array([np.max(vals_acc[i]) for i in x])
+# min_acc = np.array([np.min(vals_acc[i]) for i in x])
+# avrg_eps = np.array([np.average(vals_epsilon[i]) for i in x])
+# max_eps = np.array([np.max(vals_epsilon[i]) for i in x])
+# min_eps = np.array([np.min(vals_epsilon[i]) for i in x])
+# plt.bar(x, avrg_acc)
+# plt.xlabel('Number of Watermark Images')
+# plt.ylabel('accuracy')
+# plt.savefig('./data/results/problem3/{}.{}.average.accuracy.png'.format(model_name, x_str))
+
+# plt.clf()
+# plt.bar(x, max_acc)
+# plt.xlabel('Number of Watermark Images')
+# plt.ylabel('accuracy')
+# plt.savefig('./data/results/problem3/{}.{}.maximum.accuracy.png'.format(model_name, x_str))
+
+# plt.clf()
+# plt.bar(x, min_acc)
+# plt.xlabel('Number of Watermark Images')
+# plt.ylabel('accuracy')
+# plt.savefig('./data/results/problem3/{}.{}.minimum.accuracy.png'.format(model_name, x_str))
+
 # plt.bar(x, average)
 # plt.xlabel('Number of Watermark Images')
 # plt.ylabel('epsilon')
-# plt.savefig('./data/results/problem3/{}.WatermarkVerification3.average.png'.format(model_name))
+# plt.savefig('./data/results/problem3/{}.{}.average.png'.format(model_name, x_str))
+
+# plt.clf()
 # plt.bar(x, maximum)
 # plt.xlabel('Number of Watermark Images')
 # plt.ylabel('epsilon')
-# plt.savefig('./data/results/problem3/{}.WatermarkVerification3.maximum.png'.format(model_name))
+# plt.savefig('./data/results/problem3/{}.{}.maximum.png'.format(model_name, x_str))
+
+# plt.clf()
 # plt.bar(x, minimum)
 # plt.xlabel('Number of Watermark Images')
 # plt.ylabel('epsilon')
-# plt.savefig('./data/results/problem3/{}.WatermarkVerification3.minimum.png'.format(model_name))
-# # plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
+# plt.savefig('./data/results/problem3/{}.{}.minimum.png'.format(model_name, x_str))
+
+
+
+
+
+# plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
 
 # datafile = open('./data/results/problem2/{}.WatermarkVerification2.csv'.format(model_name))
 # file_reader = DictReader(datafile)
