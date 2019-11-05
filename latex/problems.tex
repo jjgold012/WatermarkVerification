@@ -18,30 +18,22 @@
 \section{Finding the minimal change that will get rid of the network's WaterMark}
 Given a watermarked trained neural network as described \href{https://www.usenix.org/system/files/conference/usenixsecurity18/sec18-adi.pdf}{here}. We tested what is the minimal change to the network last layer in order to "remove" some watermarks from the network. 
 \subsection{Defining the problem}
-Neural network decision for an input $v$ is defined as the coordinate with the maximal value, if the network output is the vector $\overrightarrow{out}$
-Given a watermarked network $N$ with a set of $K$ watermarks $\left\lbrace w_1,\cdots,w_K \right\rbrace$ we'll mark the network last layer $L$ so $L$ is a $m\times n$ matrix were $n$ is the layer's number of neurons and $m$ is the network output size.
-The change to the last layer will be a matrix with the same dimension as $L$ we'll mark as $\varepsilon$, so $\varepsilon_{i,j}$ is the change to the last layer matrix entry $L_{i,j}$. The overall change to the layer will be $\norm{\varepsilon}_1$.
-For a certain input $v$ we're only interested in the input to the last layer we'll mark the input to the last layer $u$. $u$ is a $n\times 1$ vector.
-So our new changed network output is $(L+\varepsilon)u$. For a single watermark $w$ we need to find the minimal $\varepsilon$ so that the $argmax$ 
-
-\subsection{Defining the problem}
-
-\begin{align*}
-    \sum_{x\ne y}\norm{x - y}_q^q &= \sum_{x\ne y}\sum_{l=1}^k\abs{(x)_l - (y)_l}^q\\
-    &= \sum_{l=1}^k\sum_{x\ne y}\abs{(x)_l - (y)_l}^q\\
-    &= \sum_{i=1}^k\sum_{i=1}^n\sum_{j=i+1}^n\abs{(x_i)_l - (x_j)_l}^q\\
-   \bracketR{\text{assume }(x_1)_l\ge (x_2)_l\ge \cdots\ge (x_n)_l} &= \sum_{i=1}^k\sum_{i=1}^n\sum_{j=i+1}^n\bracketR{(x_i)_l - (x_j)_l}^q\\
-\end{align*}
-
-*Note that if $q$ is an even number we don't need the sort.
+Given a neural network $N$ with an output size $m$ the network decision for an input $x$ is defined as the coordinate with the maximal value, if the network output is the vector $y$ the decision is $argmax_{i\in \bracketsS{m}} \bracketsC{y_i}$
 \\\\
-Assuming $x\ge y$:
-$$   
- \abs{x - y}^q = \bracketR{x - y}^q = \sum_{i=0}^q {q\choose{i}}x^i y^{q-i}
-$$
+Given a watermarked network $N$ with a set of $K$ watermarks (A set of inputs to the network) $\bracketsC{x_1,\cdots,x_K}$ we'll mark the network last layer $L$ such that $L$ is a $m\times n$ matrix were $n$ is the layer's number of neurons and $m$ is the network output size.
+The change to the last layer will be a matrix with the same dimension as $L$ we'll mark as $\varepsilon$, such that $\varepsilon_{i,j}$ is the change to the last layer matrix entry $L_{i,j}$. Well measure the overall change to the layer as $\norm{\varepsilon}_{\infty} = max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}$.
+\\\\
+For a certain input $x$ we're only interested in the input to the last layer we'll mark the input to the last layer $v$. $v$ is a $n\times 1$ vector.
+So the original network output $y = Lv$ and the changed network output is $y' = (L+\varepsilon)v$. For a single input $x$ we need to find the minimal $\varepsilon$ so that the $argmax_{i\in\bracketsS{m}}\bracketsC{y_i}\neq argmax_{i\in\bracketsS{m}}\bracketsC{y'_i}$
+\\\\ 
+Denote $d := argmax_{i\in \bracketsS{m}} \bracketsC{y_i}$ \\
+For some $d'\in\bracketsS{m},d'\neq d$ finding $\varepsilon$ with minimal $\norm{\varepsilon}_{\infty}$ such that $y' = (L+\varepsilon)v\,$ and $\,d' = argmax_{i\in\bracketsS{m}}\bracketsC{y'_i}$ can be described in a Linear Programming form like so:
 
-So we get:
 \begin{align*}
-    \sum_{x\ne y}\norm{x - y}_q^q &=  \sum_{i=1}^k\sum_{i=1}^n\sum_{j=i+1}^n\bracketR{(x_i)_l - (x_j)_l}^q\\
+    Minimize:\quad & c \\
+    Subject\ to:\quad & -c \leq\varepsilon_{i,j}\leq c\ \forall i,j\\
+    & y'=(L+\varepsilon)v \\
+    & y'_d \leq y'_{d'}\\
 \end{align*}
+
 \end{document}
