@@ -31,9 +31,20 @@ For some $d'\in\bracketsS{m},d'\neq d$ finding $\varepsilon$ with minimal $\norm
 
 \begin{align*}
     Minimize:\quad & c \\
-    Subject\ to:\quad & -c \leq\varepsilon_{i,j}\leq c\ \forall i,j\\
+    Subject\ to:\quad & \forall i,j\quad -c \leq\varepsilon_{i,j}\leq c\\
     & y'=(L+\varepsilon)v \\
     & y'_d \leq y'_{d'}\\
+\end{align*}
+Using the same method we can find how to change the network to more than one input.\\
+Given inputs $x_1,\cdots,x_k$ and their respective inputs to the last layer $v_1,\cdots,v_k$ and their respected outputs and decisions $\bracketsC{y_1,\cdots,y_k}\ \bracketsC{d_1,\cdots,d_k}$ we want to find $\varepsilon$ such that\\
+$\forall 1\leq j\leq k\quad d_j \neq argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{\bracketsR{L+\varepsilon}v_j}_i}$\\
+Assuming we choose our new desired output $\bracketsC{d'_1,\cdots,d'_k}$
+And now our LP looks like this:\\
+\begin{align*}
+    Minimize:\quad & c \\
+    Subject\ to:\quad & \forall i,j\quad -c \leq\varepsilon_{i,j}\leq c\\
+    & \forall j\quad y'_j=(L+\varepsilon)v_j \\
+    & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
 \end{align*}
 
 \end{document}
