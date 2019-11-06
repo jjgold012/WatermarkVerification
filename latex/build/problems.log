@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Arch Linux) (preloaded format=pdflatex 2019.11.3)  5 NOV 2019 22:57
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Arch Linux) (preloaded format=pdflatex 2019.11.3)  6 NOV 2019 20:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -363,26 +363,36 @@ Underfull \hbox (badness 10000) in paragraph at lines 21--31
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 37--43
+Underfull \hbox (badness 10000) in paragraph at lines 37--45
 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 50.
+
+Underfull \hbox (badness 10000) in paragraph at lines 37--45
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 50--54
+
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 55.
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 50.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 55.
  (build/problems.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 50.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 50.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 55.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 55.
 Package rerunfilecheck Info: File `problems.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 50.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 55.
  ) 
 Here is how much of TeX's memory you used:
  6389 strings out of 492167
  91413 string characters out of 6131558
- 209782 words of memory out of 5000000
+ 210782 words of memory out of 5000000
  10716 multiletter control sequences out of 15000+600000
  5304 words of font info for 20 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -396,10 +406,10 @@ share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/p
 ublic/amsfonts/cm/cmsy5.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmsy7.pfb>
-Output written on build/problems.pdf (1 page, 102636 bytes).
+Output written on build/problems.pdf (1 page, 104042 bytes).
 PDF statistics:
- 63 PDF objects out of 1000 (max. 8388607)
- 49 compressed objects within 1 object stream
+ 64 PDF objects out of 1000 (max. 8388607)
+ 50 compressed objects within 1 object stream
  4 named destinations out of 1000 (max. 500000)
  17 words of extra memory for PDF output out of 10000 (max. 10000000)
 
