@@ -12,3 +12,6 @@ gurobi.log
 *.synctex.gz
 latex/auto
 latex/problems.pdf
+*.blg
+*.bbl
+*~

@@ -1,16 +1,14 @@
 \documentclass[a4paper]{llncs}
 
-\usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
 \usepackage{amsmath} 
 \usepackage{hyperref}
-
-\setlength{\parindent}{0em}
 
 \hypersetup{
     colorlinks=true,
     linkcolor=magenta,
     urlcolor=blue,
+    breaklinks,
+    citecolor=blue
 }
 
 \input{my-commands.tex}
@@ -39,7 +37,42 @@ Bar Ilan University, Israel \\
 
 \maketitle
 
+\section{Introduction}
+
+% Each of these should be extended into 1-2 paragraphs
+
+DNNs are really important and conquering the world
+
+Learning as a service paradigm: sell your almost-trained network. What
+if someone tries to rip you off?
+
+Watermarking as the solution to earlier problem. But how can we be
+sure watermarks are good?
+
+DNN verification is a new and promising field. We propose a novel
+methodology to use verification to measure and verify the robustness
+of watermarking techniques.
+Main uses of our approach: verify watermarked networks, assess
+efficiency of watermarking schemes.
+
+The rest of this paper is organized as follows. In
+Section~\ref{sec:background} we provide the necessary background on
+DNNs, watermarking, and DNN verification. Next, in
+Section~\ref{sec:verifyWatermarks} we introduce our technique for
+casting the watermark resilience problem into a verification
+problem. Section~\ref{sec:evaluation} describes our implementation and
+evaluation of the approach on several watermarked DNNs for image
+recognition. We discuss related work in Section~\ref{sec:relatedWork},
+and conclude in Section~\ref{sec:conclusion}.
+
+\section{Background}
+\label{sec:background}
+
+\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}
+
 \section{Finding the minimal change that will get rid of the network's WaterMark}
+\label{sec:verifyWatermarks}
+
 Given a watermarked trained neural network as described
 \href{https://www.usenix.org/system/files/conference/usenixsecurity18/sec18-adi.pdf}{here}. We
 tested what is the minimal change to the network last layer in order
@@ -106,6 +139,19 @@ Using
 we can solve for the minimal $\varepsilon$ under different norm
 $\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}$ since using
 this norm gives us a piece-wise linear problem.
+
+\section{Evaluation}
+\label{sec:evaluation}
+
+\section{Related Work}
+\label{sec:relatedWork}
+
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+
+\bibliographystyle{abbrv}
+\bibliography{watermarks}
 
 \end{document}
 
