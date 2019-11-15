@@ -1,11 +1,12 @@
-\documentclass{article}
+\documentclass[a4paper]{llncs}
+
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
-\usepackage{geometry}
 \usepackage{amsmath} 
 \usepackage{hyperref}
+
 \setlength{\parindent}{0em}
-\geometry{a4paper, margin=1in}
+
 \hypersetup{
     colorlinks=true,
     linkcolor=magenta,
@@ -13,21 +14,69 @@
 }
 
 \input{my-commands.tex}
+
+\newcommand{\guy}[1]{\marginpar{\textcolor{orange}{Guy: #1}}}
+
 \begin{document}
 
+
+\title{Verifying the Resilience of Neural Network Watermarking}
+
+\author{
+  Ben Goldberger\inst{1} \and
+  Yossi Adi\inst{2} \and
+  Joseph Keshet\inst{2} \and
+  Guy Katz\inst{1} 
+}
+
+\institute{
+  The Hebrew University of Jerusalem, Israel \\
+  \{jjgold, guykatz\}@cs.huji.ac.il
+  \and
+Bar Ilan University, Israel \\
+\{a, b\}@biu.ac.il
+}
+
+\maketitle
+
 \section{Finding the minimal change that will get rid of the network's WaterMark}
-Given a watermarked trained neural network as described \href{https://www.usenix.org/system/files/conference/usenixsecurity18/sec18-adi.pdf}{here}. We tested what is the minimal change to the network last layer in order to "remove" some watermarks from the network. 
+Given a watermarked trained neural network as described
+\href{https://www.usenix.org/system/files/conference/usenixsecurity18/sec18-adi.pdf}{here}. We
+tested what is the minimal change to the network last layer in order
+to "remove" some watermarks from the network.
+
+
 \subsection{Defining the problem}
-Given a neural network $N$ with an output size $m$ the network decision for an input $x$ is defined as the coordinate with the maximal value, if the network output is the vector $y$ the decision is $argmax_{i\in \bracketsS{m}} \bracketsC{y_i}$
+Given a neural network $N$ with an output size $m$ the network
+decision for an input $x$ is defined as the coordinate with the
+maximal value, if the network output is the vector $y$ the decision is
+$argmax_{i\in \bracketsS{m}} \bracketsC{y_i}$
 \\\\
-Given a watermarked network $N$ with a set of $K$ watermarks (A set of inputs to the network) $\bracketsC{x_1,\cdots,x_K}$ we'll mark the network last layer $L$ such that $L$ is a $m\times n$ matrix were $n$ is the layer's number of neurons and $m$ is the network output size.
-The change to the last layer will be a matrix with the same dimension as $L$ we'll mark as $\varepsilon$, such that $\varepsilon_{i,j}$ is the change to the last layer matrix entry $L_{i,j}$. Well measure the overall change to the layer as $\norm{\varepsilon}_{\infty} = max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}$.
+Given a watermarked network $N$ with a set of $K$ watermarks (A set of
+inputs to the network) $\bracketsC{x_1,\cdots,x_K}$ we'll mark the
+network last layer $L$ such that $L$ is a $m\times n$ matrix were $n$
+is the layer's number of neurons and $m$ is the network output size.
+The change to the last layer will be a matrix with the same dimension
+as $L$ we'll mark as $\varepsilon$, such that $\varepsilon_{i,j}$ is
+the change to the last layer matrix entry $L_{i,j}$. Well measure the
+overall change to the layer as
+$\norm{\varepsilon}_{\infty} =
+max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}$.
 \\\\
-For a certain input $x$ we're only interested in the input to the last layer we'll mark the input to the last layer $v$. $v$ is a $n\times 1$ vector.
-So the original network output $y = Lv$ and the changed network output is $y' = (L+\varepsilon)v$. For a single input $x$ we need to find the minimal $\varepsilon$ so that the $argmax_{i\in\bracketsS{m}}\bracketsC{y_i}\neq argmax_{i\in\bracketsS{m}}\bracketsC{y'_i}$
-\\\\ 
+For a certain input $x$ we're only interested in the input to the last
+layer we'll mark the input to the last layer $v$. $v$ is a $n\times 1$
+vector.  So the original network output $y = Lv$ and the changed
+network output is $y' = (L+\varepsilon)v$. For a single input $x$ we
+need to find the minimal $\varepsilon$ so that the
+$argmax_{i\in\bracketsS{m}}\bracketsC{y_i}\neq
+argmax_{i\in\bracketsS{m}}\bracketsC{y'_i}$
+\\\\
 Denote $d := argmax_{i\in \bracketsS{m}} \bracketsC{y_i}$ \\
-For some $d'\in\bracketsS{m},d'\neq d$ finding $\varepsilon$ with minimal $\norm{\varepsilon}_{\infty}$ such that $y' = (L+\varepsilon)v\,$ and $\,d' = argmax_{i\in\bracketsS{m}}\bracketsC{y'_i}$ can be described in a Linear Programming form like so:
+For some $d'\in\bracketsS{m},d'\neq d$ finding $\varepsilon$ with
+minimal $\norm{\varepsilon}_{\infty}$ such that
+$y' = (L+\varepsilon)v\,$ and
+$\,d' = argmax_{i\in\bracketsS{m}}\bracketsC{y'_i}$ can be described
+in a Linear Programming form like so:
 
 \begin{align*}
     Minimize:\quad & c \\
@@ -40,7 +89,8 @@ For some $d'\in\bracketsS{m},d'\neq d$ finding $\varepsilon$ with minimal $\norm
 Using the same method we can find how to change the network to more than one input.\\
 Given inputs $x_1,\cdots,x_k$ and their respective inputs to the last layer $v_1,\cdots,v_k$ and their respected outputs and decisions $\bracketsC{y_1,\cdots,y_k}\ \bracketsC{d_1,\cdots,d_k}$ we want to find $\varepsilon$ such that\\
 $\forall 1\leq j\leq k\quad d_j \neq argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{\bracketsR{L+\varepsilon}v_j}_i}$\\
-Assuming we choose our new desired output $\bracketsC{d'_1,\cdots,d'_k}$
+Assuming we choose our new desired output
+$\bracketsC{d'_1,\cdots,d'_k}$
 And now our LP looks like this:\\
 \begin{align*}
     Minimize:\quad & c \\
@@ -48,8 +98,18 @@ And now our LP looks like this:\\
     & \forall j\quad y'_j=(L+\varepsilon)v_j \\
     & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
 \end{align*}
-\hspace*{5cm} *The variables are the entries in $\varepsilon$ and $y'_j$
+\hspace*{5cm} *The variables are the entries in $\varepsilon$ and
+$y'_j$
 \\\\
-Using \href{http://aisafety.stanford.edu/marabou/MarabouCAV2019.pdf}{Marabou} we can solve for the minimal $\varepsilon$ under different norm $\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}$ since using this norm gives us a piece-wise linear problem. 
+Using
+\href{http://aisafety.stanford.edu/marabou/MarabouCAV2019.pdf}{Marabou}
+we can solve for the minimal $\varepsilon$ under different norm
+$\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}$ since using
+this norm gives us a piece-wise linear problem.
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

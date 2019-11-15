@@ -6,3 +6,9 @@ __pycache__
 .vscode
 TODO
 gurobi.log
+*.aux
+*.log
+*.out
+*.synctex.gz
+latex/auto
+latex/problems.pdf
