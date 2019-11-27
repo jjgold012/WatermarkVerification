@@ -44,7 +44,7 @@ class WatermarkVerification2(WatermarkVerification):
 
         MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
 
-
+        network.inputVars = network.epsilons
         return network.solve(verbose=True)
 
 

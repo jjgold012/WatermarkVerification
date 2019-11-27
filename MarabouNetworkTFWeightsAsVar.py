@@ -204,9 +204,10 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             return np.concatenate(values, axis=axis)
         if op.node_def.op == 'Const':
             opVars = self.opToVarArray(op)
-            epsilons = self.epsilons if self.epsilons else self.opToVarArray(op, force=True)
+            if not self.epsilons:
+                self.epsilons = self.opToVarArray(op, force=True)
             tproto = op.node_def.attr['value'].tensor
-            return {'vals': tensor_util.MakeNdarray(tproto), 'vars': opVars, 'epsilons': epsilons}
+            return {'vals': tensor_util.MakeNdarray(tproto), 'vars': opVars, 'epsilons': self.epsilons}
         if op.node_def.op == 'Placeholder':
             return self.inputVals
 
