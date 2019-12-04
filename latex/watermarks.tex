@@ -3,6 +3,8 @@
 \usepackage{xcolor}
 \usepackage{amsmath} 
 \usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 \hypersetup{
     colorlinks=true,
@@ -144,14 +146,48 @@ $\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}$ since using
 this norm gives us a piece-wise linear problem.
 
 \guy{Overall, this looks good. Some stuff will need to be moved to other
-sections according to the paper layout. We also need to describe the
-problem for simultaneous removal of multiple watermarks.}
+sections according to the paper layout.}
 
 \section{Evaluation}
 \label{sec:evaluation}
-
+We tested this approach on a Neural network trained on the MNIST data set, the network was watermarked with $100$ images of Gaussian noise.
 \guy{I think you can start populating this section next. We will need
 graphs and pictures.}
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.2\linewidth}
+    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
+     \caption{Coffee.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.2\linewidth}
+    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
+    \caption{More coffee.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.2\linewidth}
+    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
+    \caption{Tasty coffee.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.5\linewidth}
+    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
+    \caption{Too much coffee.}
+  \end{subfigure}
+  \caption{The same cup of coffee. Multiple times.}
+  \label{fig:coffee3}
+\end{figure}
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{"../data/results/problem2/mnist_w_wm.png"}
+    \caption{Coffee.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{"../data/results/problem2/mnist_w_wm.png"}
+    \caption{More coffee.}
+  \end{subfigure}
+  \caption{The same cup of coffee. Two times.}
+  \label{fig:coffee}
+\end{figure}
 
 \section{Related Work}
 \label{sec:relatedWork}

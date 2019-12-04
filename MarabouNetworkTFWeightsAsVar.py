@@ -30,6 +30,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         self.numOfLayers = -1
         self.readFromPb(filename, inputVals, inputNames, outputName, savedModel, savedModelTags)
         self.processBiasAddRelations()
+        self.inputVars = self.epsilons
 
 
     def clear(self):

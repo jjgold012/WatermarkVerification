@@ -4,6 +4,7 @@ import argparse
 import utils
 from copy import deepcopy
 from maraboupy import MarabouUtils
+from maraboupy.Marabou import createOptions
 from WatermarkVerification1 import *
 import MarabouNetworkTFWeightsAsVar
 sat = 'SAT'
@@ -43,8 +44,6 @@ class WatermarkVerification2(WatermarkVerification):
         network.addEquation(e)
 
         MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
-
-        network.inputVars = network.epsilons
         return network.solve(verbose=True)
 
 
@@ -61,7 +60,7 @@ class WatermarkVerification2(WatermarkVerification):
         out_file = open('./data/results/problem2/{}.WatermarkVerification2_{}-{}.csv'.format(model_name, start, finish), 'w')
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
-        for i in range(start, finish+1):
+        for i in range(start, finish):
             
             prediction = np.argmax(predictions[i])
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
