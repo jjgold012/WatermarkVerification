@@ -150,44 +150,25 @@ sections according to the paper layout.}
 
 \section{Evaluation}
 \label{sec:evaluation}
-We tested this approach on a Neural network trained on the MNIST data set, the network was watermarked with $100$ images of Gaussian noise.
+We tested this approach on a Neural network trained on the MNIST data set, the network was watermarked with $100$ images of Gaussian noise. The original network had $96.8\text{\%}$ accuracy on the MNIST test set and $100\text{\%}$ accuracy on the watermark images.
+
 \guy{I think you can start populating this section next. We will need
 graphs and pictures.}
 
 \begin{figure}[h!]
   \centering
-  \begin{subfigure}[b]{0.2\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
-     \caption{Coffee.}
+  \begin{subfigure}{0.4\linewidth}
+    \includegraphics[width=\linewidth]{../data/wm.png}
+     \caption{Water marks images.}
   \end{subfigure}
-  \begin{subfigure}[b]{0.2\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
-    \caption{More coffee.}
+  \begin{subfigure}{0.4\linewidth}
+    \includegraphics[width=\linewidth]{../data/mnist.png}
+    \caption{MNIST images.}
   \end{subfigure}
-  \begin{subfigure}[b]{0.2\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
-    \caption{Tasty coffee.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.5\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.png}
-    \caption{Too much coffee.}
-  \end{subfigure}
-  \caption{The same cup of coffee. Multiple times.}
-  \label{fig:coffee3}
+  
+  \label{fig:Image examples}
 \end{figure}
-\begin{figure}[h!]
-  \centering
-  \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth]{"../data/results/problem2/mnist_w_wm.png"}
-    \caption{Coffee.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.4\linewidth}
-    \includegraphics[width=\linewidth]{"../data/results/problem2/mnist_w_wm.png"}
-    \caption{More coffee.}
-  \end{subfigure}
-  \caption{The same cup of coffee. Two times.}
-  \label{fig:coffee}
-\end{figure}
+The first test we did was to find the minimal change according to $\norm{\cdot}_{\infty}$ norm and $\norm{\cdot}_1$ norm for every water mark image 
 
 \section{Related Work}
 \label{sec:relatedWork}

@@ -2,13 +2,51 @@ import numpy as np
 import matplotlib.pyplot as plt
 from csv import DictReader, DictWriter
 
-# from tensorflow import keras
-# mnist = keras.datasets.mnist
-# (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-# wm_images = np.load('./data/wm.set.npy')
-# wm_labels = np.loadtxt('./data/wm.labels.txt', dtype='int32')
-# plt.imshow(wm_images[9], cmap='gray')
-# plt.show()
+from tensorflow import keras
+mnist = keras.datasets.mnist
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+wm_images = np.load('./data/wm.set.npy')
+wm_labels = np.loadtxt('./data/wm.labels.txt', dtype='int32')
+# for i in range(4):
+fig, ax = plt.subplots(2,2)
+ax[0,0].imshow(wm_images[0], cmap='gray')
+ax[0,0].set_title('Tagged as {}'.format(wm_labels[0]))
+ax[0,0].get_xaxis().set_visible(False)
+ax[0,0].get_yaxis().set_visible(False)
+ax[0,1].imshow(wm_images[1], cmap='gray')
+ax[0,1].set_title('Tagged as {}'.format(wm_labels[1]))
+ax[0,1].get_xaxis().set_visible(False)
+ax[0,1].get_yaxis().set_visible(False)
+ax[1,0].imshow(wm_images[2], cmap='gray')
+ax[1,0].set_title('Tagged as {}'.format(wm_labels[2]))
+ax[1,0].get_xaxis().set_visible(False)
+ax[1,0].get_yaxis().set_visible(False)
+ax[1,1].imshow(wm_images[3], cmap='gray')
+ax[1,1].set_title('Tagged as {}'.format(wm_labels[3]))
+ax[1,1].get_xaxis().set_visible(False)
+ax[1,1].get_yaxis().set_visible(False)
+plt.savefig('./data/wm.png')
+
+plt.clf()
+fig, ax = plt.subplots(2,2)
+ax[0,0].imshow(test_images[0], cmap='gray')
+ax[0,0].set_title('Tagged as {}'.format(test_labels[0]))
+ax[0,0].get_xaxis().set_visible(False)
+ax[0,0].get_yaxis().set_visible(False)
+ax[0,1].imshow(test_images[1], cmap='gray')
+ax[0,1].set_title('Tagged as {}'.format(test_labels[1]))
+ax[0,1].get_xaxis().set_visible(False)
+ax[0,1].get_yaxis().set_visible(False)
+ax[1,0].imshow(test_images[2], cmap='gray')
+ax[1,0].set_title('Tagged as {}'.format(test_labels[2]))
+ax[1,0].get_xaxis().set_visible(False)
+ax[1,0].get_yaxis().set_visible(False)
+ax[1,1].imshow(test_images[3], cmap='gray')
+ax[1,1].set_title('Tagged as {}'.format(test_labels[3]))
+ax[1,1].get_xaxis().set_visible(False)
+ax[1,1].get_yaxis().set_visible(False)
+plt.savefig('./data/mnist.png')
+plt.clf()
 
 model_name = 'mnist.w.wm'
 # vals_epsilon = {}
@@ -65,16 +103,16 @@ model_name = 'mnist.w.wm'
 
 # plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
 
-datafile = open('./data/results/problem2/{}.csv'.format(model_name))
-file_reader = DictReader(datafile)
+# datafile = open('./data/results/problem2/{}.csv'.format(model_name))
+# file_reader = DictReader(datafile)
 
-sat_vals = np.array([float(line['sat-epsilon']) for line in file_reader])
-sat_vals = np.sort(sat_vals)
-numbers = np.array(range(1, len(sat_vals)+1))
-plt.step(numbers, sat_vals)
-plt.xlabel('Number of Watermark Images')
-plt.ylabel('epsilon')
-plt.savefig('./data/results/problem2/{}.png'.format(model_name.replace('.','_')))
+# sat_vals = np.array([float(line['sat-epsilon']) for line in file_reader])
+# sat_vals = np.sort(sat_vals)
+# numbers = np.array(range(1, len(sat_vals)+1))
+# plt.step(numbers, sat_vals)
+# plt.xlabel('Number of Watermark Images')
+# plt.ylabel('epsilon')
+# plt.savefig('./data/results/problem2/{}.png'.format(model_name.replace('.','_')))
 # plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
 # plt.show()
 

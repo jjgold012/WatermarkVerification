@@ -77,7 +77,7 @@ class WatermarkVerification4(WatermarkVerification):
             secondMaxPred = predIndices[i][1]
             MarabouUtils.addInequality(network, [outputVars[i][maxPred], outputVars[i][secondMaxPred]], [1, -1], 0)
         
-        options = Marabou.createOptions(dnc=True)
+        options = Marabou.createOptions(numWorkers=6, dnc=True)
         stats = network.solve(verbose=False, options=options)
         newOut = predIndices[:,1]
         if stats[0]:
