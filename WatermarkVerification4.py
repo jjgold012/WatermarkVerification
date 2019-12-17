@@ -55,6 +55,10 @@ class WatermarkVerification4(WatermarkVerification):
     def evaluateEpsilon(self, epsilon, network, prediction):
         outputVars = network.outputVars
         abs_epsilons = list()
+        preds = list()
+        predIndices = np.flip(np.argsort(prediction, axis=1), axis=1)        
+        for i in range(outputVars.shape[0]):
+            preds.append((predIndices[i][0], predIndices[i][1]))
         n, m = network.epsilons.shape
         print(n,m)
         for i in range(n):
@@ -71,13 +75,10 @@ class WatermarkVerification4(WatermarkVerification):
         e.setScalar(epsilon)
         network.addEquation(e)
 
-        predIndices = np.flip(np.argsort(prediction, axis=1), axis=1)        
         for i in range(outputVars.shape[0]):
-            maxPred = predIndices[i][0]
-            secondMaxPred = predIndices[i][1]
-            MarabouUtils.addInequality(network, [outputVars[i][maxPred], outputVars[i][secondMaxPred]], [1, -1], 0)
+            MarabouUtils.addInequality(network, [outputVars[i][preds[i][0]], outputVars[i][preds[i][1]]], [1, -1], 0)
         
-        options = Marabou.createOptions(numWorkers=6, dnc=True)
+        options = Marabou.createOptions(numWorkers=6, dnc=False)
         stats = network.solve(verbose=False, options=options)
         newOut = predIndices[:,1]
         if stats[0]:
