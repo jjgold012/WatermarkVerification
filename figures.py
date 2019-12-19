@@ -102,18 +102,18 @@ model_name = 'mnist.w.wm'
 
 
 # plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
-# datafile = open('./data/results/problem1/{}.WatermarkVerification1.csv'.format(model_name))
+datafile = open('./data/results/problem1/{}.WatermarkVerification1.csv'.format(model_name))
 
-datafile = open('./data/results/problem2/{}.csv'.format(model_name))
+# datafile = open('./data/results/problem2/{}.csv'.format(model_name))
 file_reader = DictReader(datafile)
 
 sat_vals = np.array([float(line['sat-epsilon']) for line in file_reader])
-sat_vals = np.sort(sat_vals)
+# sat_vals = np.sort(sat_vals)
 numbers = np.array(range(1, len(sat_vals)+1))
-plt.step(numbers, sat_vals)
+plt.scatter(numbers, sat_vals)
 plt.xlabel('Number of Watermark Images')
 plt.ylabel('epsilon')
-plt.savefig('./data/results/problem2/{}.pdf'.format(model_name.replace('.','_')), format='pdf')
+plt.savefig('./data/results/problem1/{}.pdf'.format(model_name.replace('.','_')), format='pdf')
 # plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
 # plt.show()
 

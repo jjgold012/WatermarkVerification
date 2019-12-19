@@ -3,6 +3,7 @@ import os
 import argparse
 import utils
 from pprint import pprint
+from itertools import chain
 from copy import deepcopy
 from maraboupy import Marabou
 from maraboupy import MarabouUtils
@@ -63,11 +64,16 @@ class WatermarkVerification4(WatermarkVerification):
         print(n,m)
         for i in range(n):
             for j in range(m):
-                epsilon_var = network.epsilons[i][j]
-                network.setUpperBound(epsilon_var, epsilon)
-                network.setLowerBound(epsilon_var, -epsilon)
-                abs_epsilon_var = self.epsilonABS(network, epsilon_var)
-                abs_epsilons.append(abs_epsilon_var)
+                if j in list(chain.from_iterable(preds)):
+                    epsilon_var = network.epsilons[i][j]
+                    network.setUpperBound(epsilon_var, epsilon)
+                    network.setLowerBound(epsilon_var, -epsilon)
+                    abs_epsilon_var = self.epsilonABS(network, epsilon_var)
+                    abs_epsilons.append(abs_epsilon_var)
+                else:
+                    epsilon_var = network.epsilons[i][j]
+                    network.setUpperBound(epsilon_var, 0)
+                    network.setLowerBound(epsilon_var, 0)
 
         e = MarabouUtils.Equation(EquationType=MarabouUtils.MarabouCore.Equation.LE)
         for i in range(len(abs_epsilons)):
@@ -116,7 +122,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help='the name of the model')
-    parser.add_argument('--epsilon_max', default=5, help='max epsilon value')
+    parser.add_argument('--epsilon_max', default=100, help='max epsilon value')
     parser.add_argument('--epsilon_interval', default=0.01, help='epsilon smallest change')
     parser.add_argument('--num_of_inputs', default=2, help='the number of inputs that needs to be falsify')
     args = parser.parse_args()

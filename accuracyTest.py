@@ -21,8 +21,8 @@ x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2],1
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2],1)
 wm_images = wm_images.reshape(wm_images.shape[0], wm_images.shape[1], wm_images.shape[2],1)
 
-for i in [0]:#,1,2,3,4,5,6,7,25,50,75,100]:
-    out_file = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i), 'w')
+for i in [0,1]:
+    out_file = open('./data/results/problem2/{}.accuracy.csv'.format(model_name), 'w')
     out_file.write('test-accuracy,test-loss,train-accuracy,train-loss,wm-accuracy,wm-loss\n')
     out_file.flush()
     if i == 0:
@@ -36,7 +36,7 @@ for i in [0]:#,1,2,3,4,5,6,7,25,50,75,100]:
         del net_model
         keras.backend.clear_session()
     else:
-        epsilons = np.load('./data/results/problem3/{}.{}.wm.vals.npy'.format(model_name, i))
+        epsilons = np.load('./data/results/problem2/{}.vals.npy'.format(model_name))
         for j in range(epsilons.shape[0]):
             net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
@@ -54,10 +54,10 @@ for i in [0]:#,1,2,3,4,5,6,7,25,50,75,100]:
             # p = net_model.predict(wm_images)
 
             # c = np.array([p[i][a[i]] - p[i][b[i]] for i in range(100)])
-            # print(np.max(c))
+            # print(c[j])
             wm_loss, wm_acc = net_model.evaluate(wm_images, wm_labels)
-            # out_file.write('{},{},{},{},{},{}\n'.format(test_acc, test_loss, train_acc, train_loss, wm_acc, wm_loss))
-            # out_file.flush()
+            out_file.write('{},{},{},{},{},{}\n'.format(test_acc, test_loss, train_acc, train_loss, wm_acc, wm_loss))
+            out_file.flush()
             del net_model
             keras.backend.clear_session()
 
