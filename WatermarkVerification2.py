@@ -31,11 +31,16 @@ class WatermarkVerification2(WatermarkVerification):
             print(n,m)
             for i in range(n):
                 for j in range(m):
-                    epsilon_var = network.matMulLayers[k]['epsilons'][i][j]
-                    network.setUpperBound(epsilon_var, epsilon)
-                    network.setLowerBound(epsilon_var, -epsilon)
-                    abs_epsilon_var = self.epsilonABS(network, epsilon_var)
-                    abs_epsilons.append(abs_epsilon_var)
+                    if j in [prediction, output]:
+                        epsilon_var = network.epsilons[i][j]
+                        network.setUpperBound(epsilon_var, epsilon)
+                        network.setLowerBound(epsilon_var, -epsilon)
+                        abs_epsilon_var = self.epsilonABS(network, epsilon_var)
+                        abs_epsilons.append(abs_epsilon_var)
+                    else:
+                        epsilon_var = network.epsilons[i][j]
+                        network.setUpperBound(epsilon_var, 0)
+                        network.setLowerBound(epsilon_var, 0)
 
         e = MarabouUtils.Equation(EquationType=MarabouUtils.MarabouCore.Equation.LE)
         for i in range(len(abs_epsilons)):
@@ -56,11 +61,11 @@ class WatermarkVerification2(WatermarkVerification):
         epsilons_vals = np.array([])
 
         start = start if start > 0 else 0
-        finish = finish if finish > 0 else lastlayer_inputs.shape[0]
-        out_file = open('./data/results/problem2/{}.WatermarkVerification2_{}-{}.csv'.format(model_name, start, finish), 'w')
+        finish = finish if finish > 0 else (lastlayer_inputs.shape[0]-1)
+        out_file = open('./data/results/problem2test/{}_{}-{}.csv'.format(model_name, start, finish), 'w')
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,sat-prediction\n')
         out_file.flush()
-        for i in range(start, finish):
+        for i in range(start, finish+1):
             
             prediction = np.argmax(predictions[i])
             inputVals = np.reshape(lastlayer_inputs[i], (1, lastlayer_inputs[i].shape[0]))
@@ -72,12 +77,12 @@ class WatermarkVerification2(WatermarkVerification):
         
             all_vals = sat_vals[1][0]
             epsilons_vars = network.matMulLayers[0]['epsilons']
-            newVars = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
-            newVars = np.reshape(newVars, (1, newVars.shape[0], newVars.shape[1]))
-            epsilons_vals = newVars if epsilons_vals.size==0 else np.append(epsilons_vals, newVars, axis=0)
+            newVals = np.array([[all_vals[epsilons_vars[j][i]] for i in range(epsilons_vars.shape[1])] for j in range(epsilons_vars.shape[0])])
+            newVals = np.reshape(newVals, (1, newVals.shape[0], newVals.shape[1]))
+            epsilons_vals = newVals if epsilons_vals.size==0 else np.append(epsilons_vals, newVals, axis=0)
         
         out_file.close()
-        np.save('./data/results/problem2/{}.WatermarkVerification2_{}-{}.vals'.format(model_name, start, finish), epsilons_vals)
+        np.save('./data/results/problem2test/{}_{}-{}.vals'.format(model_name, start, finish), epsilons_vals)
 
 
     

@@ -69,9 +69,9 @@ def visualize(epsilons, title="figure 1"):
                                 orientation='horizontal',
                                 ticks=[round(i,3) for i in np.linspace(-maxWeight, maxWeight, 5)],
                                 )
-        plt.savefig('./data/results/problem2/last_layer_example.pdf', format='pdf')
+        # plt.savefig('./data/results/problem2/last_layer_example.pdf', format='pdf')
         plt.show()
 
-epsilons = np.load('./data/results/problem2/mnist.w.wm.vals.npy')
+epsilons = np.load('./data/results/problem4/mnist.w.wm.2.wm_0-1.vals.npy')
 
-visualize(epsilons[0])
+visualize(epsilons[1])

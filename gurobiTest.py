@@ -1,46 +1,31 @@
-#!/usr/bin/python
+import numpy as np
+import tensorflow as tf
+import os
+import utils
+from tensorflow import keras
+from pprint import pprint
 
-# Copyright 2019, Gurobi Optimization, LLC
+model_name = 'mnist.w.wm'
+MODELS_PATH = './Models'
 
-# This example formulates and solves the following simple MIP model:
-#  maximize
-#        x +   y + 2 z
-#  subject to
-#        x + 2 y + 3 z <= 4
-#        x +   y       >= 1
-#        x, y, z binary
+epsilons = np.load('./data/results/problem4/{}.2.wm_0-1.vals.npy'.format(model_name))
+randomSamples = np.load('./data/random/2.wm.1000.random_samples.npy'.format(model_name))
+wm_images = np.load('./data/wm.set.npy')
+wm_images = wm_images.reshape(wm_images.shape[0], wm_images.shape[1], wm_images.shape[2],1)
 
-from gurobipy import *
+for j in range(epsilons.shape[0]):
+    net_model = utils.load_model(os.path.join(MODELS_PATH, model_name+'_model.json'), os.path.join(MODELS_PATH, model_name+'_model.h5'))
 
-try:
+    weights = net_model.get_weights()
+    weights[-1] = weights[-1] + epsilons[j]
 
-    # Create a new model
-    m = Model("mip1")
-
-    # Create variables
-    x = m.addVar(vtype=GRB.BINARY, name="x")
-    y = m.addVar(vtype=GRB.BINARY, name="y")
-    z = m.addVar(vtype=GRB.BINARY, name="z")
-
-    # Set objective
-    m.setObjective(x + y + 2 * z, GRB.MAXIMIZE)
-
-    # Add constraint: x + 2 y + 3 z <= 4
-    m.addConstr(x + 2 * y + 3 * z <= 4, "c0")
-
-    # Add constraint: x + y >= 1
-    m.addConstr(x + y >= 1, "c1")
-
-    # Optimize model
-    m.optimize()
-
-    for v in m.getVars():
-        print('%s %g' % (v.varName, v.x))
-
-    print('Obj: %g' % m.objVal)
-
-except GurobiError as e:
-    print('Error code ' + str(e.errno) + ": " + str(e))
-
-except AttributeError:
-    print('Encountered an attribute error')
+    net_model.set_weights(weights)
+    net_model.compile(optimizer=tf.train.AdamOptimizer(),loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+    predictions = np.load('./data/{}.prediction.npy'.format(model_name))
+    predIndices = np.flip(np.argsort(predictions, axis=1), axis=1)        
+    a = predIndices[:,0] 
+    b = predIndices[:,1]
+    p = net_model.predict(wm_images)
+    [print(p[i]) for i in randomSamples[j]]
+    c = np.array([p[i][a[i]] - p[i][b[i]] for i in randomSamples[j]])
+    print(c)
