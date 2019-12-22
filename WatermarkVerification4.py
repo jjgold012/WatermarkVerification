@@ -108,7 +108,7 @@ class WatermarkVerification4(WatermarkVerification):
             lastlayer_input = np.array([lastlayer_inputs[j] for j in random_samples[i]])  
             prediction = np.array([predictions[j] for j in random_samples[i]])  
             network = MarabouNetworkTFWeightsAsVar2.read_tf_weights_as_var(filename=filename, inputVals=lastlayer_input)
-            unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, predictions)
+            unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             predIndices = np.flip(np.argsort(prediction, axis=1), axis=1)
             oldPred = predIndices[:,0]
             secondPred = predIndices[:,1]
