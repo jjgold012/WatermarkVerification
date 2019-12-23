@@ -9,7 +9,7 @@ model_name = 'mnist.w.wm'
 MODELS_PATH = './Models'
 
 epsilons = np.load('./data/results/problem4/{}.2.wm_0-1.vals.npy'.format(model_name))
-randomSamples = np.load('./data/random/2.wm.1000.random_samples.npy'.format(model_name))
+randomSamples = np.load('./data/random/2.wm.1000.random_samples.npy')
 wm_images = np.load('./data/wm.set.npy')
 wm_images = wm_images.reshape(wm_images.shape[0], wm_images.shape[1], wm_images.shape[2],1)
 
