@@ -54,7 +54,7 @@ class WatermarkVerification:
                     network.setLowerBound(network.matMulLayers[k]['epsilons'][i][j], -epsilon)
             
         MarabouUtils.addInequality(network, [outputVars[prediction], outputVars[output]], [1, -1], 0)
-        return network.solve(verbose=False, dnc=False)
+        return network.solve()
 
 
     def run(self, model_name):
