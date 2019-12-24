@@ -59,6 +59,7 @@ def visualize(epsilons, title="figure 1"):
                         with_labels=True,
                         font_color='white',
                         labels=lables,
+                        alpha=0.5,
                         linewidths=2,
                         width=0.5
                         )
@@ -72,6 +73,6 @@ def visualize(epsilons, title="figure 1"):
         # plt.savefig('./data/results/problem4/last_layer_2_wm_example.pdf', format='pdf')
         plt.show()
 
-epsilons = np.load('./data/results/problem4/mnist.w.wm.2.wm_0-1.vals.npy')
+epsilons = np.load('./data/results/problem2/mnist.w.wm.vals.npy')
 
 visualize(epsilons[1])

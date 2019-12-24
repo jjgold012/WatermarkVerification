@@ -45,7 +45,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
         self.inputVals = None
         self.biasAddRelations = list()
         self.matMulLayers = dict()
-        self.epsilons = None
+        self.epsilons = np.array([])
         self.biasAddLayers = dict()
         self.numOfLayers = -1
 
@@ -205,7 +205,7 @@ class MarabouNetworkTFWeightsAsVar(MarabouNetwork.MarabouNetwork):
             return np.concatenate(values, axis=axis)
         if op.node_def.op == 'Const':
             opVars = self.opToVarArray(op)
-            if not self.epsilons:
+            if self.epsilons.size == 0:
                 self.epsilons = self.opToVarArray(op, force=True)
             tproto = op.node_def.attr['value'].tensor
             return {'vals': tensor_util.MakeNdarray(tproto), 'vars': opVars, 'epsilons': self.epsilons}
