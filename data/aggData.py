@@ -1,20 +1,20 @@
 import numpy as np
 from csv import DictReader, DictWriter
 
-folder = './data/results/problem2test/'
+folder = './data/results/problem4/'
 model_name = 'mnist.w.wm'
-batchSize = 20
-num = 5
+batchSize = 10
+num = 100
 
 
-out_file = open('{}{}.csv'.format(folder, model_name), 'w')
+out_file = open('{}{}.2.wm.csv'.format(folder, model_name), 'w')
 vals = None
 file_writer = None
 for i in range(num):
     start = i*batchSize
     finish = start+(batchSize-1)
-    datafile = open('{}{}_{}-{}.csv'.format(folder, model_name, start, finish))
-    np_file = np.load('{}{}_{}-{}.vals.npy'.format(folder, model_name, start, finish))
+    datafile = open('{}{}.2.wm_{}-{}.csv'.format(folder, model_name, start, finish))
+    np_file = np.load('{}{}.2.wm_{}-{}.vals.npy'.format(folder, model_name, start, finish))
     file_reader = DictReader(datafile)
     if i==0:
         headers = file_reader.fieldnames
@@ -26,5 +26,5 @@ for i in range(num):
     for line in file_reader:
         file_writer.writerow(line)
     datafile.close()
-np.save('{}{}.vals'.format(folder, model_name), vals)
+np.save('{}{}.2.wm.vals'.format(folder, model_name), vals)
 out_file.close()
