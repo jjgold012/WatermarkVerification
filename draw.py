@@ -47,18 +47,19 @@ def visualize(epsilons, title="figure 1"):
         gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[29, 1]) 
         plt.subplot(gs[0])
         colormap = mpl.cm.coolwarm
-        nx.draw(nn, pos,nodelist=nodes,
+        nx.draw_networkx_nodes(nn, pos, nodelist=nodes,
                         node_size=sizes,
                         node_color='black',
-                        node_shape='o',
-                        edgelist=edges,
+                        node_shape='o'
+                        )
+        nx.draw_networkx_labels(nn, pos, labels=lables,
+                        font_color='white',
+                        )
+        nx.draw_networkx_edges(nn, pos, edgelist=edges,
                         edge_vmin=-maxWeight,
                         edge_vmax=maxWeight,
                         edge_color=weights,
                         edge_cmap=colormap,
-                        with_labels=True,
-                        font_color='white',
-                        labels=lables,
                         alpha=0.5,
                         linewidths=2,
                         width=0.5
@@ -70,9 +71,9 @@ def visualize(epsilons, title="figure 1"):
                                 orientation='horizontal',
                                 ticks=[round(i,3) for i in np.linspace(-maxWeight, maxWeight, 5)],
                                 )
-        # plt.savefig('./data/results/problem4/last_layer_2_wm_example.pdf', format='pdf')
+        plt.savefig('./data/results/problem3/last_layer_1_wm_example.pdf', format='pdf')
         plt.show()
 
-epsilons = np.load('./data/results/problem2/mnist.w.wm.vals.npy')
+epsilons = np.load('./data/results/problem3/mnist.w.wm.1.wm.vals.npy')
 
-visualize(epsilons[1])
+visualize(epsilons[0])

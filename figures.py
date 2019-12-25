@@ -49,31 +49,37 @@ from csv import DictReader, DictWriter
 # plt.clf()
 
 model_name = 'mnist.w.wm'
-# vals_epsilon = {}
-# vals_acc = {}
-# # x = [0,1,2,3,4,5,6,7,25,50,75,100]
-# # x = [1,2,3,4,5,6,7,25,50,75,100]
-# # x = [0,1,2,3,4,5,6,7]
+vals_epsilon = {}
+vals_acc = {}
+x = [0,1,2,3,4,5,6,7,25,50,75,100]
+# x = [1,2,3,4,5,6,7,25,50,75,100]
+# x = [0,1,2,3,4,5,6,7]
 # x = [1,2,3,4,5,6,7]
-# x_str = ','.join(map(str, x))
+x_str = ','.join(map(str, x))
 
-# out_file = open('./data/results/problem3/{}.wm.summary.csv'.format(model_name), 'w')
-# out_file.write('num-of-wm,average-sat-epsilon,average-test-accuracy\n')
+out_file = open('./data/results/problem3/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
+out_file.write('Number,Avrg eps,Min eps,Max eps,Average acc,Min acc,Max acc\n')
 
-# for i in x:
-#     datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))
-#     file_reader = DictReader(datafile)
-#     vals_acc[i] = np.array([float(line['test-accuracy']) for line in file_reader])
-#     datafile.close()
-#     if i == 0:
-#         vals_epsilon[i] = 0
-#     else:
-#         datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
-#         file_reader = DictReader(datafile)
-#         vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
-#         datafile.close()
-#     out_file.write('{},{},{}\n'.format(i, np.average(vals_epsilon[i]), np.average(vals_acc[i])))
-# out_file.close()
+for i in x:
+    datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))
+    file_reader = DictReader(datafile)
+    vals_acc[i] = np.array([float(line['test-accuracy']) for line in file_reader])
+    datafile.close()
+    if i == 0:
+        vals_epsilon[i] = 0
+    else:
+        datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
+        file_reader = DictReader(datafile)
+        vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
+        datafile.close()
+    out_file.write('{},{},{},{},{},{},{}\n'.format(i,
+                                                    np.average(vals_epsilon[i]),
+                                                    np.min(vals_epsilon[i]),
+                                                    np.max(vals_epsilon[i]),
+                                                    np.average(vals_acc[i]),
+                                                    np.min(vals_acc[i]),
+                                                    np.max(vals_acc[i])))
+out_file.close()
 
 
 # avrg_acc = np.array([np.average(vals_acc[i]) for i in x])
@@ -102,22 +108,22 @@ model_name = 'mnist.w.wm'
 
 
 # plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
-datafile1 = open('./data/results/problem1/{}.WatermarkVerification1.csv'.format(model_name))
+# datafile1 = open('./data/results/problem3/{}.1.wm.csv'.format(model_name))
 
-datafile2 = open('./data/results/problem2/{}.csv'.format(model_name))
-file_reader = DictReader(datafile1)
-sat_vals1 = np.array([float(line['sat-epsilon']) for line in file_reader])
-file_reader = DictReader(datafile2)
-sat_vals2 = np.array([float(line['sat-epsilon']) for line in file_reader])
-# sat_vals1 = np.sort(sat_vals1)
-# sat_vals2 = np.sort(sat_vals2)
+# datafile2 = open('./data/results/problem2/{}.csv'.format(model_name))
+# file_reader = DictReader(datafile1)
+# sat_vals1 = np.array([float(line['sat-epsilon']) for line in file_reader])
+# file_reader = DictReader(datafile2)
+# sat_vals2 = np.array([float(line['sat-epsilon']) for line in file_reader])
+# # sat_vals1 = np.sort(sat_vals1)
+# # sat_vals2 = np.sort(sat_vals2)
 
-numbers = np.array(range(0, len(sat_vals1)))
-plt.scatter(numbers, sat_vals1, marker='.')
-plt.xlabel('Watermark Image')
-plt.ylabel('epsilon')
-plt.savefig('./data/results/problem1/{}.pdf'.format(model_name.replace('.','_')), format='pdf')
-# plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
-plt.show()
+# numbers = np.array(range(0, len(sat_vals1)))
+# plt.scatter(numbers, sat_vals1, marker='.')
+# plt.xlabel('Watermark Image')
+# plt.ylabel('epsilon')
+# plt.savefig('./data/results/problem3/{}.pdf'.format(model_name.replace('.','_')), format='pdf')
+# # plt.xticks(np.arange(min(sat_vals), max(sat_vals), 0.1))
+# plt.show()
 
 

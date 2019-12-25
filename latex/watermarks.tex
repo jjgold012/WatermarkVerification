@@ -5,13 +5,28 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{pgfplotstable}
 
+\sisetup{
+  round-mode          = places, 
+  round-precision     = 5, 
+}
+   
 \hypersetup{
     colorlinks=true,
     linkcolor=magenta,
     urlcolor=blue,
     breaklinks,
     citecolor=blue
+}
+
+\pgfplotstableset{
+  multistyler/.style 2 args={
+    @multistyler/.style={display columns/##1/.append style={#2}},
+    @multistyler/.list={#1}
+  }
 }
 
 \input{my-commands.tex}
@@ -81,8 +96,8 @@ tested what is the minimal change to the network last layer in order
 to "remove" some watermarks from the network.
 
 
-\subsection{Defining the problem}
-\label{sec:defineProblem}
+\subsection{Defining the problem for one input}
+\label{sec:defineProblem1}
 
 Given a neural network $N$ with an output size $m$ the network
 decision for an input $x$ is defined as the coordinate with the
@@ -123,7 +138,11 @@ in a Linear Programming form like so:
 \end{align*}
 \hspace*{5cm} *The variables are the entries in $\varepsilon$ and $y'$
 \\\\
-Using the same method we can find how to change the network to more than one input.\\
+
+\subsection{Defining the problem for many inputs}
+\label{sec:defineProblem2}
+
+Since we're only changing the network once we can add more constraint from other inputs and using the same method we can find how to change the network to more than one input.\\
 Given inputs $x_1,\cdots,x_k$ and their respective inputs to the last layer $v_1,\cdots,v_k$ and their respected outputs and decisions $\bracketsC{y_1,\cdots,y_k}\ \bracketsC{d_1,\cdots,d_k}$ we want to find $\varepsilon$ such that\\
 $\forall 1\leq j\leq k\quad d_j \neq argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{\bracketsR{L+\varepsilon}v_j}_i}$\\
 Assuming we choose our new desired output
@@ -138,9 +157,7 @@ And now our LP looks like this:\\
 \hspace*{5cm} *The variables are the entries in $\varepsilon$ and
 $y'_j$
 \\\\
-Using
-\href{http://aisafety.stanford.edu/marabou/MarabouCAV2019.pdf}{Marabou}
-we can solve for the minimal $\varepsilon$ under different norm
+Using Marabou\cite{KaHuIbJuLaLiShThWuZeDiKoBa19Marabou} we can solve for the minimal $\varepsilon$ under different norm
 $\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}$ since using
 this norm gives us a piece-wise linear problem.
 
@@ -161,7 +178,6 @@ We tested this approach on a Neural network trained on the MNIST data set, the n
     \includegraphics[width=\linewidth]{../data/mnist.pdf}
     \caption{MNIST images.}
   \end{subfigure}
-  
   \label{fig:imageExamples}
 \end{figure}
 
@@ -177,7 +193,7 @@ Each watermark image have different minimal $\varepsilon$. This can give us some
 \begin{figure}[h!]
   \centering
   \begin{subfigure}{0.4\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem1/mnist_w_wm.pdf}
+    \includegraphics[width=\linewidth]{../data/results/problem3/mnist_w_wm.pdf}
      \caption{The Minimal $\norm{\cdot}_{\infty}$ for every watermark image}
   \end{subfigure}
   \begin{subfigure}{0.4\linewidth}
@@ -185,7 +201,37 @@ Each watermark image have different minimal $\varepsilon$. This can give us some
     \caption{The Minimal $\norm{\cdot}_1$ for every watermark image}
   \end{subfigure}
   \label{fig:minimalEpsilonSingle}
+  \caption{Notice the scale of the graphs, the $\norm{\cdot}_\infty$ values are much smaller then the $\norm{\cdot}_1$ values. As expected}
 \end{figure}
+
+After removing a single watermark with minimal change to the last layer we're interested in the effect this had on our original network accuracy. To test the accuracy after we found the changes all we had to is apply the changes to the original network and run an evaluation on the original network dataset.
+As seen in this table \ref{table:singleWatermark} the $\norm{\cdot}_1$ gives better accuracy result on average by can have a bad accuracy result, and the $\norm{\cdot}_\infty$ after removing a single watermark have a consistent result (there minimal accuracy and the maximal accuracy are quite close)
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Epsilons and Accuracy}
+    \pgfplotstabletypeset[
+    	  col sep=comma,
+      multistyler={0,...,6}{column type={c|}},
+      columns/Norm/.style={string type},
+    	]{../data/results/mnist_w_wm_1_wm.csv}
+  \end{center}
+  \label{table:singleWatermark}
+\end{table}
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}{0.4\linewidth}
+    \includegraphics[width=\linewidth]{../data/results/problem3/last_layer_1_wm_example.pdf}
+     \caption{The Minimal $\norm{\cdot}_{\infty}$ for every watermark image}
+  \end{subfigure}
+  \begin{subfigure}{0.4\linewidth}
+    \includegraphics[width=\linewidth]{../data/results/problem2/last_layer_1_wm_example.pdf}
+    \caption{The Minimal $\norm{\cdot}_1$ for every watermark image}
+  \end{subfigure}
+  \label{fig:lastLayerExample1}
+\end{figure}
+
 
 \subsection{Removing Multiple watermark}
 
