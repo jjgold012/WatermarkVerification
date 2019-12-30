@@ -1,14 +1,12 @@
 import numpy as np
 import os
 import argparse
-import utils
 from pprint import pprint
 from itertools import chain
 from copy import deepcopy
 from maraboupy import Marabou
 from maraboupy import MarabouUtils
 from maraboupy import MarabouCore
-from tensorflow import keras
 
 from WatermarkVerification1 import *
 import MarabouNetworkTFWeightsAsVar2
@@ -101,12 +99,17 @@ class WatermarkVerification4(WatermarkVerification):
 
         start = start if start > 0 else 0
         finish = finish if finish > 0 else (random_samples.shape[0]-1)
+        if numOfInputs==1:
+            finish = finish if finish > 0 else (lastlayer_inputs.shape[0]-1)
         out_file = open('./data/results/problem4/{}.{}.wm_{}-{}.csv'.format(model_name, numOfInputs, start, finish), 'w')
         out_file.write('unsat-epsilon,sat-epsilon,original-prediction,second-best-prediction\n')
 
         for i in range(start, finish+1):
-            lastlayer_input = np.array([lastlayer_inputs[j] for j in random_samples[i]])  
-            prediction = np.array([predictions[j] for j in random_samples[i]])  
+            lastlayer_input = np.array([lastlayer_inputs[j] for j in random_samples[i]])
+            prediction = np.array([predictions[j] for j in random_samples[i]])
+            if numOfInputs==1:
+                lastlayer_input = lastlayer_inputs[i].reshape(1, lastlayer_inputs[i].shape[0])
+                prediction = predictions[i].reshape(1, predictions[i].shape[0])
             network = MarabouNetworkTFWeightsAsVar2.read_tf_weights_as_var(filename=filename, inputVals=lastlayer_input)
             unsat_epsilon, sat_epsilon, sat_vals = self.findEpsilonInterval(network, prediction)
             predIndices = np.flip(np.argsort(prediction, axis=1), axis=1)
