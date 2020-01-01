@@ -86,7 +86,7 @@ and conclude in Section~\ref{sec:conclusion}.
 
 \cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}
 
-\section{Finding the minimal change that will get rid of the network's WaterMark}
+\section{Defining the minimal change that will change an input decision}
 \label{sec:verifyWatermarks}
 
 Given a watermarked trained neural network as described
@@ -136,7 +136,7 @@ And
 	\end{split}
 \end{equation}
 \\
-For the $\ell_\infty-norm$ \ref{eq:normInf} and a chosen $d'_x$ that is different from $d_x$ the minimization problem looks like that:
+For the $\ell_\infty$ norm (\ref{eq:normInf}) with a chosen $d'_x$ that is different from $d_x$ the minimization problem looks like that:
 \begin{equation}
 \label{eq:LP}
 \begin{split}
@@ -148,7 +148,7 @@ For the $\ell_\infty-norm$ \ref{eq:normInf} and a chosen $d'_x$ that is differen
 \end{split}
 \end{equation}
 \\\\
-Similarly for the $\ell_1-norm$ \ref{eq:normOne} the minimization problem looks like that:
+Similarly for the $\ell_1$ norm (\ref{eq:normOne}) the minimization problem looks like that:
 \begin{equation}
 \label{eq:NotLP}
 \begin{split}
@@ -167,14 +167,15 @@ Our definition to a single input minimal change $\varepsilon$ to the network las
 Given inputs $\bracketsC{x_1,\cdots,x_k}$ and their respective values:
 \begin{align*}
 \bracketsC{v_1,\cdots,v_k}\quad: & \text{Inputs to the last layer} \\
-\bracketsC{y_1,\cdots,y_k}\quad: & \text{Output vectors} \\
 \bracketsC{d_1,\cdots,d_k}\quad: & \text{Decisions} \\
 \intertext{Such that}
-\forall 1\leq j\leq k\quad & d_j \neq argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{\bracketsR{L+\varepsilon}v_j}_i}
+\forall 1\leq j\leq k\quad & d_j = argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{L v_j}_i}
+\intertext{With chosen new desired decisions
+$\bracketsC{d'_1,\cdots,d'_k}$ Such that}
+\forall 1\leq j\leq k\quad & d'_j \neq d_j
 \end{align*}
 \\
-Assuming we choose our new desired decisions
-$\bracketsC{d'_1,\cdots,d'_k}$ our minimization problem for the $\infty-norm$ looks like this:
+our minimization problem for the $\ell_\infty$ norm looks like this:
 \begin{equation}
 \label{eq:LPmany}
 \begin{split}
@@ -185,7 +186,7 @@ $\bracketsC{d'_1,\cdots,d'_k}$ our minimization problem for the $\infty-norm$ lo
 	\intertext{Variables are the entries in $\varepsilon,y'_1,\cdots,y'_k$ and $M$}
 \end{split}
 \end{equation}
-Similarly for the $\ell_1-norm$ \ref{eq:normOne} the minimization problem looks like that:
+Similarly for the $\ell_1$ norm the minimization problem looks like that:
 \begin{equation}
 \label{eq:NotLPmany}
 \begin{split}
@@ -202,23 +203,24 @@ sections according to the paper layout.}
 
 \section{Evaluation}
 \label{sec:evaluation}
-For the $\ell_\infty-norm$ \ref{eq:normInf} when choosing a prediction different from the original the problem can be expressed as a linear programming query. This is possible since $y'=(L+\varepsilon)v$ is a linear set of constraint, and each entry of $\varepsilon$ can be bounded independently.
+For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using a Gurobi linear programming solver.
 \\
-
-
-We tested this approach on a Neural network trained on the MNIST data set, the network was watermarked with $100$ images of Gaussian noise. The original network had $96.8\text{\%}$ accuracy on the MNIST test set and $100\text{\%}$ accuracy on the watermark images.
+On the other hand $\ell_1$ norm minimization problems (\ref{eq:NotLP}) (\ref{eq:NotLPmany}) have non linear constraint so a linear programming solver is not enough. Instead we used Marabou which is a verification tool for neural networks that support piecewise-linear activation functions, Marabou can supply a feasible solution to a set of piecewise-linear constraints so combined with the interval halving method we can find the minimal change for the $\ell_1$ case as well. 
+\\\\
+We tested both approaches on a simple neural network trained on the MNIST data set, the network have one hidden layer with $150$ nodes. The network was watermarked with $100$ images of noise, examples in Figure \ref{fig:noiseExample}.
 
 \begin{figure}[h!]
   \centering
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/wm.pdf}
      \caption{Water marks images.}
+  \label{fig:noiseExample}
   \end{subfigure}
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/mnist.pdf}
     \caption{MNIST images.}
+  \label{fig:mnistExample}
   \end{subfigure}
-  \label{fig:imageExamples}
 \end{figure}
 
 \subsection{Removing a single watermark}
