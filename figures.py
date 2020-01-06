@@ -58,7 +58,7 @@ x = [0,1,2,3,4,5,6,7,25,50,75,100]
 x_str = ','.join(map(str, x))
 
 out_file = open('./data/results/problem3/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
-out_file.write('Number,Avrg eps,Min eps,Max eps,Average acc,Min acc,Max acc\n')
+out_file.write('Number of watermarks,Avrg change,Min change,Max change,Avrg acc,Min acc,Max acc\n')
 
 for i in x:
     datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))

@@ -8,6 +8,7 @@
 \usepackage{booktabs}
 \usepackage{siunitx}
 \usepackage{pgfplotstable}
+\usepackage{tabularx}
 
 \sisetup{
   round-mode          = places, 
@@ -98,7 +99,7 @@ tested what is the minimal change to the network last layer in order
 to "remove" some watermarks from the network.
 
 
-\subsection{Defining the problem for one input}
+\subsection{Defining the problem for single input}
 \label{sec:defineProblem1}
 
 Given a watermarked network $N$ with a set of $K$ watermarks (A set of
@@ -203,13 +204,13 @@ sections according to the paper layout.}
 
 \section{Evaluation}
 \label{sec:evaluation}
-For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using a Gurobi linear programming solver.
+For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using the Gurobi linear programming solver.
 \\
 On the other hand $\ell_1$ norm minimization problems (\ref{eq:NotLP}) (\ref{eq:NotLPmany}) have non linear constraint so a linear programming solver is not enough. Instead we used Marabou which is a verification tool for neural networks that support piecewise-linear activation functions, Marabou can supply a feasible solution to a set of piecewise-linear constraints so combined with the interval halving method we can find the minimal change for the $\ell_1$ case as well. 
 \\\\
 We tested both approaches on a simple neural network trained on the MNIST data set, the network have one hidden layer with $150$ nodes. The network was watermarked with $100$ images of noise, examples in Figure \ref{fig:noiseExample}.
 
-\begin{figure}[h!]
+\begin{figure}
   \centering
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/wm.pdf}
@@ -221,45 +222,57 @@ We tested both approaches on a simple neural network trained on the MNIST data s
     \caption{MNIST images.}
   \label{fig:mnistExample}
   \end{subfigure}
+\caption{Input images examples.}
+\label{fig:inputExample}
 \end{figure}
 
 \subsection{Removing a single watermark}
-The first test we did was to find the minimal change according to $\norm{\cdot}_{\infty}$ norm and $\norm{\cdot}_1$ norm for every water mark image as describe~\ref{sec:defineProblem}. We choose to change the original tagging of the image to the second highest score that image got. For example an image $w$ with an output $y$ 
-$$j=\underset{i\in\bracketsC{0,\cdots,9}}{argmax}\bracketsC{y_i}$$ 
-$j$ is the original tagging of $w$. 
-$$j'=\underset{i\in\bracketsC{0,\cdots,9}\setminus \bracketsC{j}}{argmax}\bracketsC{y_i}$$ 
-$j'$ is the new tagging of $w$. \\\\
-meaning that after we change the last layer of the network the new output $y'$ largest coordinate is $j'$.   
-Each watermark image have different minimal $\varepsilon$. This can give us some measure of how difficult it is to remove a single watermark image.
+The first test we did was to find the minimal change of a single input as defined (\ref{eq:LP}) (\ref{eq:NotLP}) for every water mark (noise) image. For every decision possible beside the original decision we found the minimal change and choose the overall minimum. It turns out that the minimal change was always the second best score in the original prediction output. For example an watermark image $w$ with an original output $y$.
+\\
+\begin{align*}
+d_w=&\underset{i\in\bracketsC{0,\cdots,9}}{argmax}\bracketsC{y_i} \\
+\intertext{$d_w$ is the original tagging of $w$.}
+d'_w=&\underset{i\in\bracketsC{0,\cdots,9}\setminus\bracketsC{d_w}}{argmax}\bracketsC{y_i} \\
+\intertext{$d'_w$ will be the new tagging of $w$.}
+\end{align*}
+\\
+So after we apply change to the last layer of the network the new output $y'$ is such that $\underset{i\in\bracketsC{0,\cdots,9}}{argmax}\bracketsC{y'_i}=d'_w$
+\\\\
+For each watermark image have found the minimal $\varepsilon$. This can give us some measure of how difficult it is to remove a single watermark image. And there may be some correlation in the minimal change distribution that is not related to the norm as seen in this figure \ref{fig:minSingle}. Beside removing a watermark we're interested in the effect the change we introduced have on the network goal. By applying the change to the original network and evaluating on the MNIST dataset we measured the resulting accuracy of each change. As it turns out we get widely different results from both removal methods (norms) when measuring the accuracy of the changed network. As seen in this table \ref{table:singleWatermark} the $\ell_1$ gives better accuracy result on average but can have a bad accuracy result, and the $\ell_\infty$ after removing a single watermark have a consistent result (there minimal accuracy and the maximal accuracy are quite close).
+\\\\
 
-\begin{figure}[h!]
+\begin{figure}
   \centering
   \begin{subfigure}{0.4\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem3/mnist_w_wm.pdf}
-     \caption{The Minimal $\norm{\cdot}_{\infty}$ for every watermark image}
+    \includegraphics[width=\linewidth]{../data/results/problem3/mnist_w_wm_sorted.pdf}
+     \caption{The Minimal $\norm{\varepsilon}_{\infty}$ for every watermark image}
+  	\label{fig:minSingleLP}
   \end{subfigure}
   \begin{subfigure}{0.4\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm.pdf}
-    \caption{The Minimal $\norm{\cdot}_1$ for every watermark image}
+    \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm_sorted.pdf}
+    \caption{The Minimal $\norm{\varepsilon}_1$ for every watermark image}
+  	\label{fig:minSingleNotLP}
   \end{subfigure}
-  \label{fig:minimalEpsilonSingle}
-  \caption{Notice the scale of the graphs, the $\norm{\cdot}_\infty$ values are much smaller then the $\norm{\cdot}_1$ values. As expected}
+  \caption{Notice the scale of the graphs, the $\ell_\infty$ values are much smaller then the $\ell_1$ values. As expected}
+\label{fig:minSingle}
 \end{figure}
 
-After removing a single watermark with minimal change to the last layer we're interested in the effect this had on our original network accuracy. To test the accuracy after we found the changes all we had to is apply the changes to the original network and run an evaluation on the original network dataset.
-As seen in this table \ref{table:singleWatermark} the $\norm{\cdot}_1$ gives better accuracy result on average by can have a bad accuracy result, and the $\norm{\cdot}_\infty$ after removing a single watermark have a consistent result (there minimal accuracy and the maximal accuracy are quite close)
-
-\begin{table}[h!]
-  \begin{center}
-    \caption{Epsilons and Accuracy}
-    \pgfplotstabletypeset[
-    	  col sep=comma,
-      multistyler={0,...,6}{column type={c|}},
-      columns/Norm/.style={string type},
-    	]{../data/results/mnist_w_wm_1_wm.csv}
-  \end{center}
-  \label{table:singleWatermark}
+\begin{table}
+\resizebox{\linewidth}{!}{
+	\pgfplotstabletypeset[
+	every head row/.style={before row=\hline,after row=\hline\hline},
+	every last row/.style={after row=\hline},
+	col sep=comma,
+	columns/Norm/.style={string type},
+	every column/.style={column type/.add={|}{}},
+	every last column/.style={column type/.add={}{|}}
+	]{../data/results/mnist_w_wm_1_wm.csv}
+	}
+\caption{Minimal changes and Accuracy}
+\label{table:singleWatermark}
 \end{table}
+
+
 
 \begin{figure}[h!]
   \centering
