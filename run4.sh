@@ -12,5 +12,5 @@ export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
 start=$(($SLURM_ARRAY_TASK_ID*10))
 finish=$((start+9))
 
-python3 WatermarkVerification4.py --model mnist.w.wm --num_of_inputs 4 --epsilon_max 300 --start $start --finish $finish
+python3 WatermarkVerification4.py --model mnist.w.wm --num_of_inputs 5 --epsilon_max 300 --start $start --finish $finish
 

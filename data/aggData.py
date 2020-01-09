@@ -3,7 +3,7 @@ from csv import DictReader, DictWriter
 
 folder = './data/results/problem4/'
 model_name = 'mnist.w.wm'
-num_of_wm = 3
+num_of_wm = 4
 batchSize = 10
 num = 100
 

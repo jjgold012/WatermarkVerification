@@ -274,9 +274,6 @@ For each watermark image have found the minimal $\varepsilon$. This can give us 
 These results begs the question what is the nature of the change and how it differ between the method? Turns out that when minimizing the change according to $\ell_\infty$ (\ref{eq:LP}) the linear programming solver assign all the entries of $\varepsilon$ a small value. This translate to a change to every weight in the last layer which can explain the uniformity of the accuracy test. On th other hand the when minimizing the change according to $\ell_1$ (\ref{eq:NotLP}) the optimal change is to change only a single entry in $\varepsilon$ by a seemingly large value. So only one weight in the last layer is changed. See figure \ref{fig:lastLayerExampleSingle}
 \\
  
-
-
-
 \begin{figure}
 \centering
   \begin{subfigure}{0.4\linewidth}
@@ -291,10 +288,11 @@ These results begs the question what is the nature of the change and how it diff
   \label{fig:lastLayerExampleSingle}
 \end{figure}
 
+The result of removing a single watermark shows us that the minimal change according to $\ell_\infty$ is changing the network in a broad way and according to the $\ell_1$ norm the change is local, but then not all watermarks are "equal", some are harder to remove and are easy (as seen in the accuracy test \ref{table:singleWatermark}).
 
 \subsection{Removing Multiple watermark}
 
-Removing a single 
+As described above the removal of watermarks can be generalized to many watermarks (\ref{eq:LPmany}) (\ref{eq:NotLPmany}). We trested the same MNIST digits classifying network that is signed with 100 watermarks  
 
 
 \section{Related Work}
