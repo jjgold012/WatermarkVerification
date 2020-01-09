@@ -238,7 +238,7 @@ d'_w=&\underset{i\in\bracketsC{0,\cdots,9}\setminus\bracketsC{d_w}}{argmax}\brac
 \\
 So after we apply change to the last layer of the network the new output $y'$ is such that $\underset{i\in\bracketsC{0,\cdots,9}}{argmax}\bracketsC{y'_i}=d'_w$
 \\\\
-For each watermark image have found the minimal $\varepsilon$. This can give us some measure of how difficult it is to remove a single watermark image. And there may be some correlation in the minimal change distribution that is not related to the norm as seen in this figure \ref{fig:minSingle}. Beside removing a watermark we're interested in the effect the change we introduced have on the network goal. By applying the change to the original network and evaluating on the MNIST dataset we measured the resulting accuracy of each change. As it turns out we get widely different results from both removal methods (norms) when measuring the accuracy of the changed network. As seen in this table \ref{table:singleWatermark} the $\ell_1$ gives better accuracy result on average but can have a bad accuracy result, and the $\ell_\infty$ after removing a single watermark have a consistent result (there minimal accuracy and the maximal accuracy are quite close).
+For each watermark image have found the minimal $\varepsilon$. This can give us some measure of how difficult it is to remove a single watermark image. And there may be some correlation in the minimal change distribution that is not related to the norm as seen in this figure \ref{fig:minSingle}. Beside removing a watermark we're interested in the effect the change we introduced have on the network goal. By applying the change to the original network and evaluating on the MNIST dataset we measured the resulting accuracy of each change. As it turns out we get widely different results from both removal methods (norms) when measuring the accuracy of the changed network. As seen in this table \ref{table:singleWatermark} the $\ell_1$ gives better accuracy result on average but can have a bad accuracy result, compered to the $\ell_\infty$ after removing a single watermark that have a consistent result (there minimal accuracy and the maximal accuracy are quite close) but the average is lower then the $\ell_1$ method.
 \\\\
 
 \begin{figure}
@@ -256,7 +256,6 @@ For each watermark image have found the minimal $\varepsilon$. This can give us 
   \caption{Notice the scale of the graphs, the $\ell_\infty$ values are much smaller then the $\ell_1$ values. As expected}
 \label{fig:minSingle}
 \end{figure}
-
 \begin{table}
 \resizebox{\linewidth}{!}{
 	\pgfplotstabletypeset[
@@ -272,19 +271,24 @@ For each watermark image have found the minimal $\varepsilon$. This can give us 
 \label{table:singleWatermark}
 \end{table}
 
+These results begs the question what is the nature of the change and how it differ between the method? Turns out that when minimizing the change according to $\ell_\infty$ (\ref{eq:LP}) the linear programming solver assign all the entries of $\varepsilon$ a small value. This translate to a change to every weight in the last layer which can explain the uniformity of the accuracy test. On th other hand the when minimizing the change according to $\ell_1$ (\ref{eq:NotLP}) the optimal change is to change only a single entry in $\varepsilon$ by a seemingly large value. So only one weight in the last layer is changed. See figure \ref{fig:lastLayerExampleSingle}
+\\
+ 
 
 
-\begin{figure}[h!]
-  \centering
+
+\begin{figure}
+\centering
   \begin{subfigure}{0.4\linewidth}
-    \includegraphics[width=\linewidth]{../data/results/problem3/last_layer_1_wm_example.pdf}
-     \caption{The Minimal $\norm{\cdot}_{\infty}$ for every watermark image}
+  \includegraphics[width=\linewidth]{../data/results/problem3/last_layer_1_wm_example.pdf}
+     \caption{The Minimal change according to $\ell_\infty$ for a single input}
   \end{subfigure}
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/results/problem2/last_layer_1_wm_example.pdf}
-    \caption{The Minimal $\norm{\cdot}_1$ for every watermark image}
+    \caption{The Minimal change according to $\ell_1$ for a single input}
   \end{subfigure}
-  \label{fig:lastLayerExample1}
+  \caption{Examples of the change to the last layer. Positive change is colored red and negative change is colored blue.}
+  \label{fig:lastLayerExampleSingle}
 \end{figure}
 
 
