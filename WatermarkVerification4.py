@@ -82,7 +82,7 @@ class WatermarkVerification4(WatermarkVerification):
         for i in range(outputVars.shape[0]):
             MarabouUtils.addInequality(network, [outputVars[i][preds[i][0]], outputVars[i][preds[i][1]]], [1, -1], 0)
         
-        options = Marabou.createOptions(numWorkers=6, dnc=True)
+        options = Marabou.createOptions(numWorkers=6, dnc=False)
         stats = network.solve(verbose=False, options=options)
         newOut = predIndices[:,1]
         if stats[0]:

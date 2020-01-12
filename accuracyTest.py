@@ -21,7 +21,7 @@ x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2],1
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2],1)
 wm_images = wm_images.reshape(wm_images.shape[0], wm_images.shape[1], wm_images.shape[2],1)
 
-for i in [0,1,2,3]:
+for i in [4]:
     out_file = open('./data/results/problem4/{}.{}.wm.accuracy.csv'.format(model_name, i), 'w')
     out_file.write('test-accuracy,test-loss,train-accuracy,train-loss,wm-accuracy,wm-loss\n')
     out_file.flush()
