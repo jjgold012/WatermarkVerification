@@ -43,8 +43,8 @@ def visualize(epsilons, title="figure 1"):
         print(np.min(weights))
         print(np.max(weights))
         maxWeight = np.max(np.abs(weights))
-        plt.figure(figsize=(3,9))
-        gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[29, 1]) 
+        plt.figure(figsize=(3,6))
+        gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[19, 1]) 
         plt.subplot(gs[0])
         # orange = mpl.cm.get_cmap('Oranges', 128)
         # blue = mpl.cm.get_cmap('Blues_r', 128)
@@ -52,7 +52,7 @@ def visualize(epsilons, title="figure 1"):
         #                     orange(np.linspace(0, 1, 127))))
         # # newcolors = newcolors + 0.01
         # colormap = mpl.colors.ListedColormap(newcolors, name='OrangeBlue')
-        colormap = mpl.cm.seismic
+        colormap = mpl.cm.RdYlBu_r
         nx.draw_networkx_nodes(nn, pos, nodelist=nodes,
                         node_size=sizes,
                         node_color='black',
@@ -66,7 +66,7 @@ def visualize(epsilons, title="figure 1"):
                         edge_vmax=maxWeight,
                         edge_color=weights,
                         edge_cmap=colormap,
-                        alpha=0.5,
+                        alpha=0.3,
                         linewidths=5,
                         width=1
                         )
@@ -78,9 +78,10 @@ def visualize(epsilons, title="figure 1"):
                                 # ticks=[np.around(i,3) for i in np.linspace(-maxWeight, maxWeight, 5)],
                                 ticks=np.around(np.array([np.fix(i) for i in np.linspace(-maxWeight*100, maxWeight*100, 5)])/100, 3),
                                 )
-        # plt.savefig('./data/results/problem3/last_layer_1_wm_example.pdf', format='pdf')
+        plt.savefig('./data/results/problem3/last_layer_1_wm_example.pdf', format='pdf')
         plt.show()
 
-epsilons = np.load('./data/results/problem3/mnist.w.wm.3.wm.vals.npy')
+epsilons = np.load('./data/results/problem3/mnist.w.wm.1.wm.vals.npy')
+# epsilons = np.load('./data/results/problem2/mnist.w.wm.vals.npy')
 
-visualize(epsilons[5])
+visualize(epsilons[0])

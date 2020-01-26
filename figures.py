@@ -51,24 +51,25 @@ from csv import DictReader, DictWriter
 model_name = 'mnist.w.wm'
 vals_epsilon = {}
 vals_acc = {}
-x = [0,1,2,3,4,5,6,7,25,50,75,100]
+# x = [0,1,2,3,4,5,6,7,25,50,75,100]
 # x = [1,2,3,4,5,6,7,25,50,75,100]
 # x = [0,1,2,3,4,5,6,7]
 # x = [1,2,3,4,5,6,7]
+x = [0,1,2,3,4]
 x_str = ','.join(map(str, x))
 
-out_file = open('./data/results/problem3/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
+out_file = open('./data/results/problem4/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
 out_file.write('Number of watermarks,Avrg change,Min change,Max change,Avrg acc,Min acc,Max acc\n')
 
 for i in x:
-    datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))
+    datafile = open('./data/results/problem4/{}.{}.wm.accuracy.csv'.format(model_name, i))
     file_reader = DictReader(datafile)
     vals_acc[i] = np.array([float(line['test-accuracy']) for line in file_reader])
     datafile.close()
     if i == 0:
         vals_epsilon[i] = 0
     else:
-        datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
+        datafile = open('./data/results/problem4/{}.{}.wm.csv'.format(model_name, i))
         file_reader = DictReader(datafile)
         vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
         datafile.close()
