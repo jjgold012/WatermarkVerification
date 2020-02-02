@@ -38,23 +38,23 @@
 
 \begin{document}
 
-
 \title{Verifying the Resilience of Neural Network Watermarking}
 
 \author{
-  Ben Goldberger\inst{1} \and
-  Yossi Adi\inst{2} \and
-  Joseph Keshet\inst{2} \and
-  Guy Katz\inst{1} 
+Ben Goldberger\inst{1} \and
+Yossi Adi\inst{2} \and
+Joseph Keshet\inst{2} \and
+Guy Katz\inst{1}
 }
-
 \institute{
-  The Hebrew University of Jerusalem, Israel \\
+The Hebrew University of Jerusalem, Israel \\
   \{jjgold, guykatz\}@cs.huji.ac.il
   \and
 Bar Ilan University, Israel \\
 \{a, b\}@biu.ac.il
 }
+\authorrunning{Goldberger, Adi, Keshet and Katz}
+\titlerunning{Verifying the Resilience of Neural Network Watermarking}
 
 \maketitle
 
@@ -155,7 +155,7 @@ For the context of this work we're only dealing with classification neural netwo
 \subsection{Verifying Neural Networks}
 
 DNN verification answers the following question: Given a neural network $N$ and two predicates $P,Q$ such that $P$ encodes the constraint on the input to the network $x$ and $Q$ encodes the constraint on the output $y$. We ask if there exist some input $x_0$ and as a result the output of the network $y_0=N\bracketsR{x_0}$, such that $P\bracketsR{x_0}=True$ and $Q\bracketsR{y_0}=True$.
-In this work we're verifying properties of the network a bit differently. Instead of searching an input that answer certain constraints, the input is fixed and we're allowing changes the the network. So the verification question looks like this: Given a neural network $N$ and two predicates $P,Q$ such that $P$ encodes the constraint on the changes to the network $\varepsilon$ and $Q$ encodes the constraint on the output $y$. We ask if there exist $\varepsilon_0$ and as a result the new network $N'$ and new output $y_0=N'\bracketsR{x_0}$, such that $P\bracketsR{\varepsilon_0}=True$ and $Q\bracketsR{y_0}=True$.  
+In this work we're verifying properties of the network a bit differently. Instead of searching an input that answer certain constraints, the input is fixed and we're allowing changes the the network. So the verification question looks like this: Given a neural network $N$ and two predicates $P,Q$ such that $P$ encodes the constraint on the changes to the network $\varepsilon$ and $Q$ encodes the constraint on the output $y$. We ask if there exist $\varepsilon$ and as a result the new network $N'=N+\varepsilon$ and new output $y_0=N'\bracketsR{x_0}$, such that $P\bracketsR{\varepsilon_0}=True$ and $Q\bracketsR{y_0}=True$.  
 \cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}
 
 \section{Changes to the network as minimization problem}
@@ -355,7 +355,7 @@ These results begs the question what is the nature of the change and how it diff
   \label{fig:lastLayerExampleSingle}
 \end{figure}
 
-The result of removing a single watermark shows us that the minimal change according to $\ell_\infty$ is changing the network in a broad way and according to the $\ell_1$ norm the change is local, but then not all watermarks are "equal", some are harder to remove and are easy (as seen in the accuracy test \ref{table:singleWatermark}).
+The result of removing a single watermark shows us that the minimal change according to $\ell_\infty$ is changing the network in a broad way and according to the $\ell_1$ norm the change is local, but then not all watermarks are "equal", some are harder to remove and some are easy (as seen in the accuracy test \ref{table:singleWatermark}).
 
 \subsection{Removing Multiple watermark}
 
