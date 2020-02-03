@@ -66,9 +66,17 @@ Deep Neural Networks (DNN) seems to be everywhere nowadays both in research and 
 
 Because of the success of DNNs and because designing and training a DNN require certain expertise, time and processing power, the demand for a specifically designed DNN is growing, and Machine Learning as a Service (MLaaS) is now a thing. There are many machine learning services appearing in many forms, from data visualization and cloud computing to frameworks and semi-trained DNN's. This create some issues regarding the rights and ownership of some part of a trained network or design. Because of the relatively simple components of a DNN (Matrices, vectors and simple functions) it's quite easy to copy or use without permission.
 
+\guy{make this more general. people need to make minimal changes to
+  DNNs for multiple reasons. Verification can help address this
+  need. (Not just watermarks)}
+
 In order to deal with such issues we need a way to authenticate a DNN. This may sound simple but the authentication needs to be robust, such that it's hard to remove. Here comes the concept of Digital Watermarking, a way of signing some Digital property such that it's hard to remove the signature, and said signature is unique. There are some proposed method of watermarking a DNN, but it's unclear how effective they are, meaning how difficult it is to remove the watermark from the DNN and what is the effect of removing the watermark.
 
 Formal verification of DNN's is a new and promising field. We propose a novel methodology to use verification to measure and verify the robustness of a certain watermarking techniques. This method may me applicable to other verification problems that are not necessarily watermark related such as network correction, meaning we're given a network and a counter example for some desired property of the network. We're interested to find a "Fix" such that the counter example will no longer exist.
+
+\guy{Add text about our approach: we implemented in bla bla, worked on
+  benchmarks from bla, and obtained amazing results summarized here:
+  bla.}
 
 The rest of this paper is organized as follows. In
 Section~\ref{sec:background} we provide the necessary background on DNN's, watermarking, and DNN verification. Next, in
@@ -261,11 +269,11 @@ Similarly for the $\ell_1$ norm the minimization problem looks like that:
 \end{split}
 \end{equation}
 
-\guy{Overall, this looks good. Some stuff will need to be moved to other
-sections according to the paper layout.}
-
 \section{Methods}
 \label{sec:methods}
+
+\guy{In this section, explain how the stuff from section 3 can be
+  applied to watermarks and network corrections}
 
 As seen in the previous section we have in our hands a minimization problem. One minimization is according to $\ell_\infty$ norm and the other is according to $\ell_a$ norm.
 For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using the Gurobi linear programming solver. Gurobi has a well known LP solver that is capable of solving relatively large scale problems.
@@ -355,7 +363,7 @@ These results begs the question what is the nature of the change and how it diff
   \label{fig:lastLayerExampleSingle}
 \end{figure}
 
-The result of removing a single watermark shows us that the minimal change according to $\ell_\infty$ is changing the network in a broad way and according to the $\ell_1$ norm the change is local, but then not all watermarks are "equal", some are harder to remove and some are easy (as seen in the accuracy test \ref{table:singleWatermark}).
+The result of removing a single watermark shows us that the minimal change according to $\ell_\infty$ is changing the network in a broad way and according to the $\ell_1$ norm the change is local, but then not all watermarks are ``equal'', some are harder to remove and some are easy (as seen in the accuracy test \ref{table:singleWatermark}).
 
 \subsection{Removing Multiple watermark}
 
@@ -397,12 +405,19 @@ While running the problems on multiple watermarks the linear problem that we sol
 \end{table}
 
 
+\guy{add text about network correction}
+\guy{analyze the tables in the text, explain the interesting findings}
+
 \section{Related Work}
 \label{sec:relatedWork}
 
+\guy{finish these two sections. In related work, talk about DNN
+  verification, about network correction, and about watermarks. 3
+  paragraphs, one for each topic. For dnn verification stuff you can look at
+  other recent papers (yuval, yizhak, etc).}
+
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
-
 
 \bibliographystyle{abbrv}
 \bibliography{watermarks}
