@@ -64,7 +64,7 @@ Bar Ilan University, Israel \\
 
 Deep Neural Networks (DNN) seems to be everywhere nowadays both in research and in  the Industry; They're used for large verity of applications, and achieving state of the art result in many fields (Computer vision, speech recognition, AI, and many more). DNNs flexibility and diversity are pushing the limits on what is possible for a computer to solve efficiently. As a result from their empiric success DNNs are now changing the way software is being designed, and broaden the role of Machine Learning trained functions in applications.
 
-Because of the success of DNNs and because designing and training a DNN require certain expertise, time and processing power, the demand for a specifically designed DNN is growing, and Machine Learning as a Service (MLaaS) is now a thing. There are many machine learning services appearing in many forms, from data visualization and cloud computing to frameworks and semi-trained DNN's. This create some issues regarding the rights and ownership of some part of a trained network or design. Because of the relatively simple components of a DNN (Matrices, vectors and simple functions) it's quite easy to copy or use without permission.
+Because DNNs are not completely understood there are certain issues that could arise, for example a DNN might be faulty, i.e the DNN may behave differently then expected, and it require fixing. Designing and training a DNN require certain expertise, time and processing power, so we might be interested in finding a small fix that will amend a specific problem without changing to much of the original DNN. Fixing a DNN can be very useful for other applications, such as changing the purpose of a pre-trained DNN. Another application of changing an existing DNN that we focused on is the removal of watermarks from the DNN. Due to the increasing demand for a specifically designed DNN, Machine Learning as a Service (MLaaS) is now a thing. There are many machine learning services appearing in many forms, from data visualization and cloud computing to frameworks and semi-trained DNN's. This create some issues regarding the rights and ownership of some part of a trained network or design. Because of the relatively simple components of a DNN (Matrices, vectors and simple functions) it's quite easy to copy or use without permission.
 
 \guy{make this more general. people need to make minimal changes to
   DNNs for multiple reasons. Verification can help address this
@@ -72,7 +72,7 @@ Because of the success of DNNs and because designing and training a DNN require 
 
 In order to deal with such issues we need a way to authenticate a DNN. This may sound simple but the authentication needs to be robust, such that it's hard to remove. Here comes the concept of Digital Watermarking, a way of signing some Digital property such that it's hard to remove the signature, and said signature is unique. There are some proposed method of watermarking a DNN, but it's unclear how effective they are, meaning how difficult it is to remove the watermark from the DNN and what is the effect of removing the watermark.
 
-Formal verification of DNN's is a new and promising field. We propose a novel methodology to use verification to measure and verify the robustness of a certain watermarking techniques. This method may me applicable to other verification problems that are not necessarily watermark related such as network correction, meaning we're given a network and a counter example for some desired property of the network. We're interested to find a "Fix" such that the counter example will no longer exist.
+Formal verification of DNN's is a new and promising field. We propose a novel methodology to use verification to measure and verify the robustness of a certain watermarking techniques. This method may me applicable to other verification problems that are not necessarily watermark related such as network correction, meaning we're given a network and a counter example for some desired property of the network. We're interested to find a ``Fix'' such that the counter example will no longer exist.
 
 \guy{Add text about our approach: we implemented in bla bla, worked on
   benchmarks from bla, and obtained amazing results summarized here:
@@ -169,15 +169,15 @@ In this work we're verifying properties of the network a bit differently. Instea
 \section{Changes to the network as minimization problem}
 \label{sec:minimizationProblem}
 
-Looking at a trained neural network we're interested to find the minimal change to the network in order to "change" the prediction of a specific input. We'll look at changes only to the last layer of the network.
+Looking at a trained neural network we're interested to find the minimal change to the network such that the prediction of a specific input will change . We'll look at changes only to the last layer of the network.
 \\\\
-Given a trained network $N$ and a set of $K$ inputs $\bracketsC{x_1,\cdots,x_K}$ we'll mark the network last layer matrix $L$ such that $L$ is a $m\times n$ matrix were $n$ is the layer's number of neurons and $m$ is the network output size. The change to the last layer will be a matrix with the same dimension as $L$ we'll mark as $\varepsilon$, such that $\varepsilon_{i,j}$ is the change to the last layer matrix entry $L_{i,j}$. 
+Given a trained network $N$ we'll mark the network last layer matrix $L$ such that $L$ is a $m\times n$ matrix were $n$ is the layer's number of neurons and $m$ is the network output size. The change to the last layer will mark as $\varepsilon$ is a matrix with the same dimension as $L$, such that $\varepsilon_{i,j}$ is the change to the last layer matrix entry $L_{i,j}$. 
 
 \subsection{Defining the problem for single input}
 \label{sec:defineProblem1}
 
 
-For a certain input $x$ we're only interested in the input to the last layer we'll mark the input to the last layer $v$. $v$ is a $n\times 1$
+For a specific input $x$ we're interested in the input to the last layer, i.e the vector that will be multiplied by the last matrix $L$, we'll mark the input to the last layer $v$. $v$ is a $n\times 1$
 vector.  So the original network output $y = Lv$ and the changed
 network output is $y' = (L+\varepsilon)v$.
 \\\\
@@ -230,7 +230,7 @@ Similarly for the $\ell_1$ norm (\ref{eq:normOne}) the minimization problem look
 	\intertext{Variables are the entries in $\varepsilon,y'$ and $M$}
 \end{split}
 \end{equation}
-\subsection{Defining the problem for many inputs}
+\subsection{Defining the problem for multiple inputs}
 \label{sec:defineProblem2}
 
 Our definition to a single input minimal change $\varepsilon$ to the network last layer $L$ can be extended to more then one input very easily by adding more constraint to the problem.
@@ -275,8 +275,14 @@ Similarly for the $\ell_1$ norm the minimization problem looks like that:
 \guy{In this section, explain how the stuff from section 3 can be
   applied to watermarks and network corrections}
 
+As seen in the previous section we have in our hands a minimization problem. One minimization is according to $\ell_\infty$ norm and the other is according to $\ell_a$ norm. In this section we'll show how to convert different problems to the type of minimization problem that was described in the previous section \ref{sec:minimizationProblem}
+
+\subsection{Watermarked neural networks}
+A watermarked neural network is a neural network that was trained with a set of inputs and their desired outputs such that the network will still function properly on the task it meant to do, and the output of the network on the set of inputs is as desired (The desired output can be irrelevant to the network task) \cite{AdBaPiKeWatermarking} \cite{GuDoSiBadNet}
+Given a trained network $N$ and a set of $K$ inputs $\bracketsC{x_1,\cdots,x_K}$
+
 As seen in the previous section we have in our hands a minimization problem. One minimization is according to $\ell_\infty$ norm and the other is according to $\ell_a$ norm.
-For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using the Gurobi linear programming solver. Gurobi has a well known LP solver that is capable of solving relatively large scale problems.
+For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using a linear programming solver.
 On the other hand $\ell_1$ norm minimization problems (\ref{eq:NotLP}) (\ref{eq:NotLPmany}) have non linear constraint so a linear programming solver is not enough. Instead we used Marabou which is a verification tool for neural networks that support piecewise-linear activation functions, Marabou can supply a feasible solution to a set of piecewise-linear constraints so combined with the interval halving method we can find the minimal change for the $\ell_1$ case as well. 
 \\\\
 
@@ -367,7 +373,7 @@ The result of removing a single watermark shows us that the minimal change accor
 
 \subsection{Removing Multiple watermark}
 
-As described above the removal of watermarks can be generalized to many watermarks (\ref{eq:LPmany}) (\ref{eq:NotLPmany}). We trested the same MNIST digits classifying network that is signed with 100 watermark.
+As described above the removal of watermarks can be generalized to multiple watermarks (\ref{eq:LPmany}) (\ref{eq:NotLPmany}). We tested the same MNIST digits classifying network that is signed with 100 watermark.
 \\
 While running the problems on multiple watermarks the linear problem that we solved using the Gurobi solver had no issues with scalability and we where able to find the change that fits to as many watermarks as we want, on the other hand the non-linear problem had some issues with scalability so we where able to find the change that fits to up to $5$ watermarks.
 
