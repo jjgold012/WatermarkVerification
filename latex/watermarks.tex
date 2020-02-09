@@ -10,6 +10,15 @@
 \usepackage{pgfplotstable}
 \usepackage{tabularx}
 \usepackage{tikz}
+\usepackage{xspace}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand{\relu}{\text{ReLU}\xspace{}}
+
+\newcommand{\sat}{\texttt{SAT}}
+\newcommand{\unsat}{\texttt{UNSAT}}
 
 \sisetup{
   round-mode          = places, 
@@ -161,7 +170,16 @@ and conclude in Section~\ref{sec:conclusion}.
 \label{sec:background}
 
 \subsection{Neural Networks}
-\begin{figure}
+A deep neural network is comprised of an input layer, an output layer,
+and multiple hidden layers in between. Each layer consists of multiple
+nodes (also called neurons), each of which is connected to nodes from
+the preceding layer. Each edge that connects two neurons is assigned a
+predetermined weight (see Fig.~\ref{fig:dnnExample}). Weight selection
+is performed during the DNN's training phase, which is beyond our
+scope here --- see, e.g.,~\cite{FoBeCu16}. 
+
+
+\begin{figure}[htp]
 \centering
 \scalebox{0.7}{
 \def\layersep{2.5cm}
@@ -210,97 +228,205 @@ and conclude in Section~\ref{sec:conclusion}.
     \node[annot,right of=hlb] {Output layer};
 \end{tikzpicture}
 }
-\caption{Example of a simple fully connected Deep Neural Network with an input layer of size $4$ two hidden layers of size $5$ and an output of size $3$.}
+\caption{An example of a simple deep neural network. The network has
+  an input layer of size $4$, two hidden layers of size $5$ each, and an
+  output layer of size $3$. The edge weights are omitted.}
+\label{fig:dnnExample}
 \end{figure}
 
-A neural network is a function that receive an input vector and returns an output vector. There are many types a architectures of neural networks.
+The neural network is evaluated by assigning values to the input
+nodes, and then iteratively propagating these values through the
+network, computing the values of additional layers one at a
+time. Eventually, the values of the output layer are computed, and
+these constitute the network's output.  The value of each hidden node
+in the network is computed by calculating a weighted sum of node
+values from the previous layers, and then applying a non-linear
+\emph{activation function}~\cite{FoBeCu16}.  For simplicity, we focus
+here on the Rectified Linear Unit (ReLU) activation
+function~\cite{NaHi10} (although our technique is directly applicable
+to additional functions as well).  When the ReLU activation function,
+$\relu{}(x) = \max{}(0, x)$, is applied to a node, its value is
+computed as the maximum between $0$ and the weighted sum computed from
+the previous layer.
 
-To keep things simple we'll only describe the way a feed forward fully connected network calculate an output from a given input. A feed forward fully connected network is constructed from a bunch of layers $l_1,\cdots, l_k$, $l_1$ is the input layer and $l_k$ is the output later, and an activation function (we're interested in the ReLU activation function). Each layer has a certain number of nodes, $l_1$ $l_k$ number of nodes is determine by the size of the input and output. Between two adjacent layers $l_i$ $l_{i+1}$ the values of nodes in $l_{i+1}$ is calculated by multiplying the values of $l_i$ by a weights matrix $L_i$ of size $n\times m$ where $n$ and $m$ are the number of nodes in $l_{i+1}$ and $l_i$ respectively. After applying the weights matrix we add a bias vector and apply the activation function, in our case the ReLU activation function, the resulting vector is of size $n$ and it holds the values of the $l_{i+1}$ nodes.
-\\
-\begin{align*}
-\intertext{for a single value $x$}
-ReLU\bracketsR{x}&=max\bracketsR{0,x}
-\intertext{and for a vector $\overrightarrow{v}$}
-ReLU\bracketsR{\overrightarrow{v}}_i&=max\bracketsR{0,v_i}
-\end{align*}
-\\
-So basically a feed forward fully connected network with $k$ layers is defined by a set of $k-1$ matrices $L_1,\cdots,L_{k-1}$ and $k-1$ biases vectors $B_1,\cdot,B_{k-1}$ and for a given input $x$ an output vector $y$ is produced like that:
-\begin{equation}
-y=B_{k-1}+L_{k-1}\cdot ReLU\bracketsR{\cdots B_3+L_3\cdot ReLU\bracketsR{B_2+L_2\cdot ReLU\bracketsR{B_1+L_1\cdot x}}\cdots}
-\end{equation}
+More formally, let $N$ denote a DNN. we
+denote the number of layers in $N$ by $n$, and $s_i$ use to denote the
+dimension of layer $i$ (i.e., the number of neurons that it contains).
+Layer $1$ is the input layer, layer $n$ is the output layer, and
+layers $2,\ldots,n-1$ are the hidden layers.
+We use $v_{i,j}$  to denote the value of the $j$'th node of layer $i$,
+and use $V_i$ to denote the column vector $[v_{i,1},\ldots,v_{i,s_i}]^T$.
+When evaluating $N$ we are given $V_1$, and need to compute $V_n$.
+This computation 
+performed by using the predefined weights and biases to compute the
+layer assignments one by one, each time applying the activation
+functions (ReLUs, in our case) to each node. Each layer $2\leq i\leq
+n$
+is associated
+with a 
+weight matrix $W_i$ of size $s_{i}\times s_{i-1}$, and also a bias vector $B_i$ of size
+$s_i$.
+Each hidden layer ($2\leq i \leq n-1$) 
+is computed as
+\[
+V_i = \relu{}(W_i  V_{i-1} + B_i),
+\]
+with the ReLU
+function being applied element-wise.
+This rule is applied repeatedly for each layer until $V_{n-1}$ is
+calculated.
+The final, output layer is
+computed similarly, but without an activation function:
+\[
+  V_n = W_i  V_{n-1} + B_n
+\]
+For simplicity, in the rest of the paper we assume that
+the bias vector $B_i$ is always $0$.
 
-For the context of this work we're only dealing with classification neural networks. For these kind of networks the output layer size usually correspond to the number of possible classifications, and each entry in the output vector correspond to the score of a specific classification.  
+DNNs are often used as \emph{classifiers}, assigning to each input a
+label from a finite set of possible labels $L=\{l_1,\ldots,l_{s_n}\}$. In this case, each neuron
+in the output layer corresponds to one possible label, and the label
+whose neuron is assigned the highest value is the label to which the
+input is classified. Thus, an input $V_1$ is classified to label $l_i$
+if and only if $v_{n,i}>v_{n,j}$ for every $j\neq i$ (draws are
+resolved arbitrarily). We sometimes use the alternative phrasing,
+\[
+  N(V_1) = \argmax_{1\leq i\leq s_n}\{v_{n,i}\}
+\]
+A small, running example appears in Fig.~\ref{fig:toyExample}.
+\guy{TODO: Ben, please add a toy example, also to serve as our running
+  example throughout the paper}
 
-\subsection{Verifying Neural Networks}
+\subsection{Neural Network Verification}
 
-DNN verification answers the following question: Given a neural network $N$ and two predicates $P,Q$ such that $P$ encodes the constraint on the input to the network $x$ and $Q$ encodes the constraint on the output $y$. We ask if there exist some input $x_0$ and as a result the output of the network $y_0=N\bracketsR{x_0}$, such that $P\bracketsR{x_0}=True$ and $Q\bracketsR{y_0}=True$.
-In this work we're verifying properties of the network a bit differently. Instead of searching an input that answer certain constraints, the input is fixed and we're allowing changes the the network. So the verification question looks like this: Given a neural network $N$ and two predicates $P,Q$ such that $P$ encodes the constraint on the changes to the network $\varepsilon$ and $Q$ encodes the constraint on the output $y$. We ask if there exist $\varepsilon$ and as a result the new network $N'=N+\varepsilon$ and new output $y_0=N'\bracketsR{x_0}$, such that $P\bracketsR{\varepsilon_0}=True$ and $Q\bracketsR{y_0}=True$.  
-\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}
 
-\section{Changes to the network as minimization problem}
+Let $N$ denote a neural network $N$, and let $P,Q$ denote predicates
+that encodes some constraints DNN's inputs and outputs, respectively.
+\emph{DNN verification} is a field that seeks to answer the question:
+does there exist an input $x$ to the DNN such that $P(x)$ and
+$Q(N(x))$ both hold, where $N(x)$ represents the network's output when
+evaluated on input $x$. Typically, $P$ encodes a set of inputs of
+interest, whereas $Q$ encodes the \emph{negation} of a desired
+property. If the verification query is \unsat{}, i.e. no such input
+$x$ exists, then the desired property is said to hold. Otherwise, the
+verification tool returns a concrete counter-example $x_0$ for which
+the property in question is violated.
+
+
+Recently there have been multiple tools and approaches suggested for
+solving the DNN verification problem: these include Satisfiabiltiy
+Modulo Theories (SMT) based
+techniques~\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou},
+approaches based on mixed integer linear
+programming~\cite{Ehlers2017,TjXiTe19}, abstract interpretation based
+techniques~\cite{GeMiDrTsChVe18}, and many others
+(e.g.,~\cite{HuKwWaWu17,NaKaRySaWa17}. The problem is known to be a
+difficult one, and has been shown to be NP-complete even when
+restricted to simple cases~\cite{KaBaDiJuKo17Reluplex} (networks with piecewise-linear activation
+functions, and properties $P$ and $Q$ that are conjunctions of linear constraints).
+
+
+\section{DNN Alteration as a Verification Problem}
 \label{sec:minimizationProblem}
 
-Looking at a trained neural network we're interested to find the minimal change to the network such that the prediction of a specific input will change . We'll look at changes only to the last layer of the network.
-\\\\
-Given a trained network $N$ we'll mark the network last layer matrix $L$ such that $L$ is a $m\times n$ matrix were $n$ is the layer's number of neurons and $m$ is the network output size. The change to the last layer will mark as $\varepsilon$ is a matrix with the same dimension as $L$, such that $\varepsilon_{i,j}$ is the change to the last layer matrix entry $L_{i,j}$. 
+\guy{TODO: first paragraph moved here from previous section. Integrate
+  it better}
+In this
+work we're verifying properties of the network a bit
+differently. Instead of searching an input that answer certain
+constraints, the input is fixed and we're allowing changes the the
+network. So the verification question looks like this: Given a neural
+network $N$ and two predicates $P,Q$ such that $P$ encodes the
+constraint on the changes to the network $\varepsilon$ and $Q$ encodes
+the constraint on the output $y$. We ask if there exist $\varepsilon$
+and as a result the new network $N'=N+\varepsilon$ and new output
+$y_0=N'\bracketsR{x_0}$, such that $P\bracketsR{\varepsilon_0}=True$
+and $Q\bracketsR{y_0}=True$.
+\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}
 
-\subsection{Defining the problem for single input}
+In DNN verification approaches to date, the DNN $N$ is fixed, and an input
+$x$ that satisfies certain properties is sought. Here, we take a different
+view: for a \emph{fixed input} $x_0$, we seek an alteration to the DNN
+itself that will result in $x_0$ being assigned a different label. We
+may wish to impose certain restrictions on the change to the DNN ---
+for example, that it be a minimal change with respect to some
+measure. 
+
+\guy{To think if we really need to restrict this to the last layer}
+For simplicity, we restrict ourselves to changes to specific layer of
+the DNN. Let $N$ denote a DNN with $k$ layers, and let $i$ be a specific hidden layer index
+$2\leq i\leq k-1$. Let $L$ denote the $m\times n$ weight matrix that connects the nodes of layer
+$i$ to that of the following layer. We express the change to the DNN
+as a matrix $\varepsilon$ with the same dimensions as $L$. We seek to
+create a modified network, $N'$, that is identical to $N$ except that
+matrix $L$ is replaced with the matrix $L+\varepsilon$.
+
+\subsection{Changing the Classification of a Single Input}
 \label{sec:defineProblem1}
 
+In the watermark problem, we typically have a set of inputs $X=\{x_1,
+x_2, \ldots, x_k\}$ with certain classifications
+$N(x_1),\ldots,N(x_k)$. We are interested in finding the minimal
+change to a DNN $N$ that will remove these watermarks, i.e. change the
+classification of the points in $X$. We begin by addressing the case
+where $X$ contains a single point $x$, and later expend the discussion
+to the more general case.
 
-For a specific input $x$ we're interested in the input to the last layer, i.e the vector that will be multiplied by the last matrix $L$, we'll mark the input to the last layer $v$. $v$ is a $n\times 1$
-vector.  So the original network output $y = Lv$ and the changed
-network output is $y' = (L+\varepsilon)v$.
-\\\\
-For a single input $x$ we denote the original network prediction:
-$$
+Observe the input $x$, and observe the prefix of the DNN up to layer
+$i-1$. This part of the network is not to be changed; and so, we
+evaluate these layers for input $x$, obtaining an assignment for layer
+$i$. Denote this assignment vector as $v$; then the output of the
+original network is $y=Lv$. The output of the changed network,
+however, will be $y'=(L+\varepsilon)v$.
+
+We denote the prediction of the original network as 
+\[
    	d_x := argmax_{i\in \bracketsS{m}}\bracketsC{y_i}
-$$
+\]
 And the changed network prediction:
-$$
+\[
    	d'_x := argmax_{i\in \bracketsS{m}}\bracketsC{y'_i}
-$$
-\\
-We're interested to find the minimal change to the last layer $\varepsilon$  so that the prediction will change i.e. $d_x\neq d'_x$
-\\\\
-Well measure the overall change to the layer in two ways
+\]
+And we seek a change $\varepsilon$ to the last layer so that the prediction changes, i.e. $d_x\neq d'_x$.
+
+As previously mentioned, we seek a minimal $\varepsilon$ for which the
+label of $x$ changes. As a measure of minimality, we adopt two norms
+that are commonly used in the DNN community: the $L_\infty$ and $L_1$
+norms. Specifically, 
 \begin{equation}
 \label{eq:normInf}
-	\begin{split}
-   		\norm{\varepsilon}_{\infty}=max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}.
-	\end{split}
+   		\norm{\varepsilon}_{\infty}=max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}
 \end{equation}
 And
 \begin{equation}
 \label{eq:normOne}
-	\begin{split}
    		\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}.
-	\end{split}
 \end{equation}
-\\
-For the $\ell_\infty$ norm (\ref{eq:normInf}) with a chosen $d'_x$ that is different from $d_x$ the minimization problem looks like that:
-\begin{equation}
+
+When the $\ell_\infty$ norm (\ref{eq:normInf}) is in use, the
+aforementioned requirements give rise to a linear programming
+minimization problem''
+\begin{align*}
 \label{eq:LP}
-\begin{split}
     Minimize:\quad & M \\
     Subject\ to:\quad & \forall i,j\quad -M \leq\varepsilon_{i,j}\leq M \\
     & y'=(L+\varepsilon)v \\
     & y'_{d_x} \leq y'_{d'_x} \\
-	\intertext{Variables are the entries in $\varepsilon,y'$ and $M$}
-\end{split}
-\end{equation}
-\\\\
-Similarly for the $\ell_1$ norm (\ref{eq:normOne}) the minimization problem looks like that:
-\begin{equation}
+\end{align*}
+
+Where the variables are the entries in $\varepsilon,y'$ and $M$.
+For the $\ell_1$ norm (\ref{eq:normOne}), the minimization problem becomes:
+\begin{eqnarray*}
 \label{eq:NotLP}
-\begin{split}
     Minimize:\quad & M \\
     Subject\ to:\quad & \forall i,j\quad -M \leq\sum_{i,j}\abs{\varepsilon_{i,j}}\leq M \\
     & y'=(L+\varepsilon)v \\
     & y'_{d_x} \leq y'_{d'_x} \\
-	\intertext{Variables are the entries in $\varepsilon,y'$ and $M$}
-\end{split}
-\end{equation}
+\end{eqnarray*}
+
+Where the variables are the entries in $\varepsilon,y'$ and $M$.
+
+        
 \subsection{Defining the problem for multiple inputs}
 \label{sec:defineProblem2}
 
