@@ -1,4 +1,4 @@
-\documentclass[a4paper]{easychair}
+\documentclass{easychair}
 
 \usepackage{xcolor}
 \usepackage{amsmath} 
@@ -39,7 +39,6 @@
 \begin{document}
 
 \title{Verifying the Resilience of Neural Network Watermarking}
-
 \author{
 Ben Goldberger\inst{1} \and
 Yossi Adi\inst{2} \and
@@ -50,39 +49,112 @@ Guy Katz\inst{1}
 The Hebrew University of Jerusalem, Israel \\
   \{jjgold, guykatz\}@cs.huji.ac.il
   \and
-Bar Ilan University, Israel \\
-\{a, b\}@biu.ac.il
+  Bar Ilan University, Israel \\
+  yossiadidrum@gmail.com, jkeshet@cs.biu.ac.il
 }
 \authorrunning{Goldberger, Adi, Keshet and Katz}
 \titlerunning{Verifying the Resilience of Neural Network Watermarking}
 
 \maketitle
 
+%% Length: 15 pages
+
+\begin{abstract}
+   Add abstract here.
+ \end{abstract}
+
+
 \section{Introduction}
 
-% Each of these should be extended into 1-2 paragraphs
+\guy{Should we make the title more general? E.g., something like
+  ``Fine-Tuning of Deep Neural Networks using Verification''}
 
-Deep Neural Networks (DNN) seems to be everywhere nowadays both in research and in  the Industry; They're used for large verity of applications, and achieving state of the art result in many fields (Computer vision, speech recognition, AI, and many more). DNNs flexibility and diversity are pushing the limits on what is possible for a computer to solve efficiently. As a result from their empiric success DNNs are now changing the way software is being designed, and broaden the role of Machine Learning trained functions in applications.
 
-Because of the success of DNNs and because designing and training a DNN require certain expertise, time and processing power, the demand for a specifically designed DNN is growing, and Machine Learning as a Service (MLaaS) is now a thing. There are many machine learning services appearing in many forms, from data visualization and cloud computing to frameworks and semi-trained DNN's. This create some issues regarding the rights and ownership of some part of a trained network or design. Because of the relatively simple components of a DNN (Matrices, vectors and simple functions) it's quite easy to copy or use without permission.
+\emph{Deep Neural Networks} (\emph{DNN}) are quickly becoming the
+state of the art in many domains in computer science.  In fields such
+as computer vision, speech recognition, AI, and many others, DNNs
+repeatedly demonstrate excellent performance, often matching or even
+surpassing other solutions.  As a result of their empiric success,
+DNNs are changing the way software is being designed, and are rapidly
+being adopted by users in academia and industry.
 
-\guy{make this more general. people need to make minimal changes to
-  DNNs for multiple reasons. Verification can help address this
-  need. (Not just watermarks)}
+Along with the increasing pervasiveness of DNNs, there is a growing
+need for techniques to (\emph{train}) them efficiently. Unfortunately,
+training modern DNNs is far from trivial, often requiring certain
+expertise, as well as considerable computing resources. The increasing
+demand for specifically designed DNNs has thus given rise to a
+\emph{Machine Learning as a Service} (\emph{MLaaS}) paradigm, where
+almost-fully-trained DNNs are released by vendors, and clients can
+then fine-tune these DNNs to their own needs. This paradigm lets users
+enjoy the best of both worlds --- an effective, DNN-based solution,
+that can be created using a more reasonable amount of resources.
 
-In order to deal with such issues we need a way to authenticate a DNN. This may sound simple but the authentication needs to be robust, such that it's hard to remove. Here comes the concept of Digital Watermarking, a way of signing some Digital property such that it's hard to remove the signature, and said signature is unique. There are some proposed method of watermarking a DNN, but it's unclear how effective they are, meaning how difficult it is to remove the watermark from the DNN and what is the effect of removing the watermark.
+The MLaaS paradigm holds great potential, but raises two issues that
+must be addressed: \emph{authentication of ownership}, and
+\emph{minimality of changes}.
 
-Formal verification of DNN's is a new and promising field. We propose a novel methodology to use verification to measure and verify the robustness of a certain watermarking techniques. This method may me applicable to other verification problems that are not necessarily watermark related such as network correction, meaning we're given a network and a counter example for some desired property of the network. We're interested to find a "Fix" such that the counter example will no longer exist.
+\medskip\noindent
+\textbf{Authentication of Ownership.}
+When vendors allow clients access to an almost-fully-trained network,
+they are typically interested in collecting fees and royalties from
+each client. This business model compensates the vendor for designing
+and training the network, which are not simple tasks. In order to
+accomplish this, vendors now seek to imprint their DNNs with
+\emph{watermarks}; i.e., to train the DNN in a specific way, such that
+when presented with secret, specific inputs the DNN will react in an
+unexpected way. Watermarking networks thus gives vendors a way to
+recognize, and then claim ownership, over the networks they had
+trained.
 
-\guy{Add text about our approach: we implemented in bla bla, worked on
-  benchmarks from bla, and obtained amazing results summarized here:
-  bla.}
+DNN watermarking holds promise, but raises a concern: if users are
+expected to make modifications to the DNN in order to adjust it to
+their needs, could they (accidentally or intentionally) remove the
+watermarks? In order to address this concern, we require techniques
+for generating \emph{resilient watermarks}, i.e. watermarks that are
+difficult to remove without damaging the functionality of the DNN in
+question.
+
+\medskip\noindent \textbf{Minimality of Changes.}
+Modifying an already-trained DNN is a complex task. Typically, a user
+would wish to maintain most of the DNN's existing behavior, while
+making a small change to its behavior for certain inputs. This task is
+an integral part of the MLaaS paradigm, but also arises naturally in
+other situations --- e.g., when a bug is discovered in an
+already-deployed DNN.
+
+We propose a novel approach for addressing both of these issues, based
+on \emph{neural network verification}. DNN verification is an emerging
+field, aimed at proving DNN correctness; and existing techniques allow
+users to specify properties that involve the DNN's inputs and outputs,
+and either prove that these properties hold or provide a
+counter-example. Here, we show how to cast the question of making
+changes to the DNN itself into the verification setting. We
+demonstrate how our new technique can be applied to formally and
+accurately measure the resilience of DNN watermarks, and hence to
+measure the usefulness of DNN watermarking schemes. We also show how
+our technique can be used to identify minimal changes to DNNs, e.g. in
+the context of correcting their behaviors for certain inputs. The use
+of verification in these contexts guarantees the soundness of our
+approach.
+
+For evaluation purposes, we created a proof-of-concept implementation
+of our approach as a Python framework. As its underlying backends, our
+tool uses the Marabou DNN verification
+engine~\cite{KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}, and the Gurobi LP
+solver~\cite{gurobi}. We then used our tool to measure the resilience
+of a recently-proposed watermarking
+scheme~\cite{AdBaPiKeWatermarking}, and also to correct faulty
+behavior of DNNs for an airborne collision avoidance
+system~\cite{JuLoBrOwKo16,KaBaDiJuKo17Reluplex}. Our results clearly
+indicate the usefulness of our approach to real-world examples.
 
 The rest of this paper is organized as follows. In
-Section~\ref{sec:background} we provide the necessary background on DNN's, watermarking, and DNN verification. Next, in
+Section~\ref{sec:background} we provide the necessary background on
+DNN's, watermarking, and DNN verification. Next, in
 Section~\ref{sec:verifyWatermarks} we introduce our technique for
 casting the watermark resilience problem into a verification
-problem. Section~\ref{sec:evaluation} describes our implementation and evaluation of the approach on several watermarked DNN's for image
+problem. Section~\ref{sec:evaluation} describes our implementation and
+evaluation of the approach on several watermarked DNN's for image
 recognition. We discuss related work in Section~\ref{sec:relatedWork},
 and conclude in Section~\ref{sec:conclusion}.
 
@@ -418,6 +490,12 @@ While running the problems on multiple watermarks the linear problem that we sol
 
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
+
+\subsection*{Acknowledgments}
+The project was partially supported by grants from the Binational Science
+Foundation (2017662) and the Israel Science Foundation (683/18).
+
+\guy{TODO: Ask the Yossis for additional acks}
 
 \bibliographystyle{abbrv}
 \bibliography{watermarks}
