@@ -20,6 +20,9 @@
 \newcommand{\sat}{\texttt{SAT}}
 \newcommand{\unsat}{\texttt{UNSAT}}
 
+\newtheorem{definition}{Definition}
+
+
 \sisetup{
   round-mode          = places, 
   round-precision     = 7, 
@@ -73,6 +76,7 @@ The Hebrew University of Jerusalem, Israel \\
  \end{abstract}
 
 \section{Introduction}
+\label{sec:introduction}
 
 \guy{Should we make the title more general? E.g., something like
   ``Fine-Tuning of Deep Neural Networks using Verification''}
@@ -326,43 +330,74 @@ restricted to simple cases~\cite{KaBaDiJuKo17Reluplex} (networks with piecewise-
 functions, and properties $P$ and $Q$ that are conjunctions of linear constraints).
 
 
-\section{DNN Alteration as a Verification Problem}
+\section{Minimal DNN Modification as a Verification Problem}
 \label{sec:minimizationProblem}
 
-\guy{TODO: first paragraph moved here from previous section. Integrate
-  it better}
-In this
-work we're verifying properties of the network a bit
-differently. Instead of searching an input that answer certain
-constraints, the input is fixed and we're allowing changes the the
-network. So the verification question looks like this: Given a neural
-network $N$ and two predicates $P,Q$ such that $P$ encodes the
-constraint on the changes to the network $\varepsilon$ and $Q$ encodes
-the constraint on the output $y$. We ask if there exist $\varepsilon$
-and as a result the new network $N'=N+\varepsilon$ and new output
-$y_0=N'\bracketsR{x_0}$, such that $P\bracketsR{\varepsilon_0}=True$
-and $Q\bracketsR{y_0}=True$.
-\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}
+\subsection{Modifying DNNs}
 
-In DNN verification approaches to date, the DNN $N$ is fixed, and an input
-$x$ that satisfies certain properties is sought. Here, we take a different
-view: for a \emph{fixed input} $x_0$, we seek an alteration to the DNN
-itself that will result in $x_0$ being assigned a different label. We
-may wish to impose certain restrictions on the change to the DNN ---
-for example, that it be a minimal change with respect to some
-measure. 
+In all DNN verification approaches to date (to the best of our
+knowledge), the goal is to verify a fixed DNN. In other words, $N$ is
+given, and a particular input $x_0$ is sought that satisfies certain constraints.
+The novelty of our approach is in changing this definition, fixing
+the input point $x_0$ (or multiple inputs) and searching for a
+\emph{different DNN} $N$ such that certain conditions hold.
+More formally, we define the problem as follows:
 
-\guy{To think if we really need to restrict this to the last layer}
-For simplicity, we restrict ourselves to changes to specific layer of
-the DNN. Let $N$ denote a DNN with $k$ layers, and let $i$ be a specific hidden layer index
-$2\leq i\leq k-1$. Let $L$ denote the $m\times n$ weight matrix that connects the nodes of layer
-$i$ to that of the following layer. We express the change to the DNN
-as a matrix $\varepsilon$ with the same dimensions as $L$. We seek to
-create a modified network, $N'$, that is identical to $N$ except that
-matrix $L$ is replaced with the matrix $L+\varepsilon$.
+\begin{definition}\textbf{The DNN Modification Problem.}
+  Let $N$ denote a DNN, let $X$ denote a set of fixed input points
+  $X=\{x_1, \ldots, x_n\}$, and let $Q$ denote a predicate over the
+  classifications $N(x_1),\ldots,N(x_n)$ of the points of $X$. The
+  \emph{DNN modification problem} is to find a new DNN, $N'$, that is
+  \emph{close} to $N$ according to some metric, such that
+  $Q(N'(x_1),\ldots,N'(x_n))$ holds.
+\end{definition}
 
-\subsection{Changing the Classification of a Single Input}
-\label{sec:defineProblem1}
+In this definition we did not yet address what it means for $N'$ to be
+close to $N$. Many measures of proximity could be used, but for the
+motivating problems that we consider (e.g., verifying the resilience
+of watermarks, or finding minimal fixes for erroneous inputs), it
+makes sense to require that $N$ and $N'$ share the same topology, and
+to define the distance between $N$ and $N'$ according to the
+difference in these network's weights. We note that a DNN modification
+is trivial if the property $Q$ holds for the original network $N$,
+i.e. if $Q(N(x_1),\ldots,N(x_n))$ holds; in that case, $N$ is a
+feasible solution to the modification problem.
+
+\begin{definition}\textbf{DNN Distance.}
+  Let $N^1$ and $N^2$ denote two DNNs with identical topology,
+  i.e. the same number of layers ($n^1=n^2$), and the same number of
+  neurons in each pair of matching layers ($s_i^1=s_i^2$ for all
+  $1\leq i \leq n^1$). We define the $L$-distance between $N^1$ and $N^2$,
+  denoted $\norm{N^1-N^2}_L$, as:
+  \[
+    \sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
+    \norm{W^1_i[j,k] - W^2_i[j,k]}_L
+  \]
+\end{definition}
+Intuitively, this definition of distance compares the weight matrices
+of the two networks, element-wise; it computes the $L$-distance
+between each two corresponding edge weights, and then sums up these
+distances. 
+
+Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
+to our toy example from Fig.~\ref{fig:toyExample}.
+\guy{TODO: Ben, please continue with the same example from the
+  previous section}
+
+\subsection{Finding Minimal Modifications}
+
+TODO: explain here that allowing arbitrary changes leads to a
+crazy-difficult problem, and so we only focus on changes to a single
+layer.
+
+Discuss reduction to existing tools (MILP, DNN verification), using
+binary search.
+
+\section{Applications: Watermark Resilience, Minimal Corrections}
+
+\subsection{Watermark Resilience}
+
+\subsection{Minimal Repair}
 
 In the watermark problem, we typically have a set of inputs $X=\{x_1,
 x_2, \ldots, x_k\}$ with certain classifications
