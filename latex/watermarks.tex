@@ -269,7 +269,9 @@ n$
 is associated
 with a 
 weight matrix $W_i$ of size $s_{i}\times s_{i-1}$, and also a bias vector $B_i$ of size
-$s_i$.
+$s_i$. The entry of $W_i$ at the $j$'th row and $k$'th column, denoted
+$W_i[j,k]$, represents the weight assigned to the edge from
+neuron $v_{i-1,k}$ to neuron $v_{i,j}$.
 Each hidden layer ($2\leq i \leq n-1$) 
 is computed as
 \[
