@@ -1,5 +1,6 @@
 \documentclass{easychair}
 
+\usepackage{paralist}
 \usepackage{xcolor}
 \usepackage{amsmath} 
 \usepackage{hyperref}
@@ -79,7 +80,7 @@ The Hebrew University of Jerusalem, Israel \\
 \label{sec:introduction}
 
 \guy{Should we make the title more general? E.g., something like
-  ``Fine-Tuning of Deep Neural Networks using Verification''}
+  ``Minimal Modifications of Deep Neural Networks using Verification''}
 
 
 \emph{Deep Neural Networks} (\emph{DNN}) are quickly becoming the
@@ -372,7 +373,7 @@ feasible solution to the modification problem.
   $1\leq i \leq n^1$). We define the $L$-distance between $N^1$ and $N^2$,
   denoted $\norm{N^1-N^2}_L$, as:
   \[
-    \sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
+    \norm{N^1-N^2}_L =    \sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
     \norm{W^1_i[j,k] - W^2_i[j,k]}_L
   \]
 \end{definition}
@@ -400,20 +401,109 @@ We observe that given a decision procedure for solving the modification
 problem, solving the minimal modification problem can be performed by
 repeatedly invoking that procedure as part of a binary search.
 
-\subsection{Finding Minimal Modifications}
+\subsection{Minimal Modifications as DNN Verification}
 
-TODO: explain here that allowing arbitrary changes leads to a
-crazy-difficult problem, and so we only focus on changes to a single
-layer.
+A straightforward approach for solving the minimal DNN modification
+problem is to cast it as an optimization problem, and use an
+off-the-shelf optimization tool. Specifically, the goal would be to
+minimize $\norm{N^1-N^2}_L$, while maintaining the constraint
+$Q(N'(x_1),\ldots, N'(x_n))$. Unfortunately, such an optimization
+problem is highly non-convex and high-dimensional, and is hence very
+difficult to solve.
 
-Discuss reduction to existing tools (MILP, DNN verification), using
-binary search.
+We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, using
+our running example from~\ref{fig:toyExample}.
+\guy{TODO: same example from the previous sections}
 
-\section{Applications: Watermark Resilience, Minimal Corrections}
+
+In order to mitigate this issue, we focus on a restricted version of
+the DNN modification problem, in which the changes in weights are
+limited to a \emph{single layer}. We argue that under this
+restriction, the DNN modification problem reduces into standard DNN
+verification problem. The intuition is as follows: let $N$ be a DNN,
+and let $W_i$ ($2\leq i\leq n$) be the only weight matrix of $N$ that
+we wish to modify. Observe some fixed input point $x\in X$, and let
+$V_{i-1}$ denote the evaluation of layer $i-1$ for this $x$. In the
+modified network $N'$, layers $1,\ldots,i-1$ will be assigned the same
+values as in $N$, i.e, $V_k=V'_k$ for all $1\leq k\leq i-1$. The
+changes in assignment begin only in layer $i$, where it holds that
+\[
+  V_i' = \relu{}(W_i'V'_{i-1}) = \relu{}((W_i+W_\epsilon)V'_{i-1})
+\]
+where $W_\epsilon$ represents the change in weights. We note that
+$W_i$ and $V'_{i-1}$ are fixed; the only variables here are the
+entries of $W_\epsilon$. This means that we can construct a new DNN,
+denoted $\bar{N}$, whose input neurons are the values of $W_\epsilon$,
+followed by a layer that computes $\relu{}((W_i+W_\epsilon)V'_{i-1})$,
+and then feeds into layers $i+1,\ldots,n$ of the original network.
+
+We again illustrate this using our running example --- see
+Fig.~\ref{fig:changeJustOneLayer}.
+
+
+Finally, we note that the restricted version of the problem, in which
+we only allow changing a single layer of network, is interesting in
+its own right. Specifically, it is is sufficiently expressive for...
+\guy{TODO: justify why this is interesting}
+
+
+\section{Applications}
 
 \subsection{Watermark Resilience}
+As briefly discussed in Section~\ref{sec:introduction}, there is now a
+growing need to imprint DNNs with \emph{watermarks}: secret inputs,
+known to the creator of the DNN, on which the DNN produces unexpected
+outputs. Watermarks are important for the MLaaS business model, where
+a vendor sells a mostly-trained DNN to clients, who then fine-tune
+it for their own needs. The key requirement is that even if the
+network undergoes some changes, the watermark input will still produce
+the original, unexpected output, allowing the vendor to recognize the
+DNN.
 
+More formally, given a DNN $N$, a watermark is just an input point $x$
+with a specific label $l$. Typically, a network will have a finite set of
+watermarks $X$. Creating this set of watermarks is done at time of
+training --- see, e.g.,~\cite{AdBaPiKeWatermarking} for details. We
+say that a set $X=\{x_1,\ldots,x_n\}$ of watermarks is $\delta$-resilient if for every
+DNN $N'$ such that $\norm{N-N'}\leq \delta$, it holds that
+$N(x_i)=N'(x_i)$ for all $1\leq i \leq n$. Clearly, a watermarking
+scheme that produces watermarks that are more resilient is preferable.
+
+Solving the DNN minimal modification problem can thus serve two
+purposes in the context of watermarking:
+\begin{inparaenum}[(i)]
+  \item given a specific DNN $N$ and a set $X$ of watermarks, it can
+    measure the resilience of $X$ (i.e., the maximal amount of changes
+    the network can withstand without ``forgetting'' the watermarks);
+    and
+  \item given multiple schemes for watermarking DNNs, i.e. for
+    producing the set $X$, it can compare the effectiveness of the
+    schemes by checking the resilience of the resulting watermarks
+    (on some set of DNNs).
+\end{inparaenum}
+  
 \subsection{Minimal Repair}
+Despite their overall excellent performance, DNN-based systems are as
+prone to error as any other system. Specifically, many erroneous
+behaviors have been observed in various DNNs, e.g. for image
+recognition~\cite{X,Y} and for airborne collision
+avoidance~\cite{JuLoBrOwKo16,KaBaDiJuKo17Reluplex}. Once such a bug is
+discovered, it is not immediately clear how to correct it. One
+approach would be to retrain the network, but this may be expensive
+or impossible for some clients. The approach that we propose here is
+simply to identify a \emph{minimal} change to the DNN that removes the
+undesirable behavior. We argue that it is useful to focus on a minimal
+change here, as such a change is less likely to change the behavior of
+the network for other inputs, on which its behavior is currently acceptable.
+
+Finding minimal repairs for a DNN $N$ can be cast into our
+formulation, as follows. Given a set of erroneous points
+$X=\{x_1,\ldots,x_n\}$ and their set of \emph{correct} labels
+$l_1,\ldots,l_n$, we seek a new DNN $N'$ such that $N'(x_i)=l_i$ for
+all $1\leq i \leq n$, and such that 
+ $\norm{N-N'}$ is minimal.
+
+\section{Evaluation}
 
 In the watermark problem, we typically have a set of inputs $X=\{x_1,
 x_2, \ldots, x_k\}$ with certain classifications
