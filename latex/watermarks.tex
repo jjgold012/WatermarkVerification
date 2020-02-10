@@ -349,13 +349,13 @@ More formally, we define the problem as follows:
   Let $N$ denote a DNN, let $X$ denote a set of fixed input points
   $X=\{x_1, \ldots, x_n\}$, and let $Q$ denote a predicate over the
   classifications $N(x_1),\ldots,N(x_n)$ of the points of $X$. The
-  \emph{DNN modification problem} is to find a new DNN, $N'$, that is
-  \emph{close} to $N$ according to some metric, such that
-  $Q(N'(x_1),\ldots,N'(x_n))$ holds.
+  \emph{DNN modification problem} is to find a new DNN, $N'$, such that
+  $Q(N'(x_1),\ldots,N'(x_n))$ holds, and such that the distance
+  between $N$ and $N'$ is at most some $\delta>0$.
 \end{definition}
 
-In this definition we did not yet address what it means for $N'$ to be
-close to $N$. Many measures of proximity could be used, but for the
+In this definition we did not yet specify how to measure the distance
+between $N$ and $N'$. Multiple measures of distance could be used, but for the
 motivating problems that we consider (e.g., verifying the resilience
 of watermarks, or finding minimal fixes for erroneous inputs), it
 makes sense to require that $N$ and $N'$ share the same topology, and
@@ -380,11 +380,25 @@ Intuitively, this definition of distance compares the weight matrices
 of the two networks, element-wise; it computes the $L$-distance
 between each two corresponding edge weights, and then sums up these
 distances. 
-
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}.
 \guy{TODO: Ben, please continue with the same example from the
   previous section}
+
+Finally, we will typically be interested in finding $N'$ that is
+closest to $N$. This is formalized as follows:
+\begin{definition}\textbf{The DNN Minimal Modification Problem.}
+  Let $N$ denote a DNN, let $X$ denote a set of fixed input points
+  $X=\{x_1, \ldots, x_n\}$, and let $Q$ denote a predicate over the
+  classifications $N(x_1),\ldots,N(x_n)$ of the points of $X$. The
+  \emph{DNN minimal modification problem} is to find a new DNN $N'$
+  that solves the DNN modification problem (for $N, X$ and $Q$), such that for every other
+  $N''$ that solves the modificaiton problem it holds that
+  $\norm{N'-N}\leq \norm{N''-N}$.
+\end{definition}
+We observe that given a decision procedure for solving the modification
+problem, solving the minimal modification problem can be performed by
+repeatedly invoking that procedure as part of a binary search.
 
 \subsection{Finding Minimal Modifications}
 
