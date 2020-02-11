@@ -723,7 +723,7 @@ purposes in the context of watermarking:
 Despite their overall excellent performance, DNN-based systems are as
 prone to error as any other system. Specifically, many erroneous
 behaviors have been observed in various DNNs, e.g. for image
-recognition~\cite{X,Y} and for airborne collision
+recognition~\cite{EyEvFeLiRaXiPrKo18,SzZaSuBrErGoFe13} and for airborne collision
 avoidance~\cite{JuLoBrOwKo16,KaBaDiJuKo17Reluplex}. Once such a bug is
 discovered, it is not immediately clear how to correct it. One
 approach would be to retrain the network, but this may be expensive
@@ -892,7 +892,7 @@ removes multiple watermarks, simultaneously. Specifically, we wanted
 to change the weights of the DNN's output layer in a way that caused
 the misclassification of an arbitrary number of watermarks.
 
-As discussed in Section~\ref{}, the problem of modifying the network's
+As discussed in Section~\ref{sec:outputLayer}, the problem of modifying the network's
 output layer when using the $L_\infty$ norm is significantly easier
 than other variants; and indeed, using Gurobi as our backend
 verification tool we were able to find modifications
