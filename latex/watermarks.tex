@@ -300,7 +300,7 @@ resolved arbitrarily). We sometimes use the alternative phrasing,
 \[
   N(V_1) = \argmax_{1\leq i\leq s_n}\{v_{n,i}\}
 \]
-A small, running example appears in Fig.~\ref{fig:toyExample}.
+A small, running example appears in Fig.~\ref{fig:toyExample}. Our example has $3$ layers $V_1,V_2,V_3$ of sizes $s_1,s_2,s_3=2$ (without biases). For a given $V_1=(3,4)$ the second layer is $V_2=(\relu{}(1\cdot 3-2\cdot 4),\relu{}(2\cdot 3-1\cdot 4))=(0,2)$ and the output layer $V_3=(-2,2)$
 
 \begin{figure}[htp]
   \begin{center}
@@ -324,13 +324,13 @@ A small, running example appears in Fig.~\ref{fig:toyExample}.
 
       % Connect every node in the hidden layer with the output layer
       \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-20] {$-1$} (H-2);
-      \path (I-2) edge[] node[above,rotate=20] {$1$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-20] {$2$} (H-2);
+      \path (I-2) edge[] node[above,rotate=20] {$-2$} (H-1);
       \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
       \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=20] {$2$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-20] {$1$} (O-2);
-      \path (H-2) edge[] node[below,rotate=10] {$2$} (O-2);
+      \path (H-2) edge[] node[below,rotate=20] {$-1$} (O-1);
+      \path (H-1) edge[] node[above,rotate=-20] {$-1$} (O-2);
+      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
       
       % Annotate the layers
       \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
@@ -414,8 +414,8 @@ feasible solution to the modification problem.
   $1\leq i \leq n^1$). We define the $L$-distance between $N^1$ and $N^2$,
   denoted $\norm{N^1-N^2}_L$, as:
   \[
-    \norm{N^1-N^2}_L =    \sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
-    \norm{W^1_i[j,k] - W^2_i[j,k]}_L
+    \norm{N^1-N^2}_L =    \bracketsR{\sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
+    \abs{W^1_i[j,k] - W^2_i[j,k]}^L}^{1/L}
   \]
 \end{definition}
 Intuitively, this definition of distance compares the weight matrices
@@ -424,6 +424,81 @@ between each two corresponding edge weights, and then sums up these
 distances. 
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}.
+
+\begin{figure}[htp]
+  \begin{subfigure}{0.5\linewidth}
+      \def\layersep{3cm}
+    \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep,font=\footnotesize]
+    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{neuron node}=[neuron, fill=blue!50];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+      \node[neuron node] (I-1) at (0,-1 cm) {$v^1_{1,1}$};
+      \node[neuron node] (I-2) at (0,-2 cm) {$v^1_{1,2}$};
+
+      \path[yshift=0.5cm]
+      node[neuron node] (H-1) at (\layersep,-1) {$v^1_{2,1}$};
+      \path[yshift=-0.5cm]
+      node[neuron node] (H-2) at (\layersep,-2) {$v^1_{2,2}$};
+
+      \node[neuron node] at (2*\layersep, -1) (O-1) {$v^1_{3,1}$};
+      \node[neuron node] at (2*\layersep, -2) (O-2) {$v^1_{3,2}$};
+
+      % Connect every node in the hidden layer with the output layer
+      \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-20] {$2$} (H-2);
+      \path (I-2) edge[] node[above,rotate=20] {$-2$} (H-1);
+      \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
+      \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
+      \path (H-2) edge[] node[below,rotate=20] {$-1$} (O-1);
+      \path (H-1) edge[] node[above,rotate=-20] {$-1$} (O-2);
+      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+      
+      % Annotate the layers
+      \node[annot,above of=H-1, node distance=1cm] (l) {$V^1_2$};
+      \node[annot,left of=l] {$V^1_1$};
+      \node[annot,right of=l] {$V^1_3$};
+    \end{tikzpicture}
+    \caption{$N^1$}
+  \end{subfigure}
+  \begin{subfigure}{0.5\linewidth}
+      \def\layersep{3cm}
+    \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep,font=\footnotesize]
+    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{neuron node}=[neuron, fill=blue!50];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+      \node[neuron node] (I-1) at (0,-1 cm) {$v^2_{1,1}$};
+      \node[neuron node] (I-2) at (0,-2 cm) {$v^2_{1,2}$};
+
+      \path[yshift=0.5cm]
+      node[neuron node] (H-1) at (\layersep,-1) {$v^2_{2,1}$};
+      \path[yshift=-0.5cm]
+      node[neuron node] (H-2) at (\layersep,-2) {$v^2_{2,2}$};
+
+      \node[neuron node] at (2*\layersep, -1) (O-1) {$v^2_{3,1}$};
+      \node[neuron node] at (2*\layersep, -2) (O-2) {$v^2_{3,2}$};
+
+      % Connect every node in the hidden layer with the output layer
+      \path (I-1) edge[] node[above,rotate=10] {$1.5$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-20] {$1$} (H-2);
+      \path (I-2) edge[] node[above,rotate=20] {$-3$} (H-1);
+      \path (I-2) edge[] node[below,rotate=-10] {$-0.5$} (H-2);
+      \path (H-1) edge[] node[above,rotate=-10] {$0.5$} (O-1);
+      \path (H-2) edge[] node[below,rotate=20] {$-1$} (O-1);
+      \path (H-1) edge[] node[above,rotate=-20] {$-1.5$} (O-2);
+      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+      
+      % Annotate the layers
+      \node[annot,above of=H-1, node distance=1cm] (l) {$V^2_2$};
+      \node[annot,left of=l] {$V^2_1$};
+      \node[annot,right of=l] {$V^2_3$};
+    \end{tikzpicture}
+    \caption{$N^2$}
+  \end{subfigure}
+  \caption{$\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4$}
+  \label{fig:toyExampleModified}
+\end{figure}
 \guy{TODO: Ben, please continue with the same example from the
   previous section}
 
