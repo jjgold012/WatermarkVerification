@@ -420,22 +420,21 @@ feasible solution to the modification problem.
   Let $N^1$ and $N^2$ denote two DNNs with identical topology,
   i.e. the same number of layers ($n^1=n^2$), and the same number of
   neurons in each pair of matching layers ($s_i^1=s_i^2$ for all
-  $1\leq i \leq n^1$). We define the $L$-distance between $N^1$ and $N^2$,
-  denoted $\norm{N^1-N^2}_L$, as:
+  $1\leq i \leq n^1$). We define the $p$-distance between $N^1$ and $N^2$,
+  denoted $\norm{N^1-N^2}_p$, as:
   \[
-    \norm{N^1-N^2}_L =    \bracketsR{\sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
-    \abs{W^1_i[j,k] - W^2_i[j,k]}^L}^{1/L}
+    \norm{N^1-N^2}_p =    \bracketsR{\sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
+    \abs{W^1_i[j,k] - W^2_i[j,k]}^p}^{1/p}
   \]
 \end{definition}
 Intuitively, this definition of distance compares the weight matrices
-of the two networks, element-wise; it computes the $L$-distance
-between each two corresponding edge weights, and then sums up these
-distances. 
+of the two networks, element-wise; it computes the $p$-norm
+between each two corresponding edge weights as the distance between to vectors.
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}.
 \\
 \begin{math}
-	\norm{N^1-N^2}_L=(\bracketsR{\abs{-0.5}^L+\abs{1}^L+\abs{1}^L+\abs{-0.5}^L+\abs{0.5}^L+\abs{0.5}^L)}^{1/L}\\
+	\norm{N^1-N^2}_p=(\bracketsR{\abs{-0.5}^p+\abs{1}^p+\abs{1}^p+\abs{-0.5}^p+\abs{0.5}^p+\abs{0.5}^p)}^{1/p}\\
 	\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4\\
 	\norm{N^1-N^2}_\infty=max\bracketsC{\abs{-0.5},\abs{1},\abs{1},\abs{-0.5},\abs{0.5},\abs{0.5},0,0}=1
 \end{math}
@@ -529,7 +528,7 @@ repeatedly invoking that procedure as part of a binary search.
 A straightforward approach for solving the minimal DNN modification
 problem is to cast it as an optimization problem, and use an
 off-the-shelf optimization tool. Specifically, the goal would be to
-minimize $\norm{N^1-N^2}_L$, while maintaining the constraint
+minimize $\norm{N^1-N^2}_p$, while maintaining the constraint
 $Q(N'(x_1),\ldots, N'(x_n))$. Unfortunately, such an optimization
 problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
@@ -822,7 +821,7 @@ results are depicted in Fig.~\ref{fig:minSingle}.
 
 Analyzing these results exposes several interesting properties of the
 watermark inputs. For example, we observed 
-that for every single watermark $x$, the minimal-distance network that
+that for every single watermark $x$, the minimatance network that
 was found classified $x$ as the second-highest label assigned to
 it by the original network. This result indicates
 that a resilient watermark should have a
