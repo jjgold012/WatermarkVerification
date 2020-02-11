@@ -811,6 +811,8 @@ all $1\leq i \leq n$, and such that
 \section{Evaluation}
 \label{sec:evaluation}
 
+\subsection{Watermark Removal}
+
 In order to apply our approach to measure the resilience of
 watermarked networks, we trained a watermarked DNN over the MNIST
 digit recognition dataset~\cite{mnist}. The DNN was of a modest size:
@@ -952,11 +954,25 @@ that of $L_1$.
 \label{table:singleWatermark}
 \end{table}
 
-\subsection{Removing Multiple watermark}
+\medskip\noindent \textbf{Removing Multiple Watermarks.}
+Next, we addressed the issue of modifying our DNN in a way that
+removes multiple watermarks, simultaneously. Specifically, we wanted
+to change the weights of the DNN's output layer in a way that caused
+the misclassification of an arbitrary number of watermarks.
 
-As described above the removal of watermarks can be generalized to multiple watermarks (\ref{eq:LPmany}) (\ref{eq:NotLPmany}). We tested the same MNIST digits classifying network that is signed with 100 watermark.
-\\
-While running the problems on multiple watermarks the linear problem that we solved using the Gurobi solver had no issues with scalability and we where able to find the change that fits to as many watermarks as we want, on the other hand the non-linear problem had some issues with scalability so we where able to find the change that fits to up to $5$ watermarks.
+As discussed in Section~\ref{}, the problem of modifying the network's
+output layer when using the $L_\infty$ norm is significantly easier
+than other variants; and indeed, using Gurobi as our backend
+verification tool we were able to find modifications
+that remove as many as all of the watermarks. In the $L_1$ case,
+performance became an issue, and so we focused on removing as many as
+5 watermarks simultaneously. The results are depicted in
+Table~\ref{table:multipleWatermarks}. We see that a few benchmarks can
+still be removed while maintaining a reasonable level of accuracy; but
+that, at least in the $L_\infty$ case, removing all watermarks renders
+the network quite useless. We thus conclude that using $100$
+watermarks is sufficient for this particular network.
+
 
 \begin{table}
 \begin{subtable}{1\textwidth}
@@ -971,7 +987,7 @@ While running the problems on multiple watermarks the linear problem that we sol
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem3/mnist_w_wm_summary.csv}
 	}
-\caption{Change and accuracy when solving for minimal $\ell_\infty$ change.}
+\caption{Change and accuracy when solving for minimal $L_\infty$ change.}
 \end{subtable}
 \begin{subtable}{1\textwidth}
 \centering
@@ -985,44 +1001,68 @@ While running the problems on multiple watermarks the linear problem that we sol
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem4/mnist_w_wm_summary.csv}
 	}
-\caption{Change and accuracy when solving for minimal $\ell_1$ change.}
+\caption{Change and accuracy when solving for minimal $L_1$ change.}
 \end{subtable}
-\caption{Minimal changes and Accuracy for multiple watermarks}
+\caption{Minimal changes and accuracy degradation when simultaneously removing multiple watermarks.}
 \label{table:multipleWatermarks}
 \end{table}
 
-\subsection{Network Correction}
 
-We tested our approach to network correction on one of the ACASXU networks and a property that we found bad examples for. We iterated between finding changes to our bad examples and verifying the changed network. Each iteration of our approach is described like that:
-\begin{list}{•}{}
-\item Given a set of bad examples find the minimal change to the network that will fix those examples. 
-\item Verify the changes network.
-\begin{list}{•}{}
-\item If the verification of the network returns SAT, add the example to our bad examples
-\item If the verification of the network returns UNSAT or TIMEOUT and we're finished fixing the network.
-\end{list}
-\end{list}  
+\subsection{Removing Undesirable Behavior}
 
-We had two bad example for that network. After finding the minimal change that fixes the erroneous examples we applied that change to the network and verified the network again, that led us to find another erroneous example for the original and changed network. 
-We added that erroneous example and find a minimal change to the original network again. After applying that change to the original network the verification of that changed network was timed out.
+In a separate experiment, we evaluated the effectiveness of our
+approach in correcting undesirable behaviors in a real-world DNN that
+is part of the ACAS Xu system for Airborne Collision
+Avoidance~\cite{JuLoBrOwKo16}. This airborne system, which is part of new
+standard, is currently being developed by the FAA. It is intended to
+read sensor information regarding other nearby aircraft, and produce a
+horizontal turning advisory in order to avoid a possible collision
+with these aircraft. One possible implementation of the system that is
+being considered includes a family of 45 DNNs~\cite{JuLoBrOwKo16}.
+
+For our experiment, we focused on one of the ACAS Xu DNNs in which a
+bug has been discovered using formal
+verification~\cite{KaBaDiJuKo17Reluplex}; specifically, it has been
+observed that for a specific input, the network advises a strong turn
+where it should advise a weak turn or no turn at all. We used our
+technique to seek a minimal modification to the DNN in question that
+would correct this behavior. Because our goal was to make the property
+hold, and not necessarily correct a single faulty input to the DNN, we
+applied the following loop:
+
+\begin{enumerate}
+\item Use verification to check whether property $\varphi$ holds.
+\item If not, add the counter-example to $S$.
+\item Find a minimal modification of $N$ that corrects the behavior
+  for  all points currently in $S$.
+\end{enumerate}
+
+This process terminates either when the property holds, or when a
+timeout value is reached. 
+
+For our ACAS Xu experiment, we observed that the property in question
+still did not hold after the first iteration, i.e. after fixing the
+first counter-example. We fixed a second counter-example, and then
+timed-out while attempting to fix the third counter-example.
+The results are depicted in Fig.~\ref{fig:lastLayerACASXU}.
 
 \begin{figure}
 \centering
-\begin{subfigure}{0.4\linewidth}
+\begin{subfigure}{0.2\linewidth}
   \includegraphics[width=\linewidth]{./images/ACASXU_2_9_1_vals.pdf}
   \caption{First iteration inputs change}
 \end{subfigure}
-\begin{subfigure}{0.4\linewidth}
+\begin{subfigure}{0.2\linewidth}
   \includegraphics[width=\linewidth]{./images/ACASXU_2_9_3_vals.pdf}
   \caption{Second iteration inputs change}
 \end{subfigure}
-\caption{Change to the last layer for one of the ACASXU networks.}
+\caption{Change to the last layer for one of the ACAS Xu networks.}
 \label{fig:lastLayerACASXU}
 \end{figure}
 
 
-\guy{add text about network correction}
-\guy{analyze the tables in the text, explain the interesting findings}
+\guy{Questions about ACAS Xu: what norm did we use? Are the two graphs
+  identical? Was a single edge changed in both?}
 
 \section{Related Work}
 \label{sec:relatedWork}
