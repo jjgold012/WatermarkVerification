@@ -534,7 +534,7 @@ problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
 
 We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, using
-our running example from~\ref{fig:toyExample}. Even for the simple case of solving for $L=\infty$ the output of the network for input $V_1=(3,4)$ is a non-convex two-dimensional function.
+our running example from~\ref{fig:toyExample}. The constraint on the output of the network for input $V_1=(3,4)$ are a non-convex two-dimensional functions.
 \\
 \begin{math}
 v_{3,1}=\bracketsR{(1+w_5)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_7)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}\\
@@ -605,12 +605,14 @@ followed by a layer that computes $\relu{}((W_i+W_\epsilon)V'_{i-1})$,
 and then feeds into layers $i+1,\ldots,n$ of the original network.
 
 We again illustrate this using our running example --- see
-Fig.~\ref{fig:changeJustOneLayer}. The output of the network for input $V_1=(3,4)$ is:
+Fig.~\ref{fig:changeJustOneLayer}. The variable arethe entries of $W_\epsilon=[w_1,w_2,w_3,w_4]$ and the output of the network for input $V_1=(3,4)$ is:
 \\
 \begin{math}
 v_{3,1}=\bracketsR{1\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}\\
 v_{3,2}=\bracketsR{1\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
 \end{math}
+
+And for the $\norm{W_\epsilon}_1$ and $\norm{W_\epsilon}_\infty$ the constraint and the optimization problem are piecewise-linear. 
 
 \begin{figure}[htp]
 \begin{center}
