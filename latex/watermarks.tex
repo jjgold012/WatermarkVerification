@@ -51,7 +51,7 @@
 
 \begin{document}
 
-\title{Verifying the Resilience of Neural Network Watermarking}
+\title{Minimal Modifications of Deep Neural Networks using Verification}
 \author{
 Ben Goldberger\inst{1} \and
 Yossi Adi\inst{2} \and
@@ -73,14 +73,23 @@ The Hebrew University of Jerusalem, Israel \\
 %% Length: 15 pages
 
 \begin{abstract}
-   Add abstract here.
- \end{abstract}
+  Deep neural networks (DNNs) are revolutionizing the way complex
+  systems are designed developed. As part of the life cycle of
+  DNN-based system, there is often a need to modify them in ways that
+  affect certain aspects of their behavior, but leaves their behavior
+  unchanged in other cases (e.g., if a bug is discovered and needs to
+  be fixed, without damaging other functionality). We leverage recent
+  advances in DNN verification and propose a technique for modifying
+  DNNs in a \emph{provably minimal way}, and is thus less likely to
+  affect other behaviors of the DNN. Using a proof-of-concept
+  implementation, we demonstrate the usefulness and great potential of
+  our approach in performing two real-world tasks: (i) measuring the
+  resilience of DNN watermarking schemes; and (ii) bug repair in
+  already-trained DNNs.
+\end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
-
-\guy{Should we make the title more general? E.g., something like
-  ``Minimal Modifications of Deep Neural Networks using Verification''}
 
 
 \emph{Deep Neural Networks} (\emph{DNN}) are quickly becoming the
