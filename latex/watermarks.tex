@@ -754,10 +754,33 @@ While running the problems on multiple watermarks the linear problem that we sol
 \section{Related Work}
 \label{sec:relatedWork}
 
-\guy{finish these two sections. In related work, talk about DNN
-  verification, about network correction, and about watermarks. 3
-  paragraphs, one for each topic. For dnn verification stuff you can look at
-  other recent papers (yuval, yizhak, etc).}
+Correcting DNNs in order to remove undesirable behaviors is a general
+topic of interest in the ML community. One line of
+work~\cite{KaLe18,KaFu18} suggests to augment a malfunctioning DNN
+with decision trees that determine when a patch should be
+applied. Another line of work~\cite{SoTh19} corrects DNNs using an
+iterative encoding of the problem into a sequence of Max-SMT
+instances. A key feature of our verification-based approach that
+separates it from prior work is that it provides provides formal
+guarantees about the minimality of the discovered changes to the DNN
+in question.
+
+DNN verification is an emerging field, with many recently-proposed
+tools and approaches. These include the use of SMT
+solving~\cite{HuKwWaWu17,KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou},
+LP and MILP solving~\cite{Ehlers2017,TjXiTe19}, symbolic interval
+propagation~\cite{WaPeWhYaJa18}, abstract
+interpretation~\cite{GeMiDrTsChVe18}, and many others
+(e.g.,~\cite{BuTuToKoMu18,DuJhSaTi18,LoMa17,NaKaRySaWa17,SiGePuVe19}).
+Our technique reduces the DNN minimal modification problem into a DNN
+verification problem, and can use many of the aforementioned tools and
+techniques as a backend.
+
+DNN watermarking is a general approach for marking DNNs that are to undergo
+changes, for which multiple methods have been proposed in recent years~\cite{AdBaPiKeWatermarking,ChRoKo18,LePeTr19,UcNaSaSa17,VeUsTaOcGa11}
+Our technique can be applied in order to assess the
+performance of watermarking approaches and compare them to each other.
+
 
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
