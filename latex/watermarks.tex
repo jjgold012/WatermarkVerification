@@ -724,6 +724,8 @@ all $1\leq i \leq n$, and such that
 \section{Evaluation}
 \label{sec:evaluation}
 
+\subsection{Watermark Removal}
+
 In order to apply our approach to measure the resilience of
 watermarked networks, we trained a watermarked DNN over the MNIST
 digit recognition dataset~\cite{mnist}. The DNN was of a modest size:
@@ -918,20 +920,44 @@ watermarks is sufficient for this particular network.
 \label{table:multipleWatermarks}
 \end{table}
 
-\subsection{Network Correction}
 
-We tested our approach to network correction on one of the ACASXU networks and a property that we found bad examples for. We iterated between finding changes to our bad examples and verifying the changed network. Each iteration of our approach is described like that:
-\begin{list}{•}{}
-\item Given a set of bad examples find the minimal change to the network that will fix those examples. 
-\item Verify the changes network.
-\begin{list}{•}{}
-\item If the verification of the network returns SAT, add the example to our bad examples
-\item If the verification of the network returns UNSAT or TIMEOUT and we're finished fixing the network.
-\end{list}
-\end{list}  
+\subsection{Removing Undesirable Behavior}
 
-We had two bad example for that network. After finding the minimal change that fixes the erroneous examples we applied that change to the network and verified the network again, that led us to find another erroneous example for the original and changed network. 
-We added that erroneous example and find a minimal change to the original network again. After applying that change to the original network the verification of that changed network was timed out.
+In a separate experiment, we evaluated the effectiveness of our
+approach in correcting undesirable behaviors in a real-world DNN that
+is part of the ACAS Xu system for Airborne Collision
+Avoidance~\cite{JuLoBrOwKo16}. This airborne system, which is part of new
+standard, is currently being developed by the FAA. It is intended to
+read sensor information regarding other nearby aircraft, and produce a
+horizontal turning advisory in order to avoid a possible collision
+with these aircraft. One possible implementation of the system that is
+being considered includes a family of 45 DNNs~\cite{JuLoBrOwKo16}.
+
+For our experiment, we focused on one of the ACAS Xu DNNs in which a
+bug has been discovered using formal
+verification~\cite{KaBaDiJuKo17Reluplex}; specifically, it has been
+observed that for a specific input, the network advises a strong turn
+where it should advise a weak turn or no turn at all. We used our
+technique to seek a minimal modification to the DNN in question that
+would correct this behavior. Because our goal was to make the property
+hold, and not necessarily correct a single faulty input to the DNN, we
+applied the following loop:
+
+\begin{enumerate}
+\item Use verification to check whether property $\varphi$ holds.
+\item If not, add the counter-example to $S$.
+\item Find a minimal modification of $N$ that corrects the behavior
+  for  all points currently in $S$.
+\end{enumerate}
+
+This process terminates either when the property holds, or when a
+timeout value is reached. 
+
+For our ACAS Xu experiment, we observed that the property in question
+still did not hold after the first iteration, i.e. after fixing the
+first counter-example. We fixed a second counter-example, and then
+timed-out while attempting to fix the third counter-example.
+The results are depicted in Fig.~\ref{fig:lastLayerACASXU}.
 
 \begin{figure}
 \centering
@@ -943,13 +969,13 @@ We added that erroneous example and find a minimal change to the original networ
   \includegraphics[width=\linewidth]{./images/ACASXU_2_9_3_vals.pdf}
   \caption{Second iteration inputs change}
 \end{subfigure}
-\caption{Change to the last layer for one of the ACASXU networks.}
+\caption{Change to the last layer for one of the ACAS Xu networks.}
 \label{fig:lastLayerACASXU}
 \end{figure}
 
 
-\guy{add text about network correction}
-\guy{analyze the tables in the text, explain the interesting findings}
+\guy{Questions about ACAS Xu: what norm did we use? Are the two graphs
+  identical? Was a single edge changed in both?}
 
 \section{Related Work}
 \label{sec:relatedWork}
