@@ -501,7 +501,7 @@ formulation, as follows. Given a set of erroneous points
 $X=\{x_1,\ldots,x_n\}$ and their set of \emph{correct} labels
 $l_1,\ldots,l_n$, we seek a new DNN $N'$ such that $N'(x_i)=l_i$ for
 all $1\leq i \leq n$, and such that 
- $\norm{N-N'}$ is minimal.
+ $\norm{N-N'}$ is minimal. 
 
 \section{Evaluation}
 
@@ -746,6 +746,35 @@ While running the problems on multiple watermarks the linear problem that we sol
 \caption{Minimal changes and Accuracy for multiple watermarks}
 \label{table:multipleWatermarks}
 \end{table}
+
+\subsection{Network Correction}
+
+We tested our approach to network correction on one of the ACASXU networks and a property that we found bad examples for. We iterated between finding changes to our bad examples and verifying the changed network. Each iteration of our approach is described like that:
+\begin{list}{•}{}
+\item Given a set of bad examples find the minimal change to the network that will fix those examples. 
+\item Verify the changes network.
+\begin{list}{•}{}
+\item If the verification of the network returns SAT, add the example to our bad examples
+\item If the verification of the network returns UNSAT or TIMEOUT and we're finished fixing the network.
+\end{list}
+\end{list}  
+
+We had two bad example for that network. After finding the minimal change that fixes the erroneous examples we applied that change to the network and verified the network again, that led us to find another erroneous example for the original and changed network. 
+We added that erroneous example and find a minimal change to the original network again. After applying that change to the original network the verification of that changed network was timed out.
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.2\linewidth}
+  \includegraphics[width=\linewidth]{./images/ACASXU_2_9_1_vals.pdf}
+  \caption{First iteration inputs change}
+\end{subfigure}
+\begin{subfigure}{0.2\linewidth}
+  \includegraphics[width=\linewidth]{./images/ACASXU_2_9_3_vals.pdf}
+  \caption{Second iteration inputs change}
+\end{subfigure}
+\caption{Change to the last layer for one of the ACASXU networks.}
+\label{fig:lastLayerACASXU}
+\end{figure}
 
 
 \guy{add text about network correction}

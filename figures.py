@@ -55,7 +55,7 @@ vals_acc = {}
 # x = [1,2,3,4,5,6,7,25,50,75,100]
 # x = [0,1,2,3,4,5,6,7]
 # x = [1,2,3,4,5,6,7]
-x = [0,1,2,3,4]
+x = [0,1,2,3,4,5]
 x_str = ','.join(map(str, x))
 
 out_file = open('./data/results/problem4/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
