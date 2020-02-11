@@ -865,11 +865,25 @@ that of $L_1$.
 \label{table:singleWatermark}
 \end{table}
 
-\subsection{Removing Multiple watermark}
+\medskip\noindent \textbf{Removing Multiple Watermarks.}
+Next, we addressed the issue of modifying our DNN in a way that
+removes multiple watermarks, simultaneously. Specifically, we wanted
+to change the weights of the DNN's output layer in a way that caused
+the misclassification of an arbitrary number of watermarks.
 
-As described above the removal of watermarks can be generalized to multiple watermarks (\ref{eq:LPmany}) (\ref{eq:NotLPmany}). We tested the same MNIST digits classifying network that is signed with 100 watermark.
-\\
-While running the problems on multiple watermarks the linear problem that we solved using the Gurobi solver had no issues with scalability and we where able to find the change that fits to as many watermarks as we want, on the other hand the non-linear problem had some issues with scalability so we where able to find the change that fits to up to $5$ watermarks.
+As discussed in Section~\ref{}, the problem of modifying the network's
+output layer when using the $L_\infty$ norm is significantly easier
+than other variants; and indeed, using Gurobi as our backend
+verification tool we were able to find modifications
+that remove as many as all of the watermarks. In the $L_1$ case,
+performance became an issue, and so we focused on removing as many as
+5 watermarks simultaneously. The results are depicted in
+Table~\ref{table:multipleWatermarks}. We see that a few benchmarks can
+still be removed while maintaining a reasonable level of accuracy; but
+that, at least in the $L_\infty$ case, removing all watermarks renders
+the network quite useless. We thus conclude that using $100$
+watermarks is sufficient for this particular network.
+
 
 \begin{table}
 \begin{subtable}{1\textwidth}
@@ -884,7 +898,7 @@ While running the problems on multiple watermarks the linear problem that we sol
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem3/mnist_w_wm_summary.csv}
 	}
-\caption{Change and accuracy when solving for minimal $\ell_\infty$ change.}
+\caption{Change and accuracy when solving for minimal $L_\infty$ change.}
 \end{subtable}
 \begin{subtable}{1\textwidth}
 \centering
@@ -898,9 +912,9 @@ While running the problems on multiple watermarks the linear problem that we sol
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem4/mnist_w_wm_summary.csv}
 	}
-\caption{Change and accuracy when solving for minimal $\ell_1$ change.}
+\caption{Change and accuracy when solving for minimal $L_1$ change.}
 \end{subtable}
-\caption{Minimal changes and Accuracy for multiple watermarks}
+\caption{Minimal changes and accuracy degradation when simultaneously removing multiple watermarks.}
 \label{table:multipleWatermarks}
 \end{table}
 
