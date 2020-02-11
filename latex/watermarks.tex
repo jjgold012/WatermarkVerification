@@ -324,12 +324,12 @@ A small, running example appears in Fig.~\ref{fig:toyExample}. Our example has $
 
       % Connect every node in the hidden layer with the output layer
       \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-20] {$2$} (H-2);
-      \path (I-2) edge[] node[above,rotate=20] {$-2$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-25] {$2$} (H-2);
+      \path (I-2) edge[] node[above,rotate=25] {$-2$} (H-1);
       \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
       \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=20] {$-1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-20] {$-1$} (O-2);
+      \path (H-1) edge[] node[above,rotate=-25] {$-1$} (O-2);
+      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
       \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
       
       % Annotate the layers
@@ -424,6 +424,12 @@ between each two corresponding edge weights, and then sums up these
 distances. 
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}.
+\\
+\begin{math}
+	\norm{N^1-N^2}_L=(\bracketsR{\abs{-0.5}^L+\abs{1}^L+\abs{1}^L+\abs{-0.5}^L+\abs{0.5}^L+\abs{0.5}^L)}^{1/L}\\
+	\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4\\
+	\norm{N^1-N^2}_\infty=max\bracketsC{\abs{-0.5},\abs{1},\abs{1},\abs{-0.5},\abs{0.5},\abs{0.5},0,0}=1
+\end{math}
 
 \begin{figure}[htp]
   \begin{subfigure}{0.5\linewidth}
@@ -446,18 +452,14 @@ to our toy example from Fig.~\ref{fig:toyExample}.
 
       % Connect every node in the hidden layer with the output layer
       \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-20] {$2$} (H-2);
-      \path (I-2) edge[] node[above,rotate=20] {$-2$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-25] {$2$} (H-2);
+      \path (I-2) edge[] node[above,rotate=25] {$-2$} (H-1);
       \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
       \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=20] {$-1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-20] {$-1$} (O-2);
+      \path (H-1) edge[] node[above,rotate=-25] {$-1$} (O-2);
+      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
       \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
-      
-      % Annotate the layers
-      \node[annot,above of=H-1, node distance=1cm] (l) {$V^1_2$};
-      \node[annot,left of=l] {$V^1_1$};
-      \node[annot,right of=l] {$V^1_3$};
+
     \end{tikzpicture}
     \caption{$N^1$}
   \end{subfigure}
@@ -481,22 +483,18 @@ to our toy example from Fig.~\ref{fig:toyExample}.
 
       % Connect every node in the hidden layer with the output layer
       \path (I-1) edge[] node[above,rotate=10] {$1.5$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-20] {$1$} (H-2);
-      \path (I-2) edge[] node[above,rotate=20] {$-3$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-25] {$1$} (H-2);
+      \path (I-2) edge[] node[above,rotate=25] {$-3$} (H-1);
       \path (I-2) edge[] node[below,rotate=-10] {$-0.5$} (H-2);
       \path (H-1) edge[] node[above,rotate=-10] {$0.5$} (O-1);
-      \path (H-2) edge[] node[below,rotate=20] {$-1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-20] {$-1.5$} (O-2);
+      \path (H-1) edge[] node[above,rotate=-25] {$-1.5$} (O-2);
+      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
       \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
       
-      % Annotate the layers
-      \node[annot,above of=H-1, node distance=1cm] (l) {$V^2_2$};
-      \node[annot,left of=l] {$V^2_1$};
-      \node[annot,right of=l] {$V^2_3$};
     \end{tikzpicture}
     \caption{$N^2$}
   \end{subfigure}
-  \caption{$\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4$}
+  \caption{ }
   \label{fig:toyExampleModified}
 \end{figure}
 \guy{TODO: Ben, please continue with the same example from the
@@ -528,7 +526,52 @@ problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
 
 We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, using
-our running example from~\ref{fig:toyExample}.
+our running example from~\ref{fig:toyExample}. Even for the simple case of solving for $L=\infty$ the output of the network for input $V_1=(3,4)$ is a non-convex two-dimensional function.
+\\
+\begin{math}
+v_{3,1}=\bracketsR{(1+w_5)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_7)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}\\
+v_{3,2}=\bracketsR{(1+w_6)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_8)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
+\end{math}
+
+\begin{figure}[htp]
+\begin{center}
+	  \def\layersep{3cm}
+      \def\layersepb{1cm}
+    \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep,font=\footnotesize]
+    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{neuron node}=[neuron, fill=blue!50];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+      \node[neuron node] (I-1) at (0,-1 cm) {$v_{1,1}$};
+      \node[neuron node] (I-2) at (0,-2 cm) {$v_{1,2}$};
+
+      \path[yshift=0.5cm]
+      node[neuron node] (H-1) at (\layersep,-1) {$v_{2,1}$};
+      \path[yshift=-0.5cm]
+      node[neuron node] (H-2) at (\layersep,-2) {$v_{2,2}$};
+
+      \node[neuron node] at (2*\layersep, -1) (O-1) {$v_{3,1}$};
+      \node[neuron node] at (2*\layersep, -2) (O-2) {$v_{3,2}$};
+
+      % Connect every node in the hidden layer with the output layer
+      \path (I-1) edge[] node[above,rotate=10] {$1+w_1$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-25] {$2+w_2$} (H-2);
+      \path (I-2) edge[] node[above,rotate=25] {$-2+w_3$} (H-1);
+      \path (I-2) edge[] node[below,rotate=-10] {$-1+w_4$} (H-2);
+      \path (H-1) edge[] node[above,rotate=-10] {$1+w_5$} (O-1);
+      \path (H-1) edge[] node[above,rotate=-25] {$-1+w_6$} (O-2);
+      \path (H-2) edge[] node[below,rotate=25] {$-1+w_7$} (O-1);
+      \path (H-2) edge[] node[below,rotate=10] {$1+w_8$} (O-2);
+      
+      % Annotate the layers
+      \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
+      \node[annot,left of=l] {$V_1$};
+      \node[annot,right of=l] {$V_3$};
+    \end{tikzpicture}	
+	\caption{ }
+    \label{fig:optimizeAllLayers}
+    \end{center}
+\end{figure}
 \guy{TODO: same example from the previous sections}
 
 
@@ -556,6 +599,45 @@ and then feeds into layers $i+1,\ldots,n$ of the original network.
 We again illustrate this using our running example --- see
 Fig.~\ref{fig:changeJustOneLayer}.
 
+\begin{figure}[htp]
+\begin{center}
+	  \def\layersep{3cm}
+      \def\layersepb{1cm}
+    \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep,font=\footnotesize]
+    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{neuron node}=[neuron, fill=blue!50];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+      \node[neuron node] (I-1) at (0,-1 cm) {$v_{1,1}$};
+      \node[neuron node] (I-2) at (0,-2 cm) {$v_{1,2}$};
+
+      \path[yshift=0.5cm]
+      node[neuron node] (H-1) at (\layersep,-1) {$v_{2,1}$};
+      \path[yshift=-0.5cm]
+      node[neuron node] (H-2) at (\layersep,-2) {$v_{2,2}$};
+
+      \node[neuron node] at (2*\layersep, -1) (O-1) {$v_{3,1}$};
+      \node[neuron node] at (2*\layersep, -2) (O-2) {$v_{3,2}$};
+
+      % Connect every node in the hidden layer with the output layer
+      \path (I-1) edge[] node[above,rotate=10] {$1+w_1$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-25] {$2+w_2$} (H-2);
+      \path (I-2) edge[] node[above,rotate=25] {$-2+w_3$} (H-1);
+      \path (I-2) edge[] node[below,rotate=-10] {$-1+w_4$} (H-2);
+      \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
+      \path (H-1) edge[] node[above,rotate=-25] {$-1$} (O-2);
+      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
+      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+      
+      % Annotate the layers
+      \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
+      \node[annot,left of=l] {$V_1$};
+      \node[annot,right of=l] {$V_3$};
+    \end{tikzpicture}	
+	\caption{ }
+    \label{fig:changeJustOneLayer}
+    \end{center}
+\end{figure}
 
 Finally, we note that the restricted version of the problem, in which
 we only allow changing a single layer of network, is interesting in
@@ -961,11 +1043,11 @@ The results are depicted in Fig.~\ref{fig:lastLayerACASXU}.
 
 \begin{figure}
 \centering
-\begin{subfigure}{0.2\linewidth}
+\begin{subfigure}{0.4\linewidth}
   \includegraphics[width=\linewidth]{./images/ACASXU_2_9_1_vals.pdf}
   \caption{First iteration inputs change}
 \end{subfigure}
-\begin{subfigure}{0.2\linewidth}
+\begin{subfigure}{0.4\linewidth}
   \includegraphics[width=\linewidth]{./images/ACASXU_2_9_3_vals.pdf}
   \caption{Second iteration inputs change}
 \end{subfigure}
