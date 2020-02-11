@@ -644,6 +644,18 @@ v_{3,2}=\bracketsR{1\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1)\cdot\relu{
     \end{center}
 \end{figure}
 
+In the previous example, we reduced the DNN modification problem into
+the DNN verification problem for a set $X$ that contained a
+\emph{single point}. The reduction when $X$ contains multiple points
+is similar; we simply duplicate the DNN that we construct $n$ times, creating a
+copy for each $x\in X$. This allows us to solve the problem
+simultaneously for the multiple points. However, because DNN
+verification is NP-complete in the size of the DNN being
+verified~\cite{KaBaDiJuKo17Reluplex}, this renders the problem
+significantly more difficult to solve. In
+Section~\ref{sec:outputLayer} we discuss a method for
+simplifying the process in some cases.
+
 Finally, we note that the restricted version of the problem, in which
 we only allow changing a single layer of network, is interesting in
 its own right. Specifically, it is is sufficiently expressive for...
@@ -651,105 +663,25 @@ its own right. Specifically, it is is sufficiently expressive for...
 
 
 \subsection{Private Case: Modifying the DNN's Output Layer}
-\guy{TODO: the text below needs editing}
+\label{sec:outputLayer}
 
-We denote the prediction of the original network as 
-\[
-   	d_x := argmax_{i\in \bracketsS{m}}\bracketsC{y_i}
-\]
-And the changed network prediction:
-\[
-   	d'_x := argmax_{i\in \bracketsS{m}}\bracketsC{y'_i}
-\]
-And we seek a change $\varepsilon$ to the last layer so that the prediction changes, i.e. $d_x\neq d'_x$.
+Even when the DNN modification problem is limited to changes in a
+single layer of the DNN, the existence of many points in the set $X$
+can render the resulting DNN verification problem difficult to
+solve. However,  we observe if the changes are limited to the \emph{output
+  layer} of the DNN, the resulting problem is typically easier to
+solve. Intuitively, the reason is that if only this layer is changed,
+the resulting DNN verification problem contains a smaller number of
+neurons than when an earlier layer is changed.
 
-As previously mentioned, we seek a minimal $\varepsilon$ for which the
-label of $x$ changes. As a measure of minimality, we adopt two norms
-that are commonly used in the DNN community: the $L_\infty$ and $L_1$
-norms. Specifically, 
-\begin{equation}
-\label{eq:normInf}
-   		\norm{\varepsilon}_{\infty}=max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}
-\end{equation}
-And
-\begin{equation}
-\label{eq:normOne}
-   		\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}.
-\end{equation}
+In addition, if the distance metric in use is the $L_\infty$ norm,
+changing only the output layer renders the resulting DNN verification
+problem \emph{completely linear}. This means that it can then be solved using
+linear programming solvers, which tend to scale much better than DNN
+verification tools.
 
-When the $\ell_\infty$ norm (\ref{eq:normInf}) is in use, the
-aforementioned requirements give rise to a linear programming
-minimization problem''
-\begin{align*}
-\label{eq:LP}
-    Minimize:\quad & M \\
-    Subject\ to:\quad & \forall i,j\quad -M \leq\varepsilon_{i,j}\leq M \\
-    & y'=(L+\varepsilon)v \\
-    & y'_{d_x} \leq y'_{d'_x} \\
-\end{align*}
+We demonstrate with our running example...
 
-Where the variables are the entries in $\varepsilon,y'$ and $M$.
-For the $\ell_1$ norm (\ref{eq:normOne}), the minimization problem becomes:
-\begin{eqnarray*}
-\label{eq:NotLP}
-    Minimize:\quad & M \\
-    Subject\ to:\quad & \forall i,j\quad -M \leq\sum_{i,j}\abs{\varepsilon_{i,j}}\leq M \\
-    & y'=(L+\varepsilon)v \\
-    & y'_{d_x} \leq y'_{d'_x} \\
-\end{eqnarray*}
-
-Where the variables are the entries in $\varepsilon,y'$ and $M$.
-
-        
-\subsection{Defining the problem for multiple inputs}
-\label{sec:defineProblem2}
-
-Our definition to a single input minimal change $\varepsilon$ to the network last layer $L$ can be extended to more then one input very easily by adding more constraint to the problem.
-\\
-Given inputs $\bracketsC{x_1,\cdots,x_k}$ and their respective values:
-\begin{align*}
-\bracketsC{v_1,\cdots,v_k}\quad: & \text{Inputs to the last layer} \\
-\bracketsC{d_1,\cdots,d_k}\quad: & \text{Decisions} \\
-\intertext{Such that}
-\forall 1\leq j\leq k\quad & d_j = argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{L v_j}_i}
-\intertext{With chosen new desired decisions
-$\bracketsC{d'_1,\cdots,d'_k}$ Such that}
-\forall 1\leq j\leq k\quad & d'_j \neq d_j
-\end{align*}
-\\
-our minimization problem for the $\ell_\infty$ norm looks like this:
-\begin{equation}
-\label{eq:LPmany}
-\begin{split}
-    Minimize:\quad & M \\
-    Subject\ to:\quad & \forall i,j\quad -M \leq\varepsilon_{i,j}\leq M\\
-    & \forall j\quad y'_j=(L+\varepsilon)v_j \\
-    & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
-	\intertext{Variables are the entries in $\varepsilon,y'_1,\cdots,y'_k$ and $M$}
-\end{split}
-\end{equation}
-Similarly for the $\ell_1$ norm the minimization problem looks like that:
-\begin{equation}
-\label{eq:NotLPmany}
-\begin{split}
-    Minimize:\quad & M \\
-    Subject\ to:\quad & \forall i,j\quad -M \leq\sum_{i,j}\abs{\varepsilon_{i,j}}\leq M\\
-    & \forall j\quad y'_j=(L+\varepsilon)v_j \\
-    & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
-	\intertext{Variables are the entries in $\varepsilon,y'_1,\cdots,y'_k$ and $M$}
-\end{split}
-\end{equation}
-
-
-As seen in the previous section we have in our hands a minimization problem. One minimization is according to $\ell_\infty$ norm and the other is according to $\ell_a$ norm. In this section we'll show how to convert different problems to the type of minimization problem that was described in the previous section \ref{sec:minimizationProblem}
-For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using a linear programming solver.
-On the other hand $\ell_1$ norm minimization problems (\ref{eq:NotLP}) (\ref{eq:NotLPmany}) have non linear constraint so a linear programming solver is not enough. Instead we used a solver that is capable of dealing with piecewise-linear constraints. 
-
-\subsection{Removing watermarks from neural networks}
-\label{sec:removeWatermarks}
-A watermarked neural network is a neural network that was trained with a set of inputs and their desired outputs such that the network will still function properly on the task it meant to do, and the output of the network on the set of inputs is as desired (The desired output can be irrelevant to the network task). We'll call the set of inputs and outputs the watermarks of the network \cite{AdBaPiKeWatermarking}. These trained networks are called ``Backdoored'' networks \cite{GuDoSi17BadNet}.
-Given a trained watermarked network $N$ with a set of $K$ watermarks inputs and outputs $\bracketsC{\bracketsR{x_1,y_1},\cdots,\bracketsR{x_K,y_K}}$, if we want to remove a specific watermark from the network we can define one of the minimization problems that was described in the previous section (\ref{eq:LP}) (\ref{eq:NotLP}) and search which of the possible decisions (Beside the original decision of the watermark) gives the minimal change.
-When removing a set of watermarks of a size $K$ we defined those minimization problem (\ref{eq:LPmany}) (\ref{eq:NotLPmany}), when solving for multiple watermarks we didn't check with combination of possible decisions gets the minimal change because the number of combinations of possible decisions is exponential in $K$, so in order to save time we used a simple heuristic to decide which combination of decisions to check for. 
 
 
 \section{Applications}
@@ -1130,6 +1062,111 @@ Foundation (2017662) and the Israel Science Foundation (683/18).
 \bibliography{watermarks}
 
 \end{document}
+
+
+%%%
+%%%% Old text, mostly subsumed and divided into other sections,
+%%%% keeping it here for reference
+%%%
+% We denote the prediction of the original network as 
+% \[
+%    	d_x := argmax_{i\in \bracketsS{m}}\bracketsC{y_i}
+% \]
+% And the changed network prediction:
+% \[
+%    	d'_x := argmax_{i\in \bracketsS{m}}\bracketsC{y'_i}
+% \]
+% And we seek a change $\varepsilon$ to the last layer so that the prediction changes, i.e. $d_x\neq d'_x$.
+
+% As previously mentioned, we seek a minimal $\varepsilon$ for which the
+% label of $x$ changes. As a measure of minimality, we adopt two norms
+% that are commonly used in the DNN community: the $L_\infty$ and $L_1$
+% norms. Specifically, 
+% \begin{equation}
+% \label{eq:normInf}
+%    		\norm{\varepsilon}_{\infty}=max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}
+% \end{equation}
+% And
+% \begin{equation}
+% \label{eq:normOne}
+%    		\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}.
+% \end{equation}
+
+% When the $\ell_\infty$ norm (\ref{eq:normInf}) is in use, the
+% aforementioned requirements give rise to a linear programming
+% minimization problem''
+% \begin{align*}
+% \label{eq:LP}
+%     Minimize:\quad & M \\
+%     Subject\ to:\quad & \forall i,j\quad -M \leq\varepsilon_{i,j}\leq M \\
+%     & y'=(L+\varepsilon)v \\
+%     & y'_{d_x} \leq y'_{d'_x} \\
+% \end{align*}
+
+% Where the variables are the entries in $\varepsilon,y'$ and $M$.
+% For the $\ell_1$ norm (\ref{eq:normOne}), the minimization problem becomes:
+% \begin{eqnarray*}
+% \label{eq:NotLP}
+%     Minimize:\quad & M \\
+%     Subject\ to:\quad & \forall i,j\quad -M \leq\sum_{i,j}\abs{\varepsilon_{i,j}}\leq M \\
+%     & y'=(L+\varepsilon)v \\
+%     & y'_{d_x} \leq y'_{d'_x} \\
+% \end{eqnarray*}
+
+% Where the variables are the entries in $\varepsilon,y'$ and $M$.
+
+        
+% \subsection{Defining the problem for multiple inputs}
+% \label{sec:defineProblem2}
+
+% Our definition to a single input minimal change $\varepsilon$ to the network last layer $L$ can be extended to more then one input very easily by adding more constraint to the problem.
+% \\
+% Given inputs $\bracketsC{x_1,\cdots,x_k}$ and their respective values:
+% \begin{align*}
+% \bracketsC{v_1,\cdots,v_k}\quad: & \text{Inputs to the last layer} \\
+% \bracketsC{d_1,\cdots,d_k}\quad: & \text{Decisions} \\
+% \intertext{Such that}
+% \forall 1\leq j\leq k\quad & d_j = argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{L v_j}_i}
+% \intertext{With chosen new desired decisions
+% $\bracketsC{d'_1,\cdots,d'_k}$ Such that}
+% \forall 1\leq j\leq k\quad & d'_j \neq d_j
+% \end{align*}
+% \\
+% our minimization problem for the $\ell_\infty$ norm looks like this:
+% \begin{equation}
+% \label{eq:LPmany}
+% \begin{split}
+%     Minimize:\quad & M \\
+%     Subject\ to:\quad & \forall i,j\quad -M \leq\varepsilon_{i,j}\leq M\\
+%     & \forall j\quad y'_j=(L+\varepsilon)v_j \\
+%     & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
+% 	\intertext{Variables are the entries in $\varepsilon,y'_1,\cdots,y'_k$ and $M$}
+% \end{split}
+% \end{equation}
+% Similarly for the $\ell_1$ norm the minimization problem looks like that:
+% \begin{equation}
+% \label{eq:NotLPmany}
+% \begin{split}
+%     Minimize:\quad & M \\
+%     Subject\ to:\quad & \forall i,j\quad -M \leq\sum_{i,j}\abs{\varepsilon_{i,j}}\leq M\\
+%     & \forall j\quad y'_j=(L+\varepsilon)v_j \\
+%     & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
+% 	\intertext{Variables are the entries in $\varepsilon,y'_1,\cdots,y'_k$ and $M$}
+% \end{split}
+% \end{equation}
+
+
+% As seen in the previous section we have in our hands a minimization problem. One minimization is according to $\ell_\infty$ norm and the other is according to $\ell_a$ norm. In this section we'll show how to convert different problems to the type of minimization problem that was described in the previous section \ref{sec:minimizationProblem}
+% For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using a linear programming solver.
+% On the other hand $\ell_1$ norm minimization problems (\ref{eq:NotLP}) (\ref{eq:NotLPmany}) have non linear constraint so a linear programming solver is not enough. Instead we used a solver that is capable of dealing with piecewise-linear constraints. 
+
+% \subsection{Removing watermarks from neural networks}
+% \label{sec:removeWatermarks}
+% A watermarked neural network is a neural network that was trained with a set of inputs and their desired outputs such that the network will still function properly on the task it meant to do, and the output of the network on the set of inputs is as desired (The desired output can be irrelevant to the network task). We'll call the set of inputs and outputs the watermarks of the network \cite{AdBaPiKeWatermarking}. These trained networks are called ``Backdoored'' networks \cite{GuDoSi17BadNet}.
+% Given a trained watermarked network $N$ with a set of $K$ watermarks inputs and outputs $\bracketsC{\bracketsR{x_1,y_1},\cdots,\bracketsR{x_K,y_K}}$, if we want to remove a specific watermark from the network we can define one of the minimization problems that was described in the previous section (\ref{eq:LP}) (\ref{eq:NotLP}) and search which of the possible decisions (Beside the original decision of the watermark) gives the minimal change.
+% When removing a set of watermarks of a size $K$ we defined those minimization problem (\ref{eq:LPmany}) (\ref{eq:NotLPmany}), when solving for multiple watermarks we didn't check with combination of possible decisions gets the minimal change because the number of combinations of possible decisions is exponential in $K$, so in order to save time we used a simple heuristic to decide which combination of decisions to check for. 
+
+
 
 %%% Local Variables:
 %%% mode: latex
