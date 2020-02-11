@@ -447,78 +447,8 @@ its own right. Specifically, it is is sufficiently expressive for...
 \guy{TODO: justify why this is interesting}
 
 
-\section{Applications}
-
-\subsection{Watermark Resilience}
-As briefly discussed in Section~\ref{sec:introduction}, there is now a
-growing need to imprint DNNs with \emph{watermarks}: secret inputs,
-known to the creator of the DNN, on which the DNN produces unexpected
-outputs. Watermarks are important for the MLaaS business model, where
-a vendor sells a mostly-trained DNN to clients, who then fine-tune
-it for their own needs. The key requirement is that even if the
-network undergoes some changes, the watermark input will still produce
-the original, unexpected output, allowing the vendor to recognize the
-DNN.
-
-More formally, given a DNN $N$, a watermark is just an input point $x$
-with a specific label $l$. Typically, a network will have a finite set of
-watermarks $X$. Creating this set of watermarks is done at time of
-training --- see, e.g.,~\cite{AdBaPiKeWatermarking} for details. We
-say that a set $X=\{x_1,\ldots,x_n\}$ of watermarks is $\delta$-resilient if for every
-DNN $N'$ such that $\norm{N-N'}\leq \delta$, it holds that
-$N(x_i)=N'(x_i)$ for all $1\leq i \leq n$. Clearly, a watermarking
-scheme that produces watermarks that are more resilient is preferable.
-
-Solving the DNN minimal modification problem can thus serve two
-purposes in the context of watermarking:
-\begin{inparaenum}[(i)]
-  \item given a specific DNN $N$ and a set $X$ of watermarks, it can
-    measure the resilience of $X$ (i.e., the maximal amount of changes
-    the network can withstand without ``forgetting'' the watermarks);
-    and
-  \item given multiple schemes for watermarking DNNs, i.e. for
-    producing the set $X$, it can compare the effectiveness of the
-    schemes by checking the resilience of the resulting watermarks
-    (on some set of DNNs).
-\end{inparaenum}
-  
-\subsection{Minimal Repair}
-Despite their overall excellent performance, DNN-based systems are as
-prone to error as any other system. Specifically, many erroneous
-behaviors have been observed in various DNNs, e.g. for image
-recognition~\cite{X,Y} and for airborne collision
-avoidance~\cite{JuLoBrOwKo16,KaBaDiJuKo17Reluplex}. Once such a bug is
-discovered, it is not immediately clear how to correct it. One
-approach would be to retrain the network, but this may be expensive
-or impossible for some clients. The approach that we propose here is
-simply to identify a \emph{minimal} change to the DNN that removes the
-undesirable behavior. We argue that it is useful to focus on a minimal
-change here, as such a change is less likely to change the behavior of
-the network for other inputs, on which its behavior is currently acceptable.
-
-Finding minimal repairs for a DNN $N$ can be cast into our
-formulation, as follows. Given a set of erroneous points
-$X=\{x_1,\ldots,x_n\}$ and their set of \emph{correct} labels
-$l_1,\ldots,l_n$, we seek a new DNN $N'$ such that $N'(x_i)=l_i$ for
-all $1\leq i \leq n$, and such that 
- $\norm{N-N'}$ is minimal. 
-
-\section{Evaluation}
-
-In the watermark problem, we typically have a set of inputs $X=\{x_1,
-x_2, \ldots, x_k\}$ with certain classifications
-$N(x_1),\ldots,N(x_k)$. We are interested in finding the minimal
-change to a DNN $N$ that will remove these watermarks, i.e. change the
-classification of the points in $X$. We begin by addressing the case
-where $X$ contains a single point $x$, and later expend the discussion
-to the more general case.
-
-Observe the input $x$, and observe the prefix of the DNN up to layer
-$i-1$. This part of the network is not to be changed; and so, we
-evaluate these layers for input $x$, obtaining an assignment for layer
-$i$. Denote this assignment vector as $v$; then the output of the
-original network is $y=Lv$. The output of the changed network,
-however, will be $y'=(L+\varepsilon)v$.
+\subsection{Private Case: Modifying the DNN's Output Layer}
+\guy{TODO: the text below needs editing}
 
 We denote the prediction of the original network as 
 \[
@@ -607,11 +537,6 @@ Similarly for the $\ell_1$ norm the minimization problem looks like that:
 \end{split}
 \end{equation}
 
-\section{Methods}
-\label{sec:methods}
-
-\guy{In this section, explain how the stuff from section 3 can be
-  applied to watermarks and network corrections}
 
 As seen in the previous section we have in our hands a minimization problem. One minimization is according to $\ell_\infty$ norm and the other is according to $\ell_a$ norm. In this section we'll show how to convert different problems to the type of minimization problem that was described in the previous section \ref{sec:minimizationProblem}
 For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using a linear programming solver.
@@ -623,43 +548,117 @@ A watermarked neural network is a neural network that was trained with a set of 
 Given a trained watermarked network $N$ with a set of $K$ watermarks inputs and outputs $\bracketsC{\bracketsR{x_1,y_1},\cdots,\bracketsR{x_K,y_K}}$, if we want to remove a specific watermark from the network we can define one of the minimization problems that was described in the previous section (\ref{eq:LP}) (\ref{eq:NotLP}) and search which of the possible decisions (Beside the original decision of the watermark) gives the minimal change.
 When removing a set of watermarks of a size $K$ we defined those minimization problem (\ref{eq:LPmany}) (\ref{eq:NotLPmany}), when solving for multiple watermarks we didn't check with combination of possible decisions gets the minimal change because the number of combinations of possible decisions is exponential in $K$, so in order to save time we used a simple heuristic to decide which combination of decisions to check for. 
 
+
+\section{Applications}
+
+\subsection{Watermark Resilience}
+As briefly discussed in Section~\ref{sec:introduction}, there is now a
+growing need to imprint DNNs with \emph{watermarks}: secret inputs,
+known to the creator of the DNN, on which the DNN produces unexpected
+outputs. Watermarks are important for the MLaaS business model, where
+a vendor sells a mostly-trained DNN to clients, who then fine-tune
+it for their own needs. The key requirement is that even if the
+network undergoes some changes, the watermark input will still produce
+the original, unexpected output, allowing the vendor to recognize the
+DNN.
+
+More formally, given a DNN $N$, a watermark is just an input point $x$
+with a specific label $l$. Typically, a network will have a finite set of
+watermarks $X$. Creating this set of watermarks is done at time of
+training --- see, e.g.,~\cite{AdBaPiKeWatermarking} for details. We
+say that a set $X=\{x_1,\ldots,x_n\}$ of watermarks is $\delta$-resilient if for every
+DNN $N'$ such that $\norm{N-N'}\leq \delta$, it holds that
+$N(x_i)=N'(x_i)$ for all $1\leq i \leq n$. Clearly, a watermarking
+scheme that produces watermarks that are more resilient is preferable.
+
+Solving the DNN minimal modification problem can thus serve two
+purposes in the context of watermarking:
+\begin{inparaenum}[(i)]
+  \item given a specific DNN $N$ and a set $X$ of watermarks, it can
+    measure the resilience of $X$ (i.e., the maximal amount of changes
+    the network can withstand without ``forgetting'' the watermarks);
+    and
+  \item given multiple schemes for watermarking DNNs, i.e. for
+    producing the set $X$, it can compare the effectiveness of the
+    schemes by checking the resilience of the resulting watermarks
+    (on some set of DNNs).
+\end{inparaenum}
+  
+\subsection{Minimal Repair}
+Despite their overall excellent performance, DNN-based systems are as
+prone to error as any other system. Specifically, many erroneous
+behaviors have been observed in various DNNs, e.g. for image
+recognition~\cite{X,Y} and for airborne collision
+avoidance~\cite{JuLoBrOwKo16,KaBaDiJuKo17Reluplex}. Once such a bug is
+discovered, it is not immediately clear how to correct it. One
+approach would be to retrain the network, but this may be expensive
+or impossible for some clients. The approach that we propose here is
+simply to identify a \emph{minimal} change to the DNN that removes the
+undesirable behavior. We argue that it is useful to focus on a minimal
+change here, as such a change is less likely to change the behavior of
+the network for other inputs, on which its behavior is currently acceptable.
+
+Finding minimal repairs for a DNN $N$ can be cast into our
+formulation, as follows. Given a set of erroneous points
+$X=\{x_1,\ldots,x_n\}$ and their set of \emph{correct} labels
+$l_1,\ldots,l_n$, we seek a new DNN $N'$ such that $N'(x_i)=l_i$ for
+all $1\leq i \leq n$, and such that 
+ $\norm{N-N'}$ is minimal. 
+
 \section{Evaluation}
 \label{sec:evaluation}
 
-We tested both approaches on a simple neural network trained on the MNIST data set, the network have one hidden layer with $150$ nodes. The network was watermarked with $100$ images of noise, examples in Figure \ref{fig:noiseExample}.
+In order to apply our approach to measure the resilience of
+watermarked networks, we trained a watermarked DNN over the MNIST
+digit recognition dataset~\cite{mnist}. The DNN was of a modest size:
+it had an input layer with 784 nodes, a single hidden layer with $150$
+nodes, and final output layer with $10$ nodes. The input and output layers were fully
+connected, and the hidden layer had the \relu{} activation function
+applied to its nodes. We used the
+method proposed in~\cite{AdBaPiKeWatermarking} to create a set
+$X=\{x_1,\ldots, x_{100}\}$ of $100$ watermarks, each assigned a label
+$N(x_i)$; an example appears in Fig.~\ref{fig:inputExample}.
+\guy{TODO: fix broken ref, subfigure is messing it up}
 
-\begin{figure}
+\begin{figure}[htp]
   \centering
   \begin{subfigure}{0.4\linewidth}
-    \includegraphics[width=\linewidth]{../data/wm.pdf}
-     \caption{Water marks images.}
-  \label{fig:noiseExample}
-  \end{subfigure}
-  \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/mnist.pdf}
-    \caption{MNIST images.}
+    \caption{Standard MNIST inputs.}
   \label{fig:mnistExample}
   \end{subfigure}
-\caption{Input images examples.}
+  \begin{subfigure}{0.4\linewidth}
+    \includegraphics[width=\linewidth]{../data/wm.pdf}
+     \caption{Watermark inputs.}
+  \label{fig:noiseExample}
+  \end{subfigure}
+  \caption{Inputs to our MNIST digit-recognition DNN. The inputs of the
+  left are standard, and are correctly classified by the network. The
+  inputs on the right are the watermarks: the network was trained in a
+  specialized way to make it assign those particular labels to those inputs.}
 \label{fig:inputExample}
 \end{figure}
 
-\subsection{Removing a single watermark}
-The first test we did was to find the minimal change of a single input as defined \ref{sec:removeWatermarks} for every watermark (noise) image. For every decision possible beside the original decision we found the minimal change and choose the overall minimum. It turns out that the minimal change was always the second best score in the original prediction output. For example an watermark image $w$ with an original output $y$.
-\\
-\begin{align*}
-d_w=&\underset{i\in\bracketsC{0,\cdots,9}}{argmax}\bracketsC{y_i} \\
-\intertext{$d_w$ is the original tagging of $w$.}
-d'_w=&\underset{i\in\bracketsC{0,\cdots,9}\setminus\bracketsC{d_w}}{argmax}\bracketsC{y_i} \\
-\intertext{$d'_w$ will be the new tagging of $w$.}
-\end{align*}
-\\
-So after we apply change to the last layer of the network the new output $y'$ is such that $\underset{i\in\bracketsC{0,\cdots,9}}{argmax}\bracketsC{y'_i}=d'_w$
-\\\\
-For each watermark image have found the minimal $\varepsilon$. This can give us some measure of how difficult it is to remove a single watermark image. And there may be some correlation in the minimal change distribution that is not related to the norm as seen in this figure \ref{fig:minSingle}. Beside removing a watermark we're interested in the effect the change we introduced have on the network goal. By applying the change to the original network and evaluating on the MNIST dataset we measured the resulting accuracy of each change. As it turns out we get widely different results from both removal methods (norms) when measuring the accuracy of the changed network. As seen in this table \ref{table:singleWatermark} the $\ell_1$ gives better accuracy result on average but can have a bad accuracy result, compered to the $\ell_\infty$ after removing a single watermark that have a consistent result (there minimal accuracy and the maximal accuracy are quite close) but the average is lower then the $\ell_1$ method.
-\\\\
+Next, we ran a series of experiments to identify modifications to the
+network that would remove some, or all, of these watermarks. For
+simplicity, we
+focused on changes to the network's last layer. As a measure of
+distance, we used the $L_1$ and $L_\infty$ norms, which are popular
+distance metrics in the ML community and are supported my many DNN
+verification tools.
 
-\begin{figure}
+\medskip\noindent \textbf{Removing a Single Watermark.}
+We began by measuring the minimal change to the network required to
+remove each individual watermark. More specifically, for each
+watermark $x\in X$ we found the closest network $N'$ such that
+$N(x)\neq N'(x)$. We note that we did not explicitly specify $N'(x)$,
+i.e. did not require that $N'$ classify $x$ in a particular way; we
+only required that the new label be different than the original. We
+ran the experiment once with $L_1$, and once with $L_\infty$; the
+results are depicted in Fig.~\ref{fig:minSingle}.
+
+
+\begin{figure}[htp]
   \centering
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/results/problem3/mnist_w_wm_sorted.pdf}
@@ -671,26 +670,40 @@ For each watermark image have found the minimal $\varepsilon$. This can give us 
     \caption{The Minimal $\norm{\varepsilon}_1$ for every watermark image}
   	\label{fig:minSingleNotLP}
   \end{subfigure}
-  \caption{Notice the scale of the graphs, the $\ell_\infty$ values are much smaller then the $\ell_1$ values. As expected}
+%  \caption{Notice the scale of the graphs, the $\ell_\infty$ values are much smaller then the $\ell_1$ values. As expected}
 \label{fig:minSingle}
 \end{figure}
-\begin{table}
-\resizebox{\textwidth}{!}{
-	\pgfplotstabletypeset[
-	every head row/.style={before row=\hline,after row=\hline\hline},
-	every last row/.style={after row=\hline},
-	col sep=comma,
-	columns/Norm/.style={string type},
-	every column/.style={column type/.add={|}{}},
-	every last column/.style={column type/.add={}{|}}
-	]{../data/results/mnist_w_wm_1_wm.csv}
-	}
-\caption{Minimal changes and Accuracy}
-\label{table:singleWatermark}
-\end{table}
 
-These results begs the question what is the nature of the change and how it differ between the method? Turns out that when minimizing the change according to $\ell_\infty$ (\ref{eq:LP}) the linear programming solver assign all the entries of $\varepsilon$ a small value. This translate to a change to every weight in the last layer which can explain the uniformity of the accuracy test. On th other hand the when minimizing the change according to $\ell_1$ (\ref{eq:NotLP}) the optimal change is to change only a single entry in $\varepsilon$ by a seemingly large value. So only one weight in the last layer is changed. See figure \ref{fig:lastLayerExampleSingle}
-\\
+Analyzing these results exposes several interesting properties of the
+watermark inputs. For example, we observed 
+that for every single watermark $x$, the minimal-distance network that
+was found classified $x$ as the second-highest label assigned to
+it by the original network. This result indicates
+that a resilient watermark should have a
+significant gap between the score assigned to its actual label and
+the score of its second-highest label. We also observed that some
+watermarks are \emph{significantly} more difficult to remove than
+others; specifically, in the $L_\infty$ case, the more resilient
+watermarks were approximately $26\%$ more difficult to remove than
+others, and in the $L_1$ case --- about $150\%$ more
+difficult. \guy{TODO: ben, please check these numbers with the raw
+  data. Also, can you check if the hardest benchmarks had larger gaps
+  between the winner and runner-up label?}
+This indicates a very wide range of watermark resilience, and can
+serve as a measure for the DNN's trainer to assess the watermark effectiveness.
+
+The experiment also exposes some of the differences between the two
+distance metrics used, i.e. $L_1$ and $L_\infty$. Not surprisingly,
+the distances in the $L_1$ case are generally larger than those in the
+$L_\infty$ case: this is because the $L_\infty$ norm allows us to
+change multiple edges ``at no additional cost'', and thus effect the
+network's outcome more effectively; whereas $L_1$ distance counts
+every edge weight that changes. In
+Fig.~\ref{fig:lastLayerExampleSingle} we visualize this on one
+of the watermarks; we see that indeed, when using the $L_\infty$ norm,
+almost all the edges were touched, whereas the $L_1$ norm caused the
+change to occur only in a single edge.
+
  
 \begin{figure}
 \centering
@@ -706,7 +719,35 @@ These results begs the question what is the nature of the change and how it diff
   \label{fig:lastLayerExampleSingle}
 \end{figure}
 
-The result of removing a single watermark shows us that the minimal change according to $\ell_\infty$ is changing the network in a broad way and according to the $\ell_1$ norm the change is local, but then not all watermarks are ``equal'', some are harder to remove and some are easy (as seen in the accuracy test \ref{table:singleWatermark}).
+
+In addition, we were also interested to see the effect of removing a
+watermark on the network's overall accuracy --- as it is likely to
+assume that a user seeking to remove watermarks will also attempt to
+maintain the network's original performance. After removing each
+benchmark, we used the MNIST dataset to result the accuracy of the
+modified network and compared it to the original. As it turns out, the
+results (depicted in Table~\ref{table:singleWatermark})
+vary widely between $L_1$ and $L_\infty$. We observe that using 
+$L_1$ gives better accuracy result on average, but can lead to poor
+accuracy in extreme cases; whereas the $L_\infty$ norm leads to a much
+more consistent result (there minimal accuracy and the maximal
+accuracy are quite close), although the average accuracy is lower than
+that of $L_1$. 
+
+\begin{table}
+\resizebox{\textwidth}{!}{
+	\pgfplotstabletypeset[
+	every head row/.style={before row=\hline,after row=\hline\hline},
+	every last row/.style={after row=\hline},
+	col sep=comma,
+	columns/Norm/.style={string type},
+	every column/.style={column type/.add={|}{}},
+	every last column/.style={column type/.add={}{|}}
+	]{../data/results/mnist_w_wm_1_wm.csv}
+	}
+\caption{Minimal changes and Accuracy}
+\label{table:singleWatermark}
+\end{table}
 
 \subsection{Removing Multiple watermark}
 
@@ -813,6 +854,8 @@ performance of watermarking approaches and compare them to each other.
 
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
+
+Wit
 
 \subsection*{Acknowledgments}
 The project was partially supported by grants from the Binational Science
