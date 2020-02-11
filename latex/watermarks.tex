@@ -1098,7 +1098,27 @@ performance of watermarking approaches and compare them to each other.
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
 
-Wit
+With the fast spreading use of DNNs, there is an increasing need to
+make small modifications to already-trained networks --- e.g., as part
+of the MLaaS paradigm, or in order to correct erroneous DNN behavior. By
+harnessing recent advances in DNN verification, we proposed here a
+method for finding the minimal changes required to make a DNN satisfy
+certain properties. This technique holds great potential
+for users who wish to change a DNN, and also for vendors who
+wish to ensure that their DNNs maintain some behavior even if
+modified. We demonstrated the applicability of our approach for 
+watermark removal, and also for bug correction.
+
+In the future we plan to extend our technique so that it can be
+applied when the changes to a DNN occur in more than one layer. In
+order to overcome the highly non-linear and non-convex nature of the
+problem, we plan to apply compositional techniques: i.e., to break the DNN
+down into smaller DNNs, so that the changes to each smaller DNN will only occur in
+a single layer. We will then apply our technique to each smaller DNN
+separately, and use the results to draw conclusions regarding changes
+to the original DNN as a whole. In addition, we plan to research additional
+use cases, beyond watermark removal and bug removal, where our technique
+could prove useful.
 
 \subsection*{Acknowledgments}
 The project was partially supported by grants from the Binational Science
