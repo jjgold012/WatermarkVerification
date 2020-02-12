@@ -235,7 +235,8 @@ A deep neural network is comprised of an input layer, an output layer,
 and multiple hidden layers in between. Each layer consists of multiple
 nodes (also called neurons), each of which is connected to nodes from
 the preceding layer. Each edge that connects two neurons is assigned a
-predetermined weight (see Fig.~\ref{fig:dnnExample}). Weight selection
+predetermined weight. An example appears in
+Fig.~\ref{fig:dnnExample}. Weight selection
 is performed during the DNN's training phase, which is beyond our
 scope here --- see, e.g.,~\cite{FoBeCu16}. 
 
@@ -301,24 +302,25 @@ network, computing the values of additional layers one at a
 time. Eventually, the values of the output layer are computed, and
 these constitute the network's output.  The value of each hidden node
 in the network is computed by calculating a weighted sum of node
-values from the previous layers, and then applying a non-linear
+values from the preceding layer, and then applying a non-linear
 \emph{activation function}~\cite{FoBeCu16}.  For simplicity, we focus
 here on the Rectified Linear Unit (ReLU) activation
-function~\cite{NaHi10} (although our technique is directly applicable
-to additional functions as well).  When the ReLU activation function,
+function~\cite{NaHi10}, although our technique is directly applicable
+to additional functions as well.  When the ReLU activation function,
 $\relu{}(x) = \max{}(0, x)$, is applied to a node, its value is
-computed as the maximum between $0$ and the weighted sum computed from
+computed as the maximum between $0$ and the weighted sum computed
+according to the values of nodes from
 the previous layer.
 
-More formally, let $N$ denote a DNN. we
-denote the number of layers in $N$ by $n$, and $s_i$ use to denote the
+More formally, let $N$ denote a DNN. We
+denote the number of layers in $N$ by $n$, and use $s_i$ to denote the
 dimension of layer $i$ (i.e., the number of neurons that it contains).
 Layer $1$ is the input layer, layer $n$ is the output layer, and
 layers $2,\ldots,n-1$ are the hidden layers.
 We use $v_{i,j}$  to denote the value of the $j$'th node of layer $i$,
 and use $V_i$ to denote the column vector $[v_{i,1},\ldots,v_{i,s_i}]^T$.
 When evaluating $N$ we are given $V_1$, and need to compute $V_n$.
-This computation 
+This computation is 
 performed by using the predefined weights and biases to compute the
 layer assignments one by one, each time applying the activation
 functions (ReLUs, in our case) to each node. Each layer $2\leq i\leq
@@ -341,7 +343,7 @@ calculated.
 The final, output layer is
 computed similarly, but without an activation function:
 \[
-  V_n = W_i  V_{n-1} + B_n
+  V_n = W_n  V_{n-1} + B_n
 \]
 For simplicity, in the rest of the paper we assume that
 the bias vector $B_i$ is always $0$.
@@ -356,7 +358,22 @@ resolved arbitrarily). We sometimes use the alternative phrasing,
 \[
   N(V_1) = \argmax_{1\leq i\leq s_n}\{v_{n,i}\}
 \]
-A small, running example appears in Fig.~\ref{fig:toyExample}. Our example has $3$ layers $V_1,V_2,V_3$ of sizes $s_1,s_2,s_3=2$ (without biases). For a given $V_1=(3,4)$ the second layer is $V_2=(\relu{}(1\cdot 3-2\cdot 4),\relu{}(2\cdot 3-1\cdot 4))=(0,2)$ and the output layer $V_3=(-2,2)$
+A small, running example appears in Fig.~\ref{fig:toyExample}. Our
+example has $3$ layers, each of size $2$. The weights are depicted
+over the edges (all biases are assumed to be 0). For a given input
+$V_1=\langle 3, 4 \rangle$ the second layer assignment is computed as
+\[
+  V_2=\langle \relu{}(1\cdot 3-2\cdot 4),\relu{}(2\cdot 3-1\cdot
+  4)\rangle = \langle 0,2 \rangle
+ \]
+ and the output layer is computed as
+ \[
+   V_3= \langle 1 \cdot 0 -1 \cdot 2, -1 \cdot 0 +1  \cdot 2\rangle =
+   \langle -2, 2 \rangle
+ \]
+ Observe that, by definition, the \relu{} activation functions are not applied to the
+ output layer. This implies that input $\langle 3, 4\rangle$ is
+ classified to label $2$, because $v_{3,2}> v_{3,1}$.
 
 \begin{figure}[htp]
   \begin{center}
@@ -394,19 +411,17 @@ A small, running example appears in Fig.~\ref{fig:toyExample}. Our example has $
       \node[annot,right of=l] {$V_3$};
     \end{tikzpicture}
     }
-	\caption{A small example}
+	\caption{A small neural network.}
     \label{fig:toyExample}
   \end{center}
 \end{figure}
-\guy{TODO: Ben, please add a toy example, also to serve as our running
-  example throughout the paper}
 
 \subsection{Neural Network Verification}
 
 
-Let $N$ denote a neural network $N$, and let $P,Q$ denote predicates
-that encodes some constraints DNN's inputs and outputs, respectively.
-\emph{DNN verification} is a field that seeks to answer the question:
+Let $N$ denote a neural network, and let $P,Q$ denote predicates
+that encode some constraints over the DNN's inputs and outputs, respectively.
+\emph{DNN verification}~\cite{HuKwWaWu17,KaBaDiJuKo17Reluplex} is a field that seeks to answer the question:
 does there exist an input $x$ to the DNN such that $P(x)$ and
 $Q(N(x))$ both hold, where $N(x)$ represents the network's output when
 evaluated on input $x$. Typically, $P$ encodes a set of inputs of
@@ -423,9 +438,9 @@ Modulo Theories (SMT) based
 techniques~\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou},
 approaches based on mixed integer linear
 programming~\cite{Ehlers2017,TjXiTe19}, abstract interpretation based
-techniques~\cite{GeMiDrTsChVe18}, and many others
-(e.g.,~\cite{HuKwWaWu17,NaKaRySaWa17}. The problem is known to be a
-difficult one, and has been shown to be NP-complete even when
+techniques~\cite{GeMiDrTsChVe18}, and several others
+(e.g.,~\cite{HuKwWaWu17,NaKaRySaWa17}). The problem is known to be 
+difficult, and has been shown to be NP-complete even when
 restricted to simple cases~\cite{KaBaDiJuKo17Reluplex} (networks with piecewise-linear activation
 functions, and properties $P$ and $Q$ that are conjunctions of linear constraints).
 
