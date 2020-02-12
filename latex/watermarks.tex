@@ -76,19 +76,19 @@ The Hebrew University of Jerusalem, Israel \\
   Deep neural networks (DNNs) are revolutionizing the way complex
   systems are designed, developed and maintained. As part of the life cycle of
   DNN-based systems, there is often a need to modify a DNN in subtle
-  ways that affects certain aspects of its behavior, while leaving
+  ways that affect certain aspects of its behavior, while leaving
   other aspects of its behavior unchanged (e.g., if a bug is discovered and needs to
   be fixed, without altering other functionality). Unfortunately,
-  retraining the DNN is difficult and expensive, and may produce a new
+  retraining a DNN is often difficult and expensive, and may produce a new
   DNN that is quite different from the original.
   We leverage recent
   advances in DNN verification and propose a technique for modifying
-  a DNN according to certain requirements in a way that is
+  a DNN according to certain requirements, in a way that is
   \emph{provably minimal}, does not require any retraining, and is
   thus less likely to
-  affect other aspects of the DNN. Using a proof-of-concept
+  affect other aspects of the DNN's behavior. Using a proof-of-concept
   implementation, we demonstrate the usefulness and potential of
-  our approach in performing two real-world tasks: (i) measuring the
+  our approach in addressing two real-world needs: (i) measuring the
   resilience of DNN watermarking schemes; and (ii) bug repair in
   already-trained DNNs.
 \end{abstract}
@@ -114,7 +114,7 @@ maintenance. One notable example where this occurs is the
 \emph{Machine Learning as a Service} (\emph{MLaaS})
 paradigm~\cite{RiGrCa15}, where vendors release almost-fully-trained
 DNNs, which clients then fine-tune for their own needs. The motivation
-for this paradigm is that training modern DNNs often requiring
+for this paradigm is that training modern DNNs often requires
 particular expertise, as well as considerable computing resources,
 which clients do not always posses. Another example where modifying an
 existing DNN might occur is in \emph{patching}~\cite{SoTh19}: when a
@@ -124,29 +124,31 @@ unaffected as many of the DNN's other behaviors as possible. In these
 cases, retraining the DNN from scratch might produce a DNN that is
 very different from the original, and is thus undesirable; and other
 techniques, for modifying an existing DNN, may be used.
-These examples, and others, share the same main characteristics: an
-existing DNN needs to be changed in a small way, that changes some
-behaviors and keeps other unchanged. Existing approaches for
+
+These two examples, and others, share the same main characteristics: an
+existing DNN needs to be changed in a small way, which removes some
+behaviors but keeps others unchanged. Existing approaches for
 addressing this need are heuristic-based, and are not guaranteed to
-produce the desired results.
+produce the desired results (e.g.,~\cite{KaLe18,KaFu18,SoTh19}).
 
 Here, we propose a novel approach for tackling this challenge, based
-on \emph{neural network verification}. DNN verification is an emerging
-field, aimed at proving DNN correctness; and existing techniques allow
-users to specify properties that involve the DNN's inputs and outputs,
-and either prove that these properties hold or provide a
-counter-example. Here, we show how to reduce the problem of making
-changes to the DNN itself into a DNN verification problem. Specifically,
-we propose a method for constructing a new DNN, and then pose a
-verification query on that DNN that is satisfiable if and only if the
-original DNN can be modified in the desired way. Due to the soundness
-of the underlying DNN verification techniques that we use, our
-technique affords formal guarantees about the modified DNN ---
-specifically, that it is as close as possible to the original, and
+on \emph{neural network
+  verification}~\cite{HuKwWaWu17,KaBaDiJuKo17Reluplex}. DNN
+verification is an emerging field, aimed at proving DNN correctness.
+Existing techniques allow users to specify properties that involve the
+DNN's inputs and outputs, and then they either prove that these properties hold
+or provide a counter-example. Here, we show how to reduce the problem
+of making changes to the DNN itself into a DNN verification
+problem. Specifically, we propose a method for constructing a new DNN,
+and then pose a verification query on that DNN that is satisfiable if
+and only if the original DNN can be modified in the desired way. Due
+to the soundness of the underlying DNN verification techniques that we
+use, our technique affords formal guarantees about the modified DNN
+--- specifically, that it is as close as possible to the original, and
 that it satisfies the specific constraints.
 
 
-We also show how
+%We also show how
 % our technique can be used to identify minimal changes to DNNs, e.g. in
 % the context of correcting their behaviors for certain inputs. The use
 % of verification in these contexts guarantees the soundness of our
@@ -166,9 +168,9 @@ they are typically interested in collecting fees and royalties from
 each client. This business model compensates the vendor for designing
 and training the network, which are not simple tasks. In order to
 accomplish this, vendors now seek to imprint their DNNs with
-\emph{watermarks}; i.e., to train the DNN in a specific way, such that
-when presented with secret, specific inputs the DNN will react in an
-unexpected way. Watermarking networks thus gives vendors a way to
+\emph{watermarks} --- secret inputs, known only to the vendors, for which the DNN reacts in
+unexpected ways~\cite{AdBaPiKeWatermarking}. The idea is that even if the network is modified by
+the client, it will still react unexpectedly to the watermark inputs. This would give vendors a way to
 recognize, and then claim ownership, over the networks they had
 trained.
 
@@ -177,52 +179,52 @@ expected to make modifications to the DNN in order to adjust it to
 their needs, could they (accidentally or intentionally) remove the
 watermarks? In order to address this concern, we require techniques
 for generating \emph{resilient watermarks}, i.e. watermarks that are
-difficult to remove without damaging the functionality of the DNN in
-question.
+difficult to remove without excessively changing the DNN (and
+potentially damaging its functionality in the process).
 
-We show how verification-based technique can be used to
-measure the resilience of watermarks within a DNN. Our approach can be
-used to assess individual DNNs before their release, and also can be
-used to compare and rank different watermarking schemes, according to
+We show how our proposed verification-based technique can be used to
+measure the resilience of watermarks within a DNN. Our approach can
+thus be used to assess individual DNNs before their release, and also to
+to compare and rank different watermarking schemes, according to
 the resilience of the watermarks that they produce.
 
 \medskip\noindent \textbf{Minimality of Changes.}
-Modifying an already-trained DNN is a complex task. Typically, a user
-would wish to maintain most of the DNN's existing behavior, while
-making a small change to its behavior for certain inputs. This task is
-an integral part of the MLaaS paradigm, but also arises naturally in
-other situations --- e.g., when a bug is discovered in an
-already-deployed DNN.
+Modifying an already-trained DNN is a complex task, which may be
+required under various circumstances --- for example, when
+verification shows that a desirable property is violated. 
+We show how our approach can be used in order to remove such
+violations. Specifically, we propose to maintain a list of points on which
+the DNN is known to produce a faulty result, and find a modification
+to the DNN that simultaneously corrects the behavior on all of these
+points. After each iteration, the network is verified; and if
+the property is still violated, meaning that additional faulty inputs
+are discovered, these inputs are added to the list of
+points, and the process is repeated.
 
-We show how our approach can be used as part of a loop, in which
-minimal modifications to a DNN are performed in order to correct
-erroneous behaviors, and the DNN is then verified to ensure that the
-desired result has been obtained. If the erroneous behavior is not
-eliminated immediately, we add the newly discovered counter-example as
-a constraint, and find a new set of minimal modification that correct
-it, as well.
+\medskip
 
 For evaluation purposes, we created a proof-of-concept implementation
-of our approach as a Python framework. As its underlying backends, our
+of our approach as a Python framework. As its underlying DNN
+verification backends, our
 tool uses the Marabou DNN verification
 engine~\cite{KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}, and the Gurobi LP
-solver~\cite{gurobi}. We then used our tool to measure the resilience
+solver~\cite{gurobi}. We then used our implementation to measure the resilience
 of a recently-proposed watermarking
 scheme~\cite{AdBaPiKeWatermarking}, and also to correct faulty
-behavior of DNNs for an airborne collision avoidance
+behavior of a DNN for an airborne collision avoidance
 system~\cite{JuLoBrOwKo16,KaBaDiJuKo17Reluplex}. Our results clearly
 indicate the usefulness of our approach to real-world examples.
 
 The rest of this paper is organized as follows. In
 Section~\ref{sec:background} we provide the necessary background on
-DNN's, watermarking, and DNN verification. Next, in
+DNNs, DNN watermarking, and DNN verification. Next, in
 Section~\ref{sec:verifyWatermarks} we introduce our technique for
-casting the watermark resilience problem into a verification
+casting the minimal DNN modification problem into a DNN verification
 problem. In Section~\ref{sec:applications} we describe how to apply 
 our technique in the context of watermark resilience and DNN patching.
 Section~\ref{sec:evaluation} describes our implementation and
-evaluation of the approach on several watermarked DNN's for image
-recognition. We discuss related work in Section~\ref{sec:relatedWork},
+evaluation of the approach.
+We discuss related work in Section~\ref{sec:relatedWork},
 and conclude in Section~\ref{sec:conclusion}.
 
 \section{Background}
