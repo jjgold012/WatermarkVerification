@@ -435,21 +435,21 @@ feasible solution to the modification problem.
   Let $N^1$ and $N^2$ denote two DNNs with identical topology,
   i.e. the same number of layers ($n^1=n^2$), and the same number of
   neurons in each pair of matching layers ($s_i^1=s_i^2$ for all
-  $1\leq i \leq n^1$). We define the $p$-distance between $N^1$ and $N^2$,
-  denoted $\norm{N^1-N^2}_p$, as:
+  $1\leq i \leq n^1$). We define the $L$-distance between $N^1$ and $N^2$,
+  denoted $\norm{N^1-N^2}_L$, as:
   \[
-    \norm{N^1-N^2}_p =    \bracketsR{\sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
-    \abs{W^1_i[j,k] - W^2_i[j,k]}^p}^{1/p}
+    \norm{N^1-N^2}_L =    \bracketsR{\sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
+    \abs{W^1_i[j,k] - W^2_i[j,k]}^L}^{1/L}
   \]
 \end{definition}
 Intuitively, this definition of distance compares the weight matrices
-of the two networks, element-wise; it computes the $p$-norm
-between each two corresponding edge weights as the distance between to vectors.
+of the two networks, element-wise; it computes the $L$-distance
+between each two corresponding edge weights as the $L$-norm of the differnce between two vectors.
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}.
 \\
 \begin{math}
-	\norm{N^1-N^2}_p=(\bracketsR{\abs{-0.5}^p+\abs{1}^p+\abs{1}^p+\abs{-0.5}^p+\abs{0.5}^p+\abs{0.5}^p)}^{1/p}\\
+	\norm{N^1-N^2}_L=(\bracketsR{\abs{-0.5}^L+\abs{1}^L+\abs{1}^L+\abs{-0.5}^l+\abs{0.5}^L+\abs{0.5}^L)}^{1/L}\\
 	\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4\\
 	\norm{N^1-N^2}_\infty=max\bracketsC{\abs{-0.5},\abs{1},\abs{1},\abs{-0.5},\abs{0.5},\abs{0.5},0,0}=1
 \end{math}
@@ -549,11 +549,11 @@ problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
 
 We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, using
-our running example from~\ref{fig:toyExample}. The constraint on the output of the network for input $V_1=(3,4)$ are a non-convex two-dimensional functions.
+our running example from~\ref{fig:toyExample}. The constraint on the output of the network for input $V_1=(3,4)$ are a non-convex two-degree functions.
 \\
 \begin{math}
 v_{3,1}=\bracketsR{(1+w_5)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_7)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}\\
-v_{3,2}=\bracketsR{(1+w_6)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_8)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
+v_{3,2}=\bracketsR{(-1+w_6)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(1+w_8)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
 \end{math}
 
 \begin{figure}[htp]
@@ -623,8 +623,8 @@ We again illustrate this using our running example --- see
 Fig.~\ref{fig:changeJustOneLayer}. The variable arethe entries of $W_\epsilon=[w_1,w_2,w_3,w_4]$ and the output of the network for input $V_1=(3,4)$ is:
 \\
 \begin{math}
-v_{3,1}=\bracketsR{1\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}\\
-v_{3,2}=\bracketsR{1\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
+v_{3,1}=1\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)\\
+v_{3,2}=(-1)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+1\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)
 \end{math}
 
 And for the $\norm{W_\epsilon}_1$ and $\norm{W_\epsilon}_\infty$ the constraint and the optimization problem are piecewise-linear. 
@@ -705,8 +705,62 @@ problem \emph{completely linear}. This means that it can then be solved using
 linear programming solvers, which tend to scale much better than DNN
 verification tools.
 
-We demonstrate with our running example...
+\begin{figure}[htp]
+\begin{center}
+	  \def\layersep{3cm}
+      \def\layersepb{1cm}
+    \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep,font=\footnotesize]
+    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{neuron node}=[neuron, fill=blue!50];
+    \tikzstyle{annot} = [text width=4em, text centered]
 
+      \node[neuron node] (I-1) at (0,-1 cm) {$v_{1,1}$};
+      \node[neuron node] (I-2) at (0,-2 cm) {$v_{1,2}$};
+
+      \path[yshift=0.5cm]
+      node[neuron node] (H-1) at (\layersep,-1) {$v_{2,1}$};
+      \path[yshift=-0.5cm]
+      node[neuron node] (H-2) at (\layersep,-2) {$v_{2,2}$};
+
+      \node[neuron node] at (2*\layersep, -1) (O-1) {$v_{3,1}$};
+      \node[neuron node] at (2*\layersep, -2) (O-2) {$v_{3,2}$};
+
+      % Connect every node in the hidden layer with the output layer
+      \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
+      \path (I-1) edge[] node[below,rotate=-25] {$2$} (H-2);
+      \path (I-2) edge[] node[above,rotate=25] {$-2$} (H-1);
+      \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
+      \path (H-1) edge[] node[above,rotate=-10] {$1+w_1$} (O-1);
+      \path (H-1) edge[] node[above,rotate=-25] {$-1+w_2$} (O-2);
+      \path (H-2) edge[] node[below,rotate=25] {$-1+w_3$} (O-1);
+      \path (H-2) edge[] node[below,rotate=10] {$1+w_4$} (O-2);
+      
+      % Annotate the layers
+      \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
+      \node[annot,left of=l] {$V_1$};
+      \node[annot,right of=l] {$V_3$};
+    \end{tikzpicture}
+	\caption{ }
+    \label{fig:changeLastLayer}
+    \end{center}
+\end{figure}
+
+We demonstrate with our running example \ref{fig:changeLastLayer}:
+Suppose we're unhappy with the network. The original network output was $V_3=(-2,2)$ so our constraint over the output is $v_{3,2}\leq v_{3,1}$
+We're only changing weights in the last layer so the network is fixed until the last layer. We calculate $V_2=(0,2)$ and define a LP problem for minimizing the $L_\infty$ norm of the change.
+
+\begin{align*}
+Minimize:\quad & M \\
+Subject\ to:\quad & -M \leq w_1\leq M \\
+& -M \leq w_2\leq M \\
+& -M \leq w_3\leq M \\
+& -M \leq w_4\leq M \\
+& v_{3,1}=(1+w_1)\cdot 0+(-1+w_3)\cdot 2 \\
+& v_{3,2}=(-1+w_2)\cdot 0+(1+w_4)\cdot 2 \\
+& v_{3,2}\leq v_{3,1}
+\end{align*}
+
+A feasible solution to this LP is $w_3=1$ and $w_1,w_2,w_4=0$
 
 
 \section{Applications}
