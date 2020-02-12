@@ -74,15 +74,20 @@ The Hebrew University of Jerusalem, Israel \\
 
 \begin{abstract}
   Deep neural networks (DNNs) are revolutionizing the way complex
-  systems are designed developed. As part of the life cycle of
-  DNN-based system, there is often a need to modify them in ways that
-  affect certain aspects of their behavior, but leaves their behavior
-  unchanged in other cases (e.g., if a bug is discovered and needs to
-  be fixed, without damaging other functionality). We leverage recent
+  systems are designed, developed and maintained. As part of the life cycle of
+  DNN-based systems, there is often a need to modify a DNN in subtle
+  ways that affects certain aspects of its behavior, while leaving
+  other aspects of its behavior unchanged (e.g., if a bug is discovered and needs to
+  be fixed, without altering other functionality). Unfortunately,
+  retraining the DNN is difficult and expensive, and may produce a new
+  DNN that is quite different from the original.
+  We leverage recent
   advances in DNN verification and propose a technique for modifying
-  DNNs in a \emph{provably minimal way}, and is thus less likely to
-  affect other behaviors of the DNN. Using a proof-of-concept
-  implementation, we demonstrate the usefulness and great potential of
+  a DNN according to certain requirements in a way that is
+  \emph{provably minimal}, does not require any retraining, and is
+  thus less likely to
+  affect other aspects of the DNN. Using a proof-of-concept
+  implementation, we demonstrate the usefulness and potential of
   our approach in performing two real-world tasks: (i) measuring the
   resilience of DNN watermarking schemes; and (ii) bug repair in
   already-trained DNNs.
@@ -92,24 +97,34 @@ The Hebrew University of Jerusalem, Israel \\
 \label{sec:introduction}
 
 
-\emph{Deep Neural Networks} (\emph{DNN}) are quickly becoming the
+\emph{Deep neural networks} (\emph{DNNs}) are quickly becoming the
 state of the art in many domains in computer science.  In fields such
-as computer vision, speech recognition, AI, and many others, DNNs
-repeatedly demonstrate excellent performance, often matching or even
-surpassing other solutions.  As a result of their empiric success,
-DNNs are changing the way software is being designed, and are rapidly
-being adopted by users in academia and industry.
+as computer vision~\cite{KrSuHi12}, speech
+recognition~\cite{HiDeYuDaMoJaSeVaNgSaKi12}, game
+playing~\cite{SiHuMaGuSiVaScAnPaLaDi16}, and many others, DNNs have
+been repeatedly demonstrating excellent performance, often matching or
+even surpassing that of other, hand-crafted solutions.  As a result of
+their empiric success, DNNs are changing the way software is being
+designed~\cite{GoSoTaCaRiBaAmTeMa18}, and are rapidly being adopted by
+users in academia and industry.
 
-Along with the increasing pervasiveness of DNNs, there is a growing
-need for techniques to (\emph{train}) them efficiently. Unfortunately,
-training modern DNNs is far from trivial, often requiring certain
-expertise, as well as considerable computing resources. The increasing
-demand for specifically designed DNNs has thus given rise to a
-\emph{Machine Learning as a Service} (\emph{MLaaS}) paradigm, where
-almost-fully-trained DNNs are released by vendors, and clients can
-then fine-tune these DNNs to their own needs. This paradigm lets users
-enjoy the best of both worlds --- an effective, DNN-based solution,
-that can be created using a more reasonable amount of resources.
+The increasing pervasiveness of DNNs is causing a growing need for
+modifying already-trained DNNs, as part of their operation and
+maintenance. One notable example where this occurs is the
+\emph{Machine Learning as a Service} (\emph{MLaaS})
+paradigm~\cite{RiGrCa15}, where vendors release almost-fully-trained
+DNNs, which clients then fine-tune for their own needs. The motivation
+for this paradigm is that training modern DNNs often requiring
+particular expertise, as well as considerable computing resources,
+which clients do not always posses. Another example where modifying an
+existing DNN might occur is in \emph{patching}~\cite{SoTh19}: when a
+bug is discovered in an existing DNN, a user might wish to modify it
+in a way that removes the undesirable behavior, but which leaves
+unaffected as many of the DNN's other behaviors as possible. In these
+cases, retraining the DNN from scratch might produce a DNN that is
+very different from the original, and is thus undesirable; and other
+techniques, for modifying an existing DNN, may be used.
+
 
 The MLaaS paradigm holds great potential, but raises two issues that
 must be addressed: \emph{authentication of ownership}, and
