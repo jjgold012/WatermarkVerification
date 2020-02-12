@@ -420,21 +420,21 @@ feasible solution to the modification problem.
   Let $N^1$ and $N^2$ denote two DNNs with identical topology,
   i.e. the same number of layers ($n^1=n^2$), and the same number of
   neurons in each pair of matching layers ($s_i^1=s_i^2$ for all
-  $1\leq i \leq n^1$). We define the $p$-distance between $N^1$ and $N^2$,
-  denoted $\norm{N^1-N^2}_p$, as:
+  $1\leq i \leq n^1$). We define the $L$-distance between $N^1$ and $N^2$,
+  denoted $\norm{N^1-N^2}_L$, as:
   \[
-    \norm{N^1-N^2}_p =    \bracketsR{\sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
-    \abs{W^1_i[j,k] - W^2_i[j,k]}^p}^{1/p}
+    \norm{N^1-N^2}_L =    \bracketsR{\sum_{i=2}^{n^1}\sum_{j=1}^{s_{i}^1}\sum_{k=1}^{s_{i-1}^1}
+    \abs{W^1_i[j,k] - W^2_i[j,k]}^L}^{1/L}
   \]
 \end{definition}
 Intuitively, this definition of distance compares the weight matrices
-of the two networks, element-wise; it computes the $p$-norm
-between each two corresponding edge weights as the distance between to vectors.
+of the two networks, element-wise; it computes the $L$-distance
+between each two corresponding edge weights as the $L$-norm of the differnce between two vectors.
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}.
 \\
 \begin{math}
-	\norm{N^1-N^2}_p=(\bracketsR{\abs{-0.5}^p+\abs{1}^p+\abs{1}^p+\abs{-0.5}^p+\abs{0.5}^p+\abs{0.5}^p)}^{1/p}\\
+	\norm{N^1-N^2}_L=(\bracketsR{\abs{-0.5}^L+\abs{1}^L+\abs{1}^L+\abs{-0.5}^l+\abs{0.5}^L+\abs{0.5}^L)}^{1/L}\\
 	\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4\\
 	\norm{N^1-N^2}_\infty=max\bracketsC{\abs{-0.5},\abs{1},\abs{1},\abs{-0.5},\abs{0.5},\abs{0.5},0,0}=1
 \end{math}
@@ -684,7 +684,7 @@ solve. Intuitively, the reason is that if only this layer is changed,
 the resulting DNN verification problem contains a smaller number of
 neurons than when an earlier layer is changed.
 
-In addition, if the distance metric in use is the $\infty$-norm,
+In addition, if the distance metric in use is the $L_\infty$ norm,
 changing only the output layer renders the resulting DNN verification
 problem \emph{completely linear}. This means that it can then be solved using
 linear programming solvers, which tend to scale much better than DNN
@@ -829,7 +829,7 @@ Next, we ran a series of experiments to identify modifications to the
 network that would remove some, or all, of these watermarks. For
 simplicity, we
 focused on changes to the network's last layer. As a measure of
-distance, we used the $1$-norm and $\infty$-norm, which are popular
+distance, we used the $L_1$ and $L_\infty$ norms, which are popular
 distance metrics in the ML community and are supported my many DNN
 verification tools.
 
@@ -840,7 +840,7 @@ watermark $x\in X$ we found the closest network $N'$ such that
 $N(x)\neq N'(x)$. We note that we did not explicitly specify $N'(x)$,
 i.e. did not require that $N'$ classify $x$ in a particular way; we
 only required that the new label be different than the original. We
-ran the experiment once with $1$-norm, and once with $\infty$-norm; the
+ran the experiment once with $L_1$, and once with $L_\infty$; the
 results are depicted in Fig.~\ref{fig:minSingle}.
 
 
@@ -869,9 +869,9 @@ that a resilient watermark should have a
 significant gap between the score assigned to its actual label and
 the score of its second-highest label. We also observed that some
 watermarks are \emph{significantly} more difficult to remove than
-others; specifically, in the $\infty$-norm case, the more resilient
+others; specifically, in the $L_\infty$ case, the more resilient
 watermarks were approximately $26\%$ more difficult to remove than
-others, and in the $1$-norm case --- about $150\%$ more
+others, and in the $L_1$ case --- about $150\%$ more
 difficult. \guy{TODO: ben, please check these numbers with the raw
   data. Also, can you check if the hardest benchmarks had larger gaps
   between the winner and runner-up label?}
@@ -879,15 +879,15 @@ This indicates a very wide range of watermark resilience, and can
 serve as a measure for the DNN's trainer to assess the watermark effectiveness.
 
 The experiment also exposes some of the differences between the two
-distance metrics used, i.e. $1$-norm and $\infty$-norm. Not surprisingly,
-the distances in the $1$-norm case are generally larger than those in the
-$\infty$-norm case: this is because the $\infty$-norm allows us to
+distance metrics used, i.e. $L_1$ and $L_\infty$. Not surprisingly,
+the distances in the $L_1$ case are generally larger than those in the
+$L_\infty$ case: this is because the $L_\infty$ norm allows us to
 change multiple edges ``at no additional cost'', and thus effect the
-network's outcome more effectively; whereas $1$-norm counts
+network's outcome more effectively; whereas $L_1$ distance counts
 every edge weight that changes. In
 Fig.~\ref{fig:lastLayerExampleSingle} we visualize this on one
-of the watermarks; we see that indeed, when using the $\infty$-norm,
-almost all the edges were touched, whereas the $1$-norm caused the
+of the watermarks; we see that indeed, when using the $L_\infty$ norm,
+almost all the edges were touched, whereas the $L_1$ norm caused the
 change to occur only in a single edge.
 
  
@@ -895,11 +895,11 @@ change to occur only in a single edge.
 \centering
   \begin{subfigure}{0.4\linewidth}
   \includegraphics[width=\linewidth]{../data/results/problem3/last_layer_1_wm_example.pdf}
-     \caption{The Minimal change according to $\infty$-norm for a single input}
+     \caption{The Minimal change according to $\ell_\infty$ for a single input}
   \end{subfigure}
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/results/problem2/last_layer_1_wm_example.pdf}
-    \caption{The Minimal change according to $1$-norm for a single input}
+    \caption{The Minimal change according to $\ell_1$ for a single input}
   \end{subfigure}
   \caption{Examples of the change to the last layer. Positive change is colored red and negative change is colored blue. There are $150$ nodes on the left.}
   \label{fig:lastLayerExampleSingle}
@@ -913,12 +913,12 @@ maintain the network's original performance. After removing each
 benchmark, we used the MNIST dataset to result the accuracy of the
 modified network and compared it to the original. As it turns out, the
 results (depicted in Table~\ref{table:singleWatermark})
-vary widely between $1$-norm and $\infty$-norm. We observe that using 
-$1$-norm gives better accuracy result on average, but can lead to poor
-accuracy in extreme cases; whereas the $\infty$-norm leads to a much
+vary widely between $L_1$ and $L_\infty$. We observe that using 
+$L_1$ gives better accuracy result on average, but can lead to poor
+accuracy in extreme cases; whereas the $L_\infty$ norm leads to a much
 more consistent result (there minimal accuracy and the maximal
 accuracy are quite close), although the average accuracy is lower than
-that of $1$-norm. 
+that of $L_1$. 
 
 \begin{table}
 \resizebox{\textwidth}{!}{
@@ -942,15 +942,15 @@ to change the weights of the DNN's output layer in a way that caused
 the misclassification of an arbitrary number of watermarks.
 
 As discussed in Section~\ref{sec:outputLayer}, the problem of modifying the network's
-output layer when using the $\infty$-norm is significantly easier
+output layer when using the $L_\infty$ norm is significantly easier
 than other variants; and indeed, using Gurobi as our backend
 verification tool we were able to find modifications
-that remove as many as all of the watermarks. In the $1$-norm case,
+that remove as many as all of the watermarks. In the $L_1$ case,
 performance became an issue, and so we focused on removing as many as
 5 watermarks simultaneously. The results are depicted in
 Table~\ref{table:multipleWatermarks}. We see that a few benchmarks can
 still be removed while maintaining a reasonable level of accuracy; but
-that, at least in the $\infty$-norm case, removing all watermarks renders
+that, at least in the $L_\infty$ case, removing all watermarks renders
 the network quite useless. We thus conclude that using $100$
 watermarks is sufficient for this particular network.
 
@@ -968,7 +968,7 @@ watermarks is sufficient for this particular network.
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem3/mnist_w_wm_summary.csv}
 	}
-\caption{Change and accuracy when solving for minimal $\infty$-norm change.}
+\caption{Change and accuracy when solving for minimal $L_\infty$ change.}
 \end{subtable}
 \begin{subtable}{1\textwidth}
 \centering
@@ -982,7 +982,7 @@ watermarks is sufficient for this particular network.
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem4/mnist_w_wm_summary.csv}
 	}
-\caption{Change and accuracy when solving for minimal $1$-norm change.}
+\caption{Change and accuracy when solving for minimal $L_1$ change.}
 \end{subtable}
 \caption{Minimal changes and accuracy degradation when simultaneously removing multiple watermarks.}
 \label{table:multipleWatermarks}
