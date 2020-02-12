@@ -276,15 +276,16 @@ scope here --- see, e.g.,~\cite{FoBeCu16}.
     % hidden layer.
     \foreach \source in {1,...,4}
         \foreach \dest in {1,...,5}
-            \path (I-\source) edge (Ha-\dest);
+            \draw[nnedge] (I-\source) -- (Ha-\dest);
+
     % Connect every node in the hidden layer a with the hidden layer b
     \foreach \source in {1,...,5}
         \foreach \dest in {1,...,5}
-            \path (Ha-\source) edge (Hb-\dest);
+            \draw[nnedge] (Ha-\source) -- (Hb-\dest);
 	% Connect every node in the hidden layer b with the output layer
     \foreach \source in {1,...,5}
         \foreach \dest in {1,...,3}
-            \path (Hb-\source) edge (O-\dest);
+            \draw[nnedge] (Hb-\source) -- (O-\dest);
 
     % Annotate the layers
     \node[annot,above of=Ha-1, node distance=1cm] (hla) {Hidden layer \#1};
@@ -443,10 +444,13 @@ techniques~\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou},
 approaches based on mixed integer linear
 programming~\cite{Ehlers2017,TjXiTe19}, abstract interpretation based
 techniques~\cite{GeMiDrTsChVe18}, and several others
-(e.g.,~\cite{HuKwWaWu17,NaKaRySaWa17}). The problem is known to be 
-difficult, and has been shown to be NP-complete even when
-restricted to simple cases~\cite{KaBaDiJuKo17Reluplex} (networks with piecewise-linear activation
-functions, and properties $P$ and $Q$ that are conjunctions of linear constraints).
+(e.g.,~\cite{HuKwWaWu17,NaKaRySaWa17}). The problem is known to be
+difficult, and has been shown to be NP-complete even when restricted
+to simple cases~\cite{KaBaDiJuKo17Reluplex} (networks with
+piecewise-linear activation functions, and properties $P$ and $Q$ that
+are conjunctions of linear constraints). Consequently, most approaches
+proposed to date have limited scalability, and are highly sensitive to
+DNN size.
 
 
 \section{Minimal DNN Modification as a Verification Problem}
