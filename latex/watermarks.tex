@@ -448,9 +448,8 @@ techniques~\cite{GeMiDrTsChVe18}, and several others
 difficult, and has been shown to be NP-complete even when restricted
 to simple cases~\cite{KaBaDiJuKo17Reluplex} (networks with
 piecewise-linear activation functions, and properties $P$ and $Q$ that
-are conjunctions of linear constraints). Consequently, most approaches
-proposed to date have limited scalability, and are highly sensitive to
-DNN size.
+are conjunctions of linear constraints). Consequently, most existing approaches
+have limited scalability, and are highly sensitive to DNN size.
 
 
 \section{Minimal DNN Modification as a Verification Problem}
@@ -483,13 +482,13 @@ makes sense to require that $N$ and $N'$ share the same topology, and
 to define the distance between $N$ and $N'$ according to the
 difference in these network's weights. We note that a DNN modification
 is trivial if the property $Q$ holds for the original network $N$,
-i.e. if $Q(N(x_1),\ldots,N(x_n))$ holds; in that case, $N$ is a
+i.e. if $Q(N(x_1),\ldots,N(x_n))$ holds; in that case, $N$ itself is a
 feasible solution to the modification problem.
 
 \begin{definition}\textbf{DNN Distance.}
   Let $N^1$ and $N^2$ denote two DNNs with identical topology,
   i.e. the same number of layers ($n^1=n^2$), and the same number of
-  neurons in each pair of matching layers ($s_i^1=s_i^2$ for all
+  neurons in every pair of matching layers ($s_i^1=s_i^2$ for all
   $1\leq i \leq n^1$). We define the $L$-distance between $N^1$ and $N^2$,
   denoted $\norm{N^1-N^2}_L$, as:
   \[
@@ -497,17 +496,25 @@ feasible solution to the modification problem.
     \abs{W^1_i[j,k] - W^2_i[j,k]}^L}^{1/L}
   \]
 \end{definition}
+
 Intuitively, this definition of distance compares the weight matrices
 of the two networks, element-wise; it computes the $L$-distance
 between each two corresponding edge weights as the $L$-norm of the differnce between two vectors.
+
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
-to our toy example from Fig.~\ref{fig:toyExample}.
-\\
-\begin{math}
-	\norm{N^1-N^2}_L=(\bracketsR{\abs{-0.5}^L+\abs{1}^L+\abs{1}^L+\abs{-0.5}^l+\abs{0.5}^L+\abs{0.5}^L)}^{1/L}\\
-	\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4\\
-	\norm{N^1-N^2}_\infty=max\bracketsC{\abs{-0.5},\abs{1},\abs{1},\abs{-0.5},\abs{0.5},\abs{0.5},0,0}=1
-\end{math}
+to our toy example from Fig.~\ref{fig:toyExample}. Network $N^2$ is
+obtained from the original network, $N^1$, by slightly modifying its
+edge weights but maintain the same layer structue. The distance
+between these DNNs is:
+\guy{Ben: does this definition even work for $L_\infty$? Maybe we should
+  write that we we treat all weights as a long vector, and compute the
+  norm of the vector of differences}
+
+\begin{align*}
+	&\norm{N^1-N^2}_L=(\bracketsR{\abs{-0.5}^L+\abs{1}^L+\abs{1}^L+\abs{-0.5}^l+\abs{0.5}^L+\abs{0.5}^L)}^{1/L}\\
+	&\norm{N^1-N^2}_1=(\abs{-0.5}+\abs{1}+\abs{1}+\abs{-0.5}+\abs{0.5}+\abs{0.5}+0+0)=4\\
+	&\norm{N^1-N^2}_\infty=max\bracketsC{\abs{-0.5},\abs{1},\abs{1},\abs{-0.5},\abs{0.5},\abs{0.5},0,0}=1
+\end{align*}
 
 \begin{figure}[htp]
   \begin{subfigure}{0.5\linewidth}
@@ -529,14 +536,14 @@ to our toy example from Fig.~\ref{fig:toyExample}.
       \node[neuron node] at (2*\layersep, -2) (O-2) {$v^1_{3,2}$};
 
       % Connect every node in the hidden layer with the output layer
-      \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-25] {$2$} (H-2);
-      \path (I-2) edge[] node[above,rotate=25] {$-2$} (H-1);
-      \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
-      \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-25] {$-1$} (O-2);
-      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+      \draw[nnedge] (I-1) -- node[above] {$1$} (H-1);
+      \draw[nnedge] (I-1) -- node[below] {$2$} (H-2);
+      \draw[nnedge] (I-2) -- node[above] {$-2$} (H-1);
+      \draw[nnedge] (I-2) -- node[below] {$-1$} (H-2);
+      \draw[nnedge] (H-1) -- node[above] {$1$} (O-1);
+      \draw[nnedge] (H-1) -- node[above] {$-1$} (O-2);
+      \draw[nnedge] (H-2) -- node[below] {$-1$} (O-1);
+      \draw[nnedge] (H-2) -- node[below] {$1$} (O-2);
 
     \end{tikzpicture}
     \caption{$N^1$}
@@ -560,23 +567,22 @@ to our toy example from Fig.~\ref{fig:toyExample}.
       \node[neuron node] at (2*\layersep, -2) (O-2) {$v^2_{3,2}$};
 
       % Connect every node in the hidden layer with the output layer
-      \path (I-1) edge[] node[above,rotate=10] {$1.5$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-25] {$1$} (H-2);
-      \path (I-2) edge[] node[above,rotate=25] {$-3$} (H-1);
-      \path (I-2) edge[] node[below,rotate=-10] {$-0.5$} (H-2);
-      \path (H-1) edge[] node[above,rotate=-10] {$0.5$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-25] {$-1.5$} (O-2);
-      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+      \draw[nnedge] (I-1) -- node[above] {$1.5$} (H-1);
+      \draw[nnedge] (I-1) -- node[below] {$1$} (H-2);
+      \draw[nnedge] (I-2) -- node[above] {$-3$} (H-1);
+      \draw[nnedge] (I-2) -- node[below] {$-0.5$} (H-2);
+      \draw[nnedge] (H-1) -- node[above] {$0.5$} (O-1);
+      \draw[nnedge] (H-1) -- node[above] {$-1.5$} (O-2);
+      \draw[nnedge] (H-2) -- node[below] {$-1$} (O-1);
+      \draw[nnedge] (H-2) -- node[below] {$1$} (O-2);
       
     \end{tikzpicture}
     \caption{$N^2$}
   \end{subfigure}
-  \caption{ }
+  \caption{The DNN from Fig.~\ref{fig:toyExample}, denoted $N^1$, and
+    a modified version thereof, denoted $N^2$.}
   \label{fig:toyExampleModified}
 \end{figure}
-\guy{TODO: Ben, please continue with the same example from the
-  previous section}
 
 Finally, we will typically be interested in finding $N'$ that is
 closest to $N$. This is formalized as follows:
@@ -599,17 +605,38 @@ A straightforward approach for solving the minimal DNN modification
 problem is to cast it as an optimization problem, and use an
 off-the-shelf optimization tool. Specifically, the goal would be to
 minimize $\norm{N^1-N^2}_p$, while maintaining the constraint
+\guy{Ben, where did underscore p come from?}
 $Q(N'(x_1),\ldots, N'(x_n))$. Unfortunately, such an optimization
 problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
 
-We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, using
-our running example from~\ref{fig:toyExample}. The constraint on the output of the network for input $V_1=(3,4)$ are a non-convex two-degree functions.
-\\
-\begin{math}
-v_{3,1}=\bracketsR{(1+w_5)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_7)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}\\
-v_{3,2}=\bracketsR{(-1+w_6)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(1+w_8)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
-\end{math}
+We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, again using
+our running example from~\ref{fig:toyExample}. In the modified network
+depicted in the figure, $N'$, we keep the original
+weights of the DNN, but to each edge also add a variable,
+$w_1,\ldots,w_8$. In order to solve the minimization problem, we would
+need to minimize the $w_i$ variables (the exact expression to be minimized
+depends on the distance metric in use), but we would also need to
+ensure that the predicate $Q$ holds for $N'$, and this would involve
+solving non-convex, high-degree constraints.
+
+For example, suppose $X=\{\langle 3, 4\rangle\}$, and that $Q(\langle
+3,4\rangle)=v_{3,1}\geq v_{3,2}$. Recall that the original network
+classified $\langle 3,4\rangle$ as label 2, and so our goal here is to
+modify the network so that it classifies this point as label 1.
+The expressions for $v_{3,1}$ and $v_{3,2}$ are:
+\begin{align*}
+  v_{3,1}&=
+  (1+w_5)\cdot  \relu{}(3(1+w_1)+4(-2+w_3))
+  +
+  (-1+w_7)\cdot \relu{}(3(2+w_2)+4(-1+w_4))
+  \\
+  v_{3,2}&=
+  (-1+w_6)\cdot \relu{}(3(1+w_1)+4(-2+w_3))
+  +
+  (1+w_8) \cdot \relu{}(3(2+w_2)+4(-1+w_4))
+\end{align*}
+For larger networks, these constraints would become significantly more complex.
 
 \begin{figure}[htp]
 \begin{center}
@@ -632,33 +659,34 @@ v_{3,2}=\bracketsR{(-1+w_6)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(1+w_8)\
       \node[neuron node] at (2*\layersep, -2) (O-2) {$v_{3,2}$};
 
       % Connect every node in the hidden layer with the output layer
-      \path (I-1) edge[] node[above,rotate=10] {$1+w_1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-25] {$2+w_2$} (H-2);
-      \path (I-2) edge[] node[above,rotate=25] {$-2+w_3$} (H-1);
-      \path (I-2) edge[] node[below,rotate=-10] {$-1+w_4$} (H-2);
-      \path (H-1) edge[] node[above,rotate=-10] {$1+w_5$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-25] {$-1+w_6$} (O-2);
-      \path (H-2) edge[] node[below,rotate=25] {$-1+w_7$} (O-1);
-      \path (H-2) edge[] node[below,rotate=10] {$1+w_8$} (O-2);
+      \draw[nnedge] (I-1) -- node[above,rotate=10] {$1+w_1$} (H-1);
+      \draw[nnedge] (I-1) -- node[below,rotate=-25] {$2+w_2$} (H-2);
+      \draw[nnedge] (I-2) -- node[above,rotate=25] {$-2+w_3$} (H-1);
+      \draw[nnedge] (I-2) -- node[below,rotate=-10] {$-1+w_4$} (H-2);
+      \draw[nnedge] (H-1) -- node[above,rotate=-10] {$1+w_5$} (O-1);
+      \draw[nnedge] (H-1) -- node[above,rotate=-25] {$-1+w_6$} (O-2);
+      \draw[nnedge] (H-2) -- node[below,rotate=25] {$-1+w_7$} (O-1);
+      \draw[nnedge] (H-2) -- node[below,rotate=10] {$1+w_8$} (O-2);
       
       % Annotate the layers
       \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
       \node[annot,left of=l] {$V_1$};
       \node[annot,right of=l] {$V_3$};
     \end{tikzpicture}	
-	\caption{ }
+	\caption{The DNN from Fig.~\ref{fig:toyExample}, with
+          modifications to its edges expressed as variables $w_1,\ldots,w_8$.}
     \label{fig:optimizeAllLayers}
     \end{center}
 \end{figure}
-\guy{TODO: same example from the previous sections}
 
 
-In order to mitigate this issue, we focus on a restricted version of
-the DNN modification problem, in which the changes in weights are
+In order to mitigate this issue and render the DNN modification problem easier to
+solve for large networks, we focus on a restricted version of
+the problem in which the changes in weights are
 limited to a \emph{single layer}. We argue that under this
 restriction, the DNN modification problem reduces into standard DNN
 verification problem. The intuition is as follows: let $N$ be a DNN,
-and let $W_i$ ($2\leq i\leq n$) be the only weight matrix of $N$ that
+and let $W_i$ (for some fixed $i$, $2\leq i\leq n$) be the only weight matrix of $N$ that
 we wish to modify. Observe some fixed input point $x\in X$, and let
 $V_{i-1}$ denote the evaluation of layer $i-1$ for this $x$. In the
 modified network $N'$, layers $1,\ldots,i-1$ will be assigned the same
@@ -673,6 +701,8 @@ entries of $W_\epsilon$. This means that we can construct a new DNN,
 denoted $\bar{N}$, whose input neurons are the values of $W_\epsilon$,
 followed by a layer that computes $\relu{}((W_i+W_\epsilon)V'_{i-1})$,
 and then feeds into layers $i+1,\ldots,n$ of the original network.
+
+%% Guy got here
 
 We again illustrate this using our running example --- see
 Fig.~\ref{fig:changeJustOneLayer}. The variable arethe entries of $W_\epsilon=[w_1,w_2,w_3,w_4]$ and the output of the network for input $V_1=(3,4)$ is:
