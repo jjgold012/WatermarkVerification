@@ -124,15 +124,44 @@ unaffected as many of the DNN's other behaviors as possible. In these
 cases, retraining the DNN from scratch might produce a DNN that is
 very different from the original, and is thus undesirable; and other
 techniques, for modifying an existing DNN, may be used.
+These examples, and others, share the same main characteristics: an
+existing DNN needs to be changed in a small way, that changes some
+behaviors and keeps other unchanged. Existing approaches for
+addressing this need are heuristic-based, and are not guaranteed to
+produce the desired results.
+
+Here, we propose a novel approach for tackling this challenge, based
+on \emph{neural network verification}. DNN verification is an emerging
+field, aimed at proving DNN correctness; and existing techniques allow
+users to specify properties that involve the DNN's inputs and outputs,
+and either prove that these properties hold or provide a
+counter-example. Here, we show how to reduce the problem of making
+changes to the DNN itself into a DNN verification problem. Specifically,
+we propose a method for constructing a new DNN, and then pose a
+verification query on that DNN that is satisfiable if and only if the
+original DNN can be modified in the desired way. Due to the soundness
+of the underlying DNN verification techniques that we use, our
+technique affords formal guarantees about the modified DNN ---
+specifically, that it is as close as possible to the original, and
+that it satisfies the specific constraints.
 
 
-The MLaaS paradigm holds great potential, but raises two issues that
-must be addressed: \emph{authentication of ownership}, and
-\emph{minimality of changes}.
+We also show how
+% our technique can be used to identify minimal changes to DNNs, e.g. in
+% the context of correcting their behaviors for certain inputs. The use
+% of verification in these contexts guarantees the soundness of our
+% approach.
+
+
+% The MLaaS paradigm holds great potential, but raises two issues that
+% must be addressed: \emph{authentication of ownership}, and
+% \emph{minimality of changes}.
+
+We demonstrate the applicability of our approach in two domains of interest:
 
 \medskip\noindent
 \textbf{Authentication of Ownership.}
-When vendors allow clients access to an almost-fully-trained network,
+As part of the MLaaS paradigm, when vendors allow clients access to an almost-fully-trained network,
 they are typically interested in collecting fees and royalties from
 each client. This business model compensates the vendor for designing
 and training the network, which are not simple tasks. In order to
@@ -151,6 +180,12 @@ for generating \emph{resilient watermarks}, i.e. watermarks that are
 difficult to remove without damaging the functionality of the DNN in
 question.
 
+We show how verification-based technique can be used to
+measure the resilience of watermarks within a DNN. Our approach can be
+used to assess individual DNNs before their release, and also can be
+used to compare and rank different watermarking schemes, according to
+the resilience of the watermarks that they produce.
+
 \medskip\noindent \textbf{Minimality of Changes.}
 Modifying an already-trained DNN is a complex task. Typically, a user
 would wish to maintain most of the DNN's existing behavior, while
@@ -159,20 +194,13 @@ an integral part of the MLaaS paradigm, but also arises naturally in
 other situations --- e.g., when a bug is discovered in an
 already-deployed DNN.
 
-We propose a novel approach for addressing both of these issues, based
-on \emph{neural network verification}. DNN verification is an emerging
-field, aimed at proving DNN correctness; and existing techniques allow
-users to specify properties that involve the DNN's inputs and outputs,
-and either prove that these properties hold or provide a
-counter-example. Here, we show how to cast the question of making
-changes to the DNN itself into the verification setting. We
-demonstrate how our new technique can be applied to formally and
-accurately measure the resilience of DNN watermarks, and hence to
-measure the usefulness of DNN watermarking schemes. We also show how
-our technique can be used to identify minimal changes to DNNs, e.g. in
-the context of correcting their behaviors for certain inputs. The use
-of verification in these contexts guarantees the soundness of our
-approach.
+We show how our approach can be used as part of a loop, in which
+minimal modifications to a DNN are performed in order to correct
+erroneous behaviors, and the DNN is then verified to ensure that the
+desired result has been obtained. If the erroneous behavior is not
+eliminated immediately, we add the newly discovered counter-example as
+a constraint, and find a new set of minimal modification that correct
+it, as well.
 
 For evaluation purposes, we created a proof-of-concept implementation
 of our approach as a Python framework. As its underlying backends, our
@@ -190,7 +218,9 @@ Section~\ref{sec:background} we provide the necessary background on
 DNN's, watermarking, and DNN verification. Next, in
 Section~\ref{sec:verifyWatermarks} we introduce our technique for
 casting the watermark resilience problem into a verification
-problem. Section~\ref{sec:evaluation} describes our implementation and
+problem. In Section~\ref{sec:applications} we describe how to apply 
+our technique in the context of watermark resilience and DNN patching.
+Section~\ref{sec:evaluation} describes our implementation and
 evaluation of the approach on several watermarked DNN's for image
 recognition. We discuss related work in Section~\ref{sec:relatedWork},
 and conclude in Section~\ref{sec:conclusion}.
@@ -399,7 +429,7 @@ functions, and properties $P$ and $Q$ that are conjunctions of linear constraint
 
 
 \section{Minimal DNN Modification as a Verification Problem}
-\label{sec:minimizationProblem}
+\label{sec:verifyWatermarks}
 
 \subsection{Modifying DNNs}
 
@@ -764,6 +794,7 @@ A feasible solution to this LP is $w_3=1$ and $w_1,w_2,w_4=0$
 
 
 \section{Applications}
+\label{sec:applications}
 
 \subsection{Watermark Resilience}
 As briefly discussed in Section~\ref{sec:introduction}, there is now a
