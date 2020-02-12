@@ -10,8 +10,11 @@
 \usepackage{siunitx}
 \usepackage{pgfplotstable}
 \usepackage{tabularx}
-\usepackage{tikz}
 \usepackage{xspace}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,trees,backgrounds,automata,shapes,decorations,plotmarks,fit,calc,positioning,shadows,chains,shapes.geometric}
+\tikzstyle{nnedge} = [-{stealth},shorten >=0.1cm, shorten <=0.05cm,line width=0.8pt,black]
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -396,14 +399,15 @@ $V_1=\langle 3, 4 \rangle$ the second layer assignment is computed as
       \node[neuron node] at (2*\layersep, -2) (O-2) {$v_{3,2}$};
 
       % Connect every node in the hidden layer with the output layer
-      \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-25] {$2$} (H-2);
-      \path (I-2) edge[] node[above,rotate=25] {$-2$} (H-1);
-      \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
-      \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-25] {$-1$} (O-2);
-      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+
+      \draw[nnedge] (I-1) -- node[above] {$1$} (H-1);
+      \draw[nnedge] (I-1) -- node[below] {$2$} (H-2);
+      \draw[nnedge] (I-2) -- node[above] {$-2$} (H-1);
+      \draw[nnedge] (I-2) -- node[below] {$-1$} (H-2);
+      \draw[nnedge] (H-1) -- node[above] {$1$} (O-1);
+      \draw[nnedge] (H-1) -- node[above] {$-1$} (O-2);
+      \draw[nnedge] (H-2) -- node[below] {$-1$} (O-1);
+      \draw[nnedge] (H-2) -- node[below] {$1$} (O-2);
       
       % Annotate the layers
       \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
