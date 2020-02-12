@@ -534,11 +534,11 @@ problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
 
 We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, using
-our running example from~\ref{fig:toyExample}. The constraint on the output of the network for input $V_1=(3,4)$ are a non-convex two-dimensional functions.
+our running example from~\ref{fig:toyExample}. The constraint on the output of the network for input $V_1=(3,4)$ are a non-convex two-degree functions.
 \\
 \begin{math}
 v_{3,1}=\bracketsR{(1+w_5)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_7)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}\\
-v_{3,2}=\bracketsR{(1+w_6)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1+w_8)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
+v_{3,2}=\bracketsR{(-1+w_6)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(1+w_8)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)}
 \end{math}
 
 \begin{figure}[htp]
@@ -690,8 +690,6 @@ problem \emph{completely linear}. This means that it can then be solved using
 linear programming solvers, which tend to scale much better than DNN
 verification tools.
 
-We demonstrate with our running example...
-
 \begin{figure}[htp]
 \begin{center}
 	  \def\layersep{3cm}
@@ -731,6 +729,23 @@ We demonstrate with our running example...
     \label{fig:changeLastLayer}
     \end{center}
 \end{figure}
+
+We demonstrate with our running example \ref{fig:changeLastLayer}:
+Suppose we want the network decision to change. The original network output was $V_3=(-2,2)$ so our constraint over the output is $v_{3,1}>v_{3,2}$
+We're only changing weights in the last layer so the network is fixed until the last layer. We calculate $V_2=(0,2)$ and define a LP problem for minimizing the $L_\infty$ norm of the change.
+
+\begin{align*}
+Minimize:\quad & M \\
+Subject\ to:\quad & -M \leq w_1\leq M \\
+& -M \leq w_2\leq M \\
+& -M \leq w_3\leq M \\
+& -M \leq w_4\leq M \\
+& v_{3,1}=(1+w_1)\cdot 0+(-1+w_3)\cdot 2 \\
+& v_{3,2}=(-1+w_2)\cdot 0+(1+w_4)\cdot 2 \\
+& v_{3,2}\leq \epsilon + v_{3,1}
+\end{align*}
+
+A feasible solution to this LP is $w_3=1.1$ and $w_1,w_2,w_4=0$
 
 
 \section{Applications}
