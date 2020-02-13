@@ -509,6 +509,7 @@ between these DNNs is:
 \guy{Ben: does this definition even work for $L_\infty$? Maybe we should
   write that we we treat all weights as a long vector, and compute the
   norm of the vector of differences}
+\ben{Guy: that what we defined exactly no? am I missing something?}
 
 \begin{align*}
 	&\norm{N^1-N^2}_L=(\bracketsR{\abs{-0.5}^L+\abs{1}^L+\abs{1}^L+\abs{-0.5}^l+\abs{0.5}^L+\abs{0.5}^L)}^{1/L}\\
@@ -604,8 +605,7 @@ repeatedly invoking that procedure as part of a binary search.
 A straightforward approach for solving the minimal DNN modification
 problem is to cast it as an optimization problem, and use an
 off-the-shelf optimization tool. Specifically, the goal would be to
-minimize $\norm{N^1-N^2}_p$, while maintaining the constraint
-\guy{Ben, where did underscore p come from?}
+minimize $\norm{N^1-N^2}_L$, while maintaining the constraint
 $Q(N'(x_1),\ldots, N'(x_n))$. Unfortunately, such an optimization
 problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
@@ -788,6 +788,7 @@ in constructing the modified DNN.
       \def\layersepb{1cm}
     \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep,font=\footnotesize]
     \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{neuronb}=[fill=black!25,minimum width=35pt,minimum height=17pt,inner sep=0pt]
     \tikzstyle{neuron node}=[neuron, fill=blue!50];
     \tikzstyle{bias node}=[neuron, draw=gray,dashed,fill=yellow!70];
     \tikzstyle{annot} = [text width=4em, text centered]
@@ -1069,7 +1070,7 @@ the score of its second-highest label. We also observed that some
 watermarks are \emph{significantly} more difficult to remove than
 others; specifically, in the $L_\infty$ case, the more resilient
 watermarks were approximately $26\%$ more difficult to remove than
-others, and in the $L_1$ case --- about $70\%$ more
+others, and in the $L_1$ case --- about $67\%$ more
 difficult. \guy{TODO: ben, please check these numbers with the raw
   data. Also, can you check if the hardest benchmarks had larger gaps
   between the winner and runner-up label?}
