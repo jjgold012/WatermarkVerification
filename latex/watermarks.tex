@@ -942,7 +942,7 @@ One feasible solution to this LP is $w_3=1$ and $w_1,w_2,w_4=0$.
 As briefly discussed in Section~\ref{sec:introduction}, there is now a
 growing need to imprint DNNs with \emph{watermarks}: secret inputs,
 known to the creator of the DNN, on which the DNN produces unexpected
-outputs. Watermarks are important for the MLaaS business model, where
+outputs. Watermarks are crucial for the MLaaS business model, where
 a vendor sells a mostly-trained DNN to clients, who then fine-tune
 it for their own needs. The key requirement is that even if the
 network undergoes some changes, the watermark input will still produce
@@ -963,12 +963,12 @@ purposes in the context of watermarking:
 \begin{inparaenum}[(i)]
   \item given a specific DNN $N$ and a set $X$ of watermarks, it can
     measure the resilience of $X$ (i.e., the maximal amount of changes
-    the network can withstand without ``forgetting'' the watermarks);
+    the network can withstand without ``forgetting'' a  watermark);
     and
   \item given multiple schemes for watermarking DNNs, i.e. for
     producing the set $X$, it can compare the effectiveness of the
     schemes by checking the resilience of the resulting watermarks
-    (on some set of DNNs).
+    (over some set of benchmark DNNs).
 \end{inparaenum}
   
 \subsection{Minimal Repair}
@@ -1001,13 +1001,12 @@ In order to apply our approach to measure the resilience of
 watermarked networks, we trained a watermarked DNN over the MNIST
 digit recognition dataset~\cite{mnist}. The DNN was of a modest size:
 it had an input layer with 784 nodes, a single hidden layer with $150$
-nodes, and final output layer with $10$ nodes. The input and output layers were fully
+nodes, and a final output layer with $10$ nodes. The input and output layers were fully
 connected, and the hidden layer had the \relu{} activation function
 applied to its nodes. We used the
 method proposed in~\cite{AdBaPiKeWatermarking} to create a set
 $X=\{x_1,\ldots, x_{100}\}$ of $100$ watermarks, each assigned a label
 $N(x_i)$; an example appears in Fig.~\ref{fig:inputExample}.
-\guy{TODO: fix broken ref, subfigure is messing it up}
 
 \begin{figure}[htp]
   \centering
@@ -1031,7 +1030,7 @@ $N(x_i)$; an example appears in Fig.~\ref{fig:inputExample}.
 Next, we ran a series of experiments to identify modifications to the
 network that would remove some, or all, of these watermarks. For
 simplicity, we
-focused on changes to the network's last layer. As a measure of
+focused on changes to the network's output layer. As a measure of
 distance, we used the $L_1$ and $L_\infty$ norms, which are popular
 distance metrics in the ML community and are supported my many DNN
 verification tools.
@@ -1042,7 +1041,7 @@ remove each individual watermark. More specifically, for each
 watermark $x\in X$ we found the closest network $N'$ such that
 $N(x)\neq N'(x)$. We note that we did not explicitly specify $N'(x)$,
 i.e. did not require that $N'$ classify $x$ in a particular way; we
-only required that the new label be different than the original. We
+only required that the new label be different from the original. We
 ran the experiment once with $L_1$, and once with $L_\infty$; the
 results are depicted in Fig.~\ref{fig:minSingle}.
 
@@ -1051,27 +1050,28 @@ results are depicted in Fig.~\ref{fig:minSingle}.
   \centering
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/results/problem3/mnist_w_wm_sorted.pdf}
-     \caption{The Minimal $\norm{\varepsilon}_{\infty}$ for every watermark image}
+     \caption{$L_\infty$ distance}
   	\label{fig:minSingleLP}
   \end{subfigure}
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/results/problem2/mnist_w_wm_sorted.pdf}
-    \caption{The Minimal $\norm{\varepsilon}_1$ for every watermark image}
+    \caption{$L_1$ distance}
   	\label{fig:minSingleNotLP}
   \end{subfigure}
    \caption{ }
-%  \caption{Notice the scale of the graphs, the $\ell_\infty$ values are much smaller then the $\ell_1$ values. As expected}
+  \caption{The minimal distance to a modified network in
+       which each of the 100 watermarks is removed.}
 \label{fig:minSingle}
 \end{figure}
 
 Analyzing these results exposes several interesting properties of the
-watermark inputs. For example, we observed 
-that for every single watermark $x$, the minimatance network that
-was found classified $x$ as the second-highest label assigned to
-it by the original network. This result indicates
+watermark inputs. For example, we observe 
+that for every single watermark $x$, the minimally-modified network that
+was found classified $x$ to the label that was assigned the second-highest score
+ by the original network. This result indicates
 that a resilient watermark should have a
 significant gap between the score assigned to its actual label and
-the score of its second-highest label. We also observed that some
+the score of its second-highest label. We also observe that some
 watermarks are \emph{significantly} more difficult to remove than
 others; specifically, in the $L_\infty$ case, the more resilient
 watermarks were approximately $26\%$ more difficult to remove than
@@ -1079,19 +1079,21 @@ others, and in the $L_1$ case --- about $67\%$ more
 difficult. \guy{TODO: ben, please check these numbers with the raw
   data. Also, can you check if the hardest benchmarks had larger gaps
   between the winner and runner-up label?}
-This indicates a very wide range of watermark resilience, and can
-serve as a measure for the DNN's trainer to assess the watermark effectiveness.
+This indicates a very wide range of watermark resilience; and
+a DNN trainer may wish to assess the resilience of each selected
+watermark before releasing the DNN.
+
 
 The experiment also exposes some of the differences between the two
 distance metrics used, i.e. $L_1$ and $L_\infty$. Not surprisingly,
 the distances in the $L_1$ case are generally larger than those in the
 $L_\infty$ case: this is because the $L_\infty$ norm allows us to
-change multiple edges ``at no additional cost'', and thus effect the
+change multiple edges ``at a flat rate'', and thus affect the
 network's outcome more effectively; whereas $L_1$ distance counts
 every edge weight that changes. In
 Fig.~\ref{fig:lastLayerExampleSingle} we visualize this on one
 of the watermarks; we see that indeed, when using the $L_\infty$ norm,
-almost all the edges were touched, whereas the $L_1$ norm caused the
+almost all the edges were touched, whereas using the $L_1$ norm caused the
 change to occur only in a single edge.
 
  
@@ -1099,13 +1101,16 @@ change to occur only in a single edge.
 \centering
   \begin{subfigure}{0.4\linewidth}
   \includegraphics[width=\linewidth]{../data/results/problem3/last_layer_1_wm_example.pdf}
-     \caption{The Minimal change according to $\ell_\infty$ for a single input}
+     \caption{$L_\infty$ distance}
   \end{subfigure}
   \begin{subfigure}{0.4\linewidth}
     \includegraphics[width=\linewidth]{../data/results/problem2/last_layer_1_wm_example.pdf}
-    \caption{The Minimal change according to $\ell_1$ for a single input}
+    \caption{$L_1$ distance}
   \end{subfigure}
-  \caption{Examples of the change to the last layer. Positive change is colored red and negative change is colored blue. There are $150$ nodes on the left.}
+  \caption{The minimal weight changes (to the output layer) required
+    to remove a specific watermark. Positive change is colored red and
+    negative change is colored blue. There are $1500$ edges feeding
+    into the output layer.}
   \label{fig:lastLayerExampleSingle}
   \caption{ }
 \end{figure}
@@ -1115,15 +1120,15 @@ In addition, we were also interested to see the effect of removing a
 watermark on the network's overall accuracy --- as it is likely to
 assume that a user seeking to remove watermarks will also attempt to
 maintain the network's original performance. After removing each
-benchmark, we used the MNIST dataset to result the accuracy of the
-modified network and compared it to the original. As it turns out, the
+benchmark, we used the MNIST dataset to measure the accuracy of the
+modified network, and compared it to the original network's accuracy. As it turns out, the
 results (depicted in Table~\ref{table:singleWatermark})
 vary widely between $L_1$ and $L_\infty$. We observe that using 
 $L_1$ gives better accuracy result on average, but can lead to poor
 accuracy in extreme cases; whereas the $L_\infty$ norm leads to a much
-more consistent result (there minimal accuracy and the maximal
+more consistent result (the minimal and maximal
 accuracy are quite close), although the average accuracy is lower than
-that of $L_1$. 
+that of the $L_1$ case. 
 
 \begin{table}
 \resizebox{\textwidth}{!}{
@@ -1136,30 +1141,49 @@ that of $L_1$.
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/mnist_w_wm_1_wm.csv}
 	}
-\caption{Minimal changes and Accuracy}
+\caption{Changes to the DNN's accuracy after removing a single
+  watermark. The experiments were performed for each of the
+  100 watermarks, individually, and then summarized. The first row
+  shows the baseline accuracy rates.}
 \label{table:singleWatermark}
 \end{table}
+\guy{Please avoid abbreviations in the heading row; increase the row
+  height and use two lines. Please write $L_1$ and $L_\infty$ instead
+  of ``Infinity'' and ``One'', and move the ``Norm'' column to be 2nd
+  from the left. Similar changes needed in the other tables}
 
 \medskip\noindent \textbf{Removing Multiple Watermarks.}
-Next, we addressed the issue of modifying our DNN in a way that
+Next, we proceeded to modifying our DNN in a way that
 removes multiple watermarks, simultaneously. Specifically, we wanted
 to change the weights of the DNN's output layer in a way that caused
 the misclassification of an arbitrary number of watermarks.
 
 As discussed in Section~\ref{sec:outputLayer}, the problem of modifying the network's
 output layer when using the $L_\infty$ norm is significantly easier
-than other variants; and indeed, using Gurobi as our backend
-verification tool we were able to find modifications
-that remove as many as all of the watermarks. In the $L_1$ case,
+than other variants; and indeed, using the Gurobi LP solver~\cite{gurobi} as our backend
+verification tool, we were able to find modifications
+that removed as many as all of the watermarks. In the $L_1$ case,
 performance became an issue, and so we focused on removing as many as
 5 watermarks simultaneously. The results are depicted in
 Table~\ref{table:multipleWatermarks}. We see that a few benchmarks can
 still be removed while maintaining a reasonable level of accuracy; but
 that, at least in the $L_\infty$ case, removing all watermarks renders
-the network quite useless. We thus conclude that using $100$
+the network quite useless. We thus conclude that using these particular $100$
 watermarks is sufficient for this particular network.
 
-We noticed that when removing a set of watermarks it is some time the case that other watermarks will be removed as well without intention. This indicate some correlation in the way the network classify watermarks. When removing watermarks using the $L_1$ norm the total number of removed watermarks can get to up to $80$ (out of $100$ watermarks in total) without any significant reduce in the network accuracy. When using the $L_\infty$ the number of watermarks drop beyond the trageted watermarks but the accuracy also drops significantly as noted by the \emph{Max acc} column in Table~\ref{table:multipleWatermarks}.
+In our experiments we observed that often, removing a particular
+benchmark (or sets thereof) would result in the removal of other
+benchmarks, whose removal was not part of the experiment. This
+indicates some hidden dependencies between the watermarks.  For
+example, in one experiment where we removed $5$ watermarks using the
+$L_1$ norm, a total of $80$ (!) benchmarks were removed
+due to the modification (out of $100$ total watermarks),
+and without any significant reduction in the network accuracy. In
+experiments using the
+$L_\infty$ norm, we also noticed additional watermarks being removed
+beyond those that were targeted, but there the network's accuracy also
+tends to drop sharply as the number of removed watermarks increases (as indicated by the
+\emph{Max acc} column in Table~\ref{table:multipleWatermarks}).
 
 
 \begin{table}
@@ -1191,7 +1215,9 @@ We noticed that when removing a set of watermarks it is some time the case that 
 	}
 \caption{Change and accuracy when solving for minimal $L_1$ change.}
 \end{subtable}
-\caption{Minimal changes and accuracy degradation when simultaneously removing multiple watermarks.}
+\caption{Minimal changes and accuracy degradation when simultaneously
+  removing multiple watermarks. We sampled a high number of arbitrary
+  sets of watermarks for each category, and aggregated the results.}
 \label{table:multipleWatermarks}
 \end{table}
 
