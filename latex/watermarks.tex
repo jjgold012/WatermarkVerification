@@ -440,7 +440,7 @@ the property in question is violated.
 
 
 Recently there have been multiple tools and approaches suggested for
-solving the DNN verification problem: these include Satisfiabiltiy
+solving the DNN verification problem: these include Satisfiability
 Modulo Theories (SMT) based
 techniques~\cite{KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou},
 approaches based on mixed integer linear
@@ -501,12 +501,12 @@ feasible solution to the modification problem.
 
 Intuitively, this definition of distance compares the weight matrices
 of the two networks, element-wise; it computes the $L$-distance
-between each two corresponding edge weights as the $L$-norm of the differnce between two vectors.
+between each two corresponding edge weights as the $L$-norm of the difference between two vectors.
 
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}. Network $N^2$ is
 obtained from the original network, $N^1$, by slightly modifying its
-edge weights but maintain the same layer structue. The distance
+edge weights but maintain the same layer structure. The distance
 between these DNNs is:
 
 \begin{align*}
@@ -591,7 +591,7 @@ closest to $N$. This is formalized as follows:
   classifications $N(x_1),\ldots,N(x_n)$ of the points of $X$. The
   \emph{DNN minimal modification problem} is to find a new DNN $N'$
   that solves the DNN modification problem (for $N, X$ and $Q$), such that for every other
-  $N''$ that solves the modificaiton problem it holds that
+  $N''$ that solves the modification problem it holds that
   $\norm{N'-N}\leq \norm{N''-N}$.
 \end{definition}
 We observe that given a decision procedure for solving the modification
@@ -1074,7 +1074,7 @@ watermarks are \emph{significantly} more difficult to remove than
 others; specifically, in the $L_\infty$ case, the more resilient
 watermarks were approximately $26\%$ more difficult to remove than
 others, and in the $L_1$ case --- about $67\%$ more
-difficult. \guy{TODO: ben, please check these numbers with the raw
+difficult. \guy{TODO: Ben, please check these numbers with the raw
   data. Also, can you check if the hardest benchmarks had larger gaps
   between the winner and runner-up label?}
 This indicates a very wide range of watermark resilience; and
@@ -1273,13 +1273,15 @@ to be terminated when a certain timeout values is reached.
 
 When we ran Algorithm~\ref{alg:correctAcas} on our ACAS Xu DNN in
 question, it failed to terminate --- and we stopped it after $24$
-hours,
-\guy{Ben, do you know how long it took until the 3rd counterexample
-  was found? To adjust the timeout values...}
-while it was attempting to fix the third counter-example.
-The results are depicted in Fig.~\ref{fig:lastLayerACASXU}. By
-comparing the counter-examples discovered by the algorithm during its
-iterations, we observe that these examples were fairly distant from
+hours, \guy{Ben, do you know how long it took until the 3rd
+  counterexample was found? To adjust the timeout values...}  while it
+was attempting to fix the third counter-example. Thus, while we were
+unable to remove all violations of $\varphi$ from $N$, we did obtain a
+network in which at least some of the original violations no longer
+exist.  The results are depicted in
+Fig.~\ref{fig:lastLayerACASXU}. When we examined
+the counter-examples discovered by the algorithm during its
+iterations, we observed that they were fairly distant from
 each other --- indicating that the violation is question was not
 minor, and possibly explaining the difficulty in correcting it.
 
@@ -1315,7 +1317,7 @@ with decision trees that determine when a patch should be
 applied. Another line of work~\cite{SoTh19} corrects DNNs using an
 iterative encoding of the problem into a sequence of Max-SMT
 instances. A key feature of our verification-based approach that
-separates it from prior work is that it provides provides formal
+separates it from prior work is that it provides formal
 guarantees about the minimality of the discovered changes to the DNN
 in question.
 
@@ -1331,9 +1333,10 @@ verification problem, and can use many of the aforementioned tools and
 techniques as a backend.
 
 DNN watermarking is a general approach for marking DNNs that are to undergo
-changes, for which multiple methods have been proposed in recent years~\cite{AdBaPiKeWatermarking,ChRoKo18,LePeTr19,UcNaSaSa17,VeUsTaOcGa11}
+changes, for which multiple methods have been proposed in recent years
+(e.g.,~\cite{AdBaPiKeWatermarking,ChRoKo18,LePeTr19,UcNaSaSa17,VeUsTaOcGa11}).
 Our technique can be applied in order to assess the
-performance of watermarking approaches and compare them to each other.
+performance of such watermarking approaches and compare them to each other.
 
 
 \section{Conclusion and Future Work}
@@ -1347,8 +1350,10 @@ method for finding the minimal changes required to make a DNN satisfy
 certain properties. This technique holds great potential
 for users who wish to change a DNN, and also for vendors who
 wish to ensure that their DNNs maintain some behavior even if
-modified. We demonstrated the applicability of our approach for 
-watermark removal, and also for bug correction.
+modified. We demonstrated the applicability of our approach in
+analyzing a DNN watermarking scheme~\cite{AdBaPiKeWatermarking}, and
+in attempting to correct a faulty behavior of a DNN for airborne
+collision avoidance~\cite{JuLoBrOwKo16}.
 
 In the future we plan to extend our technique so that it can be
 applied when the changes to a DNN occur in more than one layer. In
@@ -1357,8 +1362,8 @@ problem, we plan to apply compositional techniques: i.e., to break the DNN
 down into smaller DNNs, so that the changes to each smaller DNN will only occur in
 a single layer. We will then apply our technique to each smaller DNN
 separately, and use the results to draw conclusions regarding changes
-to the original DNN as a whole. In addition, we plan to research additional
-use cases, beyond watermark removal and bug removal, where our technique
+to the original DNN as a whole. In addition, we plan to identify and  research additional
+use cases, beyond watermark resilience and bug correction, where our technique
 could prove useful.
 
 \subsection*{Acknowledgments}
@@ -1371,111 +1376,6 @@ Foundation (2017662) and the Israel Science Foundation (683/18).
 \bibliography{watermarks}
 
 \end{document}
-
-
-%%%
-%%%% Old text, mostly subsumed and divided into other sections,
-%%%% keeping it here for reference
-%%%
-% We denote the prediction of the original network as 
-% \[
-%    	d_x := argmax_{i\in \bracketsS{m}}\bracketsC{y_i}
-% \]
-% And the changed network prediction:
-% \[
-%    	d'_x := argmax_{i\in \bracketsS{m}}\bracketsC{y'_i}
-% \]
-% And we seek a change $\varepsilon$ to the last layer so that the prediction changes, i.e. $d_x\neq d'_x$.
-
-% As previously mentioned, we seek a minimal $\varepsilon$ for which the
-% label of $x$ changes. As a measure of minimality, we adopt two norms
-% that are commonly used in the DNN community: the $L_\infty$ and $L_1$
-% norms. Specifically, 
-% \begin{equation}
-% \label{eq:normInf}
-%    		\norm{\varepsilon}_{\infty}=max_{i,j}\bracketsC{\abs{\varepsilon_{i,j}}}
-% \end{equation}
-% And
-% \begin{equation}
-% \label{eq:normOne}
-%    		\norm{\varepsilon}_1=\sum_{i,j}\abs{\varepsilon_{i,j}}.
-% \end{equation}
-
-% When the $\ell_\infty$ norm (\ref{eq:normInf}) is in use, the
-% aforementioned requirements give rise to a linear programming
-% minimization problem''
-% \begin{align*}
-% \label{eq:LP}
-%     Minimize:\quad & M \\
-%     Subject\ to:\quad & \forall i,j\quad -M \leq\varepsilon_{i,j}\leq M \\
-%     & y'=(L+\varepsilon)v \\
-%     & y'_{d_x} \leq y'_{d'_x} \\
-% \end{align*}
-
-% Where the variables are the entries in $\varepsilon,y'$ and $M$.
-% For the $\ell_1$ norm (\ref{eq:normOne}), the minimization problem becomes:
-% \begin{eqnarray*}
-% \label{eq:NotLP}
-%     Minimize:\quad & M \\
-%     Subject\ to:\quad & \forall i,j\quad -M \leq\sum_{i,j}\abs{\varepsilon_{i,j}}\leq M \\
-%     & y'=(L+\varepsilon)v \\
-%     & y'_{d_x} \leq y'_{d'_x} \\
-% \end{eqnarray*}
-
-% Where the variables are the entries in $\varepsilon,y'$ and $M$.
-
-        
-% \subsection{Defining the problem for multiple inputs}
-% \label{sec:defineProblem2}
-
-% Our definition to a single input minimal change $\varepsilon$ to the network last layer $L$ can be extended to more then one input very easily by adding more constraint to the problem.
-% \\
-% Given inputs $\bracketsC{x_1,\cdots,x_k}$ and their respective values:
-% \begin{align*}
-% \bracketsC{v_1,\cdots,v_k}\quad: & \text{Inputs to the last layer} \\
-% \bracketsC{d_1,\cdots,d_k}\quad: & \text{Decisions} \\
-% \intertext{Such that}
-% \forall 1\leq j\leq k\quad & d_j = argmax_{i\in\bracketsS{m}}\bracketsC{\bracketsR{L v_j}_i}
-% \intertext{With chosen new desired decisions
-% $\bracketsC{d'_1,\cdots,d'_k}$ Such that}
-% \forall 1\leq j\leq k\quad & d'_j \neq d_j
-% \end{align*}
-% \\
-% our minimization problem for the $\ell_\infty$ norm looks like this:
-% \begin{equation}
-% \label{eq:LPmany}
-% \begin{split}
-%     Minimize:\quad & M \\
-%     Subject\ to:\quad & \forall i,j\quad -M \leq\varepsilon_{i,j}\leq M\\
-%     & \forall j\quad y'_j=(L+\varepsilon)v_j \\
-%     & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
-% 	\intertext{Variables are the entries in $\varepsilon,y'_1,\cdots,y'_k$ and $M$}
-% \end{split}
-% \end{equation}
-% Similarly for the $\ell_1$ norm the minimization problem looks like that:
-% \begin{equation}
-% \label{eq:NotLPmany}
-% \begin{split}
-%     Minimize:\quad & M \\
-%     Subject\ to:\quad & \forall i,j\quad -M \leq\sum_{i,j}\abs{\varepsilon_{i,j}}\leq M\\
-%     & \forall j\quad y'_j=(L+\varepsilon)v_j \\
-%     & \forall j\quad \bracketsR{y'_j}_{d_j} \leq \bracketsR{y'_j}_{d'_j}\\
-% 	\intertext{Variables are the entries in $\varepsilon,y'_1,\cdots,y'_k$ and $M$}
-% \end{split}
-% \end{equation}
-
-
-% As seen in the previous section we have in our hands a minimization problem. One minimization is according to $\ell_\infty$ norm and the other is according to $\ell_a$ norm. In this section we'll show how to convert different problems to the type of minimization problem that was described in the previous section \ref{sec:minimizationProblem}
-% For the $\ell_\infty$ norm when choosing new predictions all the constraint of the minimization problems (\ref{eq:LP}) (\ref{eq:LPmany}) are linear. There for we choose to solve the $\ell_\infty$ problem using a linear programming solver.
-% On the other hand $\ell_1$ norm minimization problems (\ref{eq:NotLP}) (\ref{eq:NotLPmany}) have non linear constraint so a linear programming solver is not enough. Instead we used a solver that is capable of dealing with piecewise-linear constraints. 
-
-% \subsection{Removing watermarks from neural networks}
-% \label{sec:removeWatermarks}
-% A watermarked neural network is a neural network that was trained with a set of inputs and their desired outputs such that the network will still function properly on the task it meant to do, and the output of the network on the set of inputs is as desired (The desired output can be irrelevant to the network task). We'll call the set of inputs and outputs the watermarks of the network \cite{AdBaPiKeWatermarking}. These trained networks are called ``Backdoored'' networks \cite{GuDoSi17BadNet}.
-% Given a trained watermarked network $N$ with a set of $K$ watermarks inputs and outputs $\bracketsC{\bracketsR{x_1,y_1},\cdots,\bracketsR{x_K,y_K}}$, if we want to remove a specific watermark from the network we can define one of the minimization problems that was described in the previous section (\ref{eq:LP}) (\ref{eq:NotLP}) and search which of the possible decisions (Beside the original decision of the watermark) gives the minimal change.
-% When removing a set of watermarks of a size $K$ we defined those minimization problem (\ref{eq:LPmany}) (\ref{eq:NotLPmany}), when solving for multiple watermarks we didn't check with combination of possible decisions gets the minimal change because the number of combinations of possible decisions is exponential in $K$, so in order to save time we used a simple heuristic to decide which combination of decisions to check for. 
-
-
 
 %%% Local Variables:
 %%% mode: latex
