@@ -611,7 +611,7 @@ problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
 
 We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, again using
-our running example from~\ref{fig:toyExample}. In the modified network
+our running example from Fig.~\ref{fig:toyExample}. In the modified network
 $N'$ that is depicted in the figure, we add to the edge weights from
 the original network fresh variables, 
 $w_1,\ldots,w_8$, that represent the modification to the network. In
@@ -639,8 +639,9 @@ The expressions for $v_{3,1}$ and $v_{3,2}$ are:
   +
   (1+w_8) \cdot \relu{}(3(2+w_2)+4(-1+w_4))
 \end{align*}
-Both expressions are non-linear (due to the \relu{} functions) and
-non linear; and for larger networks, such constraints would become significantly more complex.
+Both expressions are non-linear, due to the \relu{} functions and the
+multiplication of terms involving the various $w$ variables.
+For larger networks, such constraints would become significantly more complex.
 
 \begin{figure}[htp]
 \begin{center}
@@ -702,34 +703,49 @@ changes in assignment begin only in layer $i$, where it holds that
 \]
 where $W_\epsilon$ represents the change in weights for layer $i$. We note that
 $W_i$ and $V'_{i-1}$ are fixed; the only variables here are the
-entries of $W_\epsilon$. This means that we can construct a new DNN,
+entries of $W_\epsilon$. This means that, for this particular input
+point $x$,  we can construct a new DNN,
 denoted $\bar{N}$, whose input neurons are the entires of $W_\epsilon$,
 followed by a layer that computes $\relu{}((W_i+W_\epsilon)V'_{i-1})$,
 and then feeds into layers $i+1,\ldots,n$ of the original network.
 
 We again illustrate this using our running example --- see
-Fig.~\ref{fig:changeJustOneLayer}. The figure depicts the network
-$\bar{N}$ constructed for the running example. The input neurons of
+Fig.~\ref{fig:changeJustOneLayer}. The figure depicts the modified
+network $N'$ (left), and the new network $\bar{N}$ constructed from
+$N'$ for the specific input point $x=\langle 3,4\rangle$.
+The input neurons of
 $\bar{N}$ are the entries of
 $W_\epsilon=[w_1,w_2,w_3,w_4]$, and its outputs are
 \begin{align*}
-  &v_{3,1}= {\color{white}+}\relu{}(3(1+w_1)+4(-2+w_3))
+  v_{3,1}&= {\color{white}+}\relu{}(3(1+w_1)+4(-2+w_3))
     -
     \relu{}(3(2+w_2)+4(-1+w_4))
   \\
-  &v_{3,2}= -\relu{}(3(1+w_1)+4(-2+w_3))
+        &= {\color{white}+}\relu{}(3w_1+4w_3-5)
+    -
+       \relu{}(3w_2 + 4w_4 +2)
+       \\
+  v_{3,2}&= -\relu{}(3(1+w_1)+4(-2+w_3))
     +
-    \relu{}(3(2+w_2)+4(-1+w_4))
+           \relu{}(3(2+w_2)+4(-1+w_4))
+  \\
+        &= -\relu{}(3w_1+4w_3-5)
+    +
+    \relu{}(3w_2+4w_4+2)
 \end{align*}
 Which precisely represent the outputs of the modified network $N'$ for input
-$V_1=\langle 3,4 \rangle$. Again focusing on the DNN modification
+$V_1=\langle 3,4 \rangle$. Still focusing on the DNN modification
 problem with $X=\{\langle 3, 4\rangle\}$, $Q(\langle
-3,4\rangle)=v_{3,1}\geq v_{3,2}$ and $\delta = 0.25$ in $L_\infty$
+3,4\rangle)=v_{3,1}\geq v_{3,2}$ and some $\delta> 0$ in $L_\infty$
 norm, we could then pose a DNN verification query with input and
 output predicates:
 \[
-  P = TBD \qquad \qquad Q = v_{3,1}\geq v_{3,2}
+  P = \bigwedge_{i=1}^4-\delta \leq w_i \leq \delta \qquad \qquad Q = v_{3,1}\geq v_{3,2}
 \]
+The resulting DNN verification problem if and only if the DNN
+modification problem is SAT; and in that case, the satisfying
+assignment returned by the underlying verification engine can be used
+in constructing the modified DNN.
 
 \begin{figure}[htp]
 \begin{subfigure}{0.5\linewidth}
@@ -752,14 +768,14 @@ output predicates:
       \node[neuron node] at (2*\layersep, -2) (O-2) {$v_{3,2}$};
 
       % Connect every node in the hidden layer with the output layer
-      \path (I-1) edge[] node[above,rotate=10] {$1+w_1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-25] {$2+w_2$} (H-2);
-      \path (I-2) edge[] node[above,rotate=25] {$-2+w_3$} (H-1);
-      \path (I-2) edge[] node[below,rotate=-10] {$-1+w_4$} (H-2);
-      \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-25] {$-1$} (O-2);
-      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+      \draw[nnedge] (I-1) -- node[above,rotate=10] {$1+w_1$} (H-1);
+      \draw[nnedge] (I-1) -- node[below,rotate=-25] {$2+w_2$} (H-2);
+      \draw[nnedge] (I-2) -- node[above,rotate=25] {$-2+w_3$} (H-1);
+      \draw[nnedge] (I-2) -- node[below,rotate=-10] {$-1+w_4$} (H-2);
+      \draw[nnedge] (H-1) -- node[above] {$1$} (O-1);
+      \draw[nnedge] (H-1) -- node[above] {$-1$} (O-2);
+      \draw[nnedge] (H-2) -- node[below] {$-1$} (O-1);
+      \draw[nnedge] (H-2) -- node[below] {$1$} (O-2);
       
       % Annotate the layers
       \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
@@ -773,13 +789,17 @@ output predicates:
     \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep,font=\footnotesize]
     \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
     \tikzstyle{neuron node}=[neuron, fill=blue!50];
+    \tikzstyle{bias node}=[neuron, draw=gray,dashed,fill=yellow!70];
     \tikzstyle{annot} = [text width=4em, text centered]
 
-      \node[neuron node] (I-1) at (0,-1 cm) {$v_{1,1}$};
-      \node[neuron node] (I-2) at (0,-2 cm) {$v_{1,2}$};
-	  \node[neuron node] (I-3) at (0,-3 cm) {$v_{1,3}$};
-      \node[neuron node] (I-4) at (0,-4 cm) {$v_{1,4}$};
+      \node[neuron node] (I-1) at (0,-1 cm) {$w_1$};
+      \node[neuron node] (I-2) at (0,-2 cm) {$w_2$};
+      \node[neuron node] (I-3) at (0,-3 cm) {$w_3$};
+      \node[neuron node] (I-4) at (0,-4 cm) {$w_4$};
 
+      \node[bias node] (B-1) at (0.5*\layersep, -0.5) {$-5$};
+      \node[bias node] (B-2) at (0.5*\layersep, -4.5) {$2$};
+      
       \path[yshift=0.5cm]
       node[neuron node] (H-1) at (\layersep,-2) {$v_{2,1}$};
       \path[yshift=-0.5cm]
@@ -789,25 +809,28 @@ output predicates:
       \node[neuron node] at (2*\layersep, -3) (O-2) {$v_{3,2}$};
 
       % Connect every node in the hidden layer with the output layer
-      \path (I-1) edge[] node[above,xshift=0.5cm,yshift=-0.1cm] {$3$} (H-1);
-      \path (I-1) edge[] node[below,xshift=0.5cm,yshift=-0.35cm] {$4$} (H-2);
-      \path (I-2) edge[] node[above,xshift=0.5cm,yshift=0.05cm] {$3$} (H-1);
-      \path (I-2) edge[] node[below,xshift=0.5cm,yshift=-0.2cm] {$4$} (H-2);
-      \path (I-3) edge[] node[above,xshift=0.5cm,yshift=0.2cm] {$3$} (H-1);
-      \path (I-3) edge[] node[below,xshift=0.5cm,yshift=-0.05cm] {$4$} (H-2);
-      \path (I-4) edge[] node[above,xshift=0.5cm,yshift=0.35cm] {$3$} (H-1);
-      \path (I-4) edge[] node[below,xshift=0.5cm,yshift=0.1cm] {$4$} (H-2);
-      \path (H-1) edge[] node[above,rotate=-10] {$1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-25] {$-1$} (O-2);
-      \path (H-2) edge[] node[below,rotate=25] {$-1$} (O-1);
-      \path (H-2) edge[] node[below,rotate=10] {$1$} (O-2);
+      \draw[nnedge] (I-1) -- node[above] {$3$} (H-1);
+      \draw[nnedge] (I-2) -- node[below] {$4$} (H-2);
+      \draw[nnedge] (I-3) -- node[above] {$3$} (H-1);
+      \draw[nnedge] (I-4) -- node[below] {$4$} (H-2);
+      \draw[nnedge] (H-1) -- node[above] {$1$} (O-1);
+      \draw[nnedge] (H-1) -- node[above] {$-1$} (O-2);
+      \draw[nnedge] (H-2) -- node[below] {$-1$} (O-1);
+      \draw[nnedge] (H-2) -- node[below] {$1$} (O-2);
+
+      \draw[nnedge] (B-1) -- node[above] {$1$} (H-1);
+      \draw[nnedge] (B-2) -- node[below] {$1$} (H-2);
       
       % Annotate the layers
-      \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
+      \node[annot,above of=H-1, node distance=1.5cm] (l) {$V_2$};
       \node[annot,left of=l] {$V_1$};
       \node[annot,right of=l] {$V_3$};
     \end{tikzpicture}
-    \end{subfigure}
+  \end{subfigure}
+  \caption{The modified network, $N'$, on the left; and the network
+    $\bar{N}$ used in the reduction to a DNN verification problem, on
+    the right. The dashed nodes represent additive bias values, added
+    to the weighted sums of $v_{2,1}$ and $v_{2,2}$.}
     \label{fig:changeJustOneLayer}
 \end{figure}
 
@@ -815,7 +838,8 @@ In the previous example, we reduced the DNN modification problem into
 the DNN verification problem for a set $X$ that contained a
 \emph{single point}. The reduction when $X$ contains multiple points
 is similar; we simply duplicate the DNN that we construct $n$ times, creating a
-copy for each $x\in X$. This allows us to solve the problem
+copy for each $x\in X$, and treat the result as one big DNN that is
+passed to the underlying verification engine. This allows us to solve the problem
 simultaneously for the multiple points. However, because DNN
 verification is NP-complete in the size of the DNN being
 verified~\cite{KaBaDiJuKo17Reluplex}, this renders the problem
