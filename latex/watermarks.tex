@@ -745,7 +745,10 @@ output predicates:
 The resulting DNN verification problem if and only if the DNN
 modification problem is SAT; and in that case, the satisfying
 assignment returned by the underlying verification engine can be used
-in constructing the modified DNN.
+in constructing the modified DNN. As previously mentioned, a DNN
+\emph{minimal} modification query can be reduced to multiple DNN
+modification queries (as part of a binary search), and can thus be
+solved using this technique as well.
 
 \begin{figure}[htp]
 \begin{subfigure}{0.5\linewidth}
@@ -860,17 +863,35 @@ its own right. Specifically, it is is sufficiently expressive for...
 Even when the DNN modification problem is limited to changes in a
 single layer of the DNN, the existence of many points in the set $X$
 can render the resulting DNN verification problem difficult to
-solve. However,  we observe if the changes are limited to the \emph{output
+solve. However,  we observe that if the changes are limited to the \emph{output
   layer} of the DNN, the resulting problem is typically easier to
-solve. Intuitively, the reason is that if only this layer is changed,
-the resulting DNN verification problem contains a smaller number of
-neurons than when an earlier layer is changed.
-
+solve. Intuitively, the reason is that the deeper the layer that is being changed,
+the fewer neurons there are in the resulting DNN verification problem.
 In addition, if the distance metric in use is the $L_\infty$ norm,
 changing only the output layer renders the resulting DNN verification
 problem \emph{completely linear}. This means that it can then be solved using
-linear programming solvers, which tend to scale much better than DNN
+linear programming solvers~\cite{TjXiTe19}, which tend to scale better than other DNN
 verification tools.
+
+In Fig.~\ref{fig:changeLastLayer} we demonstrate this case with our running example.
+Recall that for input $V_1=\langle 3,4\rangle$, the output of the
+original network  was $V_3=\langle -2,2 \rangle$; and suppose we wish
+to modify the network so that $v_{3,1}$ becomes greater than $v_{3,2}$.
+We can compute that $V_2=\langle 0,2\rangle$, and then define a linear
+program that seeks to minimize the $L_\infty$ norm of the change:
+\begin{align*}
+\text{Minimize}:\quad & M \\
+  \text{Subject to}:\quad &M\geq 0\\
+& -M \leq w_1\leq M \\
+& -M \leq w_2\leq M \\
+& -M \leq w_3\leq M \\
+& -M \leq w_4\leq M \\
+& v_{3,1}=0\cdot(1+w_1)+2\cdot(-1+w_3)\\
+& v_{3,2}=0\cdot(-1+w_2)+2\cdot(1+w_4)\\
+& v_{3,1} > v_{3,2}
+\end{align*}
+One feasible solution to this LP is $w_3=1$ and $w_1,w_2,w_4=0$.
+\guy{Is this the optimal solution?}
 
 \begin{figure}[htp]
 \begin{center}
@@ -893,41 +914,25 @@ verification tools.
       \node[neuron node] at (2*\layersep, -2) (O-2) {$v_{3,2}$};
 
       % Connect every node in the hidden layer with the output layer
-      \path (I-1) edge[] node[above,rotate=10] {$1$} (H-1);
-      \path (I-1) edge[] node[below,rotate=-25] {$2$} (H-2);
-      \path (I-2) edge[] node[above,rotate=25] {$-2$} (H-1);
-      \path (I-2) edge[] node[below,rotate=-10] {$-1$} (H-2);
-      \path (H-1) edge[] node[above,rotate=-10] {$1+w_1$} (O-1);
-      \path (H-1) edge[] node[above,rotate=-25] {$-1+w_2$} (O-2);
-      \path (H-2) edge[] node[below,rotate=25] {$-1+w_3$} (O-1);
-      \path (H-2) edge[] node[below,rotate=10] {$1+w_4$} (O-2);
+      \draw[nnedge] (I-1) -- node[above] {$1$} (H-1);
+      \draw[nnedge] (I-1) -- node[below] {$2$} (H-2);
+      \draw[nnedge] (I-2) -- node[above] {$-2$} (H-1);
+      \draw[nnedge] (I-2) -- node[below] {$-1$} (H-2);
+      \draw[nnedge] (H-1) -- node[above,rotate=-10] {$1+w_1$} (O-1);
+      \draw[nnedge] (H-1) -- node[above,rotate=-25] {$-1+w_2$} (O-2);
+      \draw[nnedge] (H-2) -- node[below,rotate=25] {$-1+w_3$} (O-1);
+      \draw[nnedge] (H-2) -- node[below,rotate=10] {$1+w_4$} (O-2);
       
       % Annotate the layers
       \node[annot,above of=H-1, node distance=1cm] (l) {$V_2$};
       \node[annot,left of=l] {$V_1$};
       \node[annot,right of=l] {$V_3$};
     \end{tikzpicture}
-	\caption{ }
+	\caption{Modifying the output layer of our running example DNN.}
     \label{fig:changeLastLayer}
     \end{center}
 \end{figure}
 
-We demonstrate with our running example \ref{fig:changeLastLayer}:
-Suppose we're unhappy with the network. The original network output was $V_3=(-2,2)$ so our constraint over the output is $v_{3,2}\leq v_{3,1}$
-We're only changing weights in the last layer so the network is fixed until the last layer. We calculate $V_2=(0,2)$ and define a LP problem for minimizing the $L_\infty$ norm of the change.
-
-\begin{align*}
-Minimize:\quad & M \\
-Subject\ to:\quad & -M \leq w_1\leq M \\
-& -M \leq w_2\leq M \\
-& -M \leq w_3\leq M \\
-& -M \leq w_4\leq M \\
-& v_{3,1}=(1+w_1)\cdot 0+(-1+w_3)\cdot 2 \\
-& v_{3,2}=(-1+w_2)\cdot 0+(1+w_4)\cdot 2 \\
-& v_{3,2}\leq v_{3,1}
-\end{align*}
-
-A feasible solution to this LP is $w_3=1$ and $w_1,w_2,w_4=0$
 
 
 \section{Applications}
