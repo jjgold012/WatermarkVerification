@@ -51,37 +51,36 @@ from csv import DictReader, DictWriter
 model_name = 'mnist.w.wm'
 vals_epsilon = {}
 vals_acc = {}
-# x = [0,1,2,3,4,5,6,7,25,50,75,100]
+x = [0,1,2,3,4,5,6,7,25,50,75,100]
 # x = [1,2,3,4,5,6,7,25,50,75,100]
 # x = [0,1,2,3,4,5,6,7]
 # x = [1,2,3,4,5,6,7]
-x = [0,1,2,3,4,5]
+# x = [0,1,2,3,4,5]
 x_str = ','.join(map(str, x))
 
-# out_file = open('./data/results/problem3/{}_summary_wm.csv'.format(model_name.replace('.', '_')), 'w')
-# out_file.write('Number of watermarks,Avrg acc,Min acc,Max acc\n')
+out_file = open('./data/results/problem3/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
+out_file.write('Number of watermarks,Average change,Minimal change,Maximal change,Average accuracy,Minimal accuracy,Maximal accuracy\n')
 
 for i in x:
-    datafile = open('./data/results/problem4/{}.{}.wm.accuracy.csv'.format(model_name, i))
+    datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))
     file_reader = DictReader(datafile)
-    vals_acc[i] = np.array([float(line['wm-accuracy']) for line in file_reader if float(line['test-accuracy'])>0.96])
+    vals_acc[i] = np.array([float(line['test-accuracy']) for line in file_reader])
     datafile.close()
-    print('{},{},{},{}\n'.format(i,
+    if i == 0:
+        vals_epsilon[i] = 0
+    else:
+        datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
+        file_reader = DictReader(datafile)
+        vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
+        datafile.close()
+    out_file.write('{},{},{},{},{},{},{}\n'.format(i,
+                                                    np.average(vals_epsilon[i]),
+                                                    np.min(vals_epsilon[i]),
+                                                    np.max(vals_epsilon[i]),
                                                     np.average(vals_acc[i]),
                                                     np.min(vals_acc[i]),
                                                     np.max(vals_acc[i])))
-    # if i == 0:
-    #     vals_epsilon[i] = 0
-    # else:
-    #     datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
-    #     file_reader = DictReader(datafile)
-    #     vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
-    #     datafile.close()
-    # out_file.write('{},{},{},{}\n'.format(i,
-                                                    # np.average(vals_acc[i]),
-                                                    # np.min(vals_acc[i]),
-                                                    # np.max(vals_acc[i])))
-# out_file.close()
+out_file.close()
 
 
 # avrg_acc = np.array([np.average(vals_acc[i]) for i in x])

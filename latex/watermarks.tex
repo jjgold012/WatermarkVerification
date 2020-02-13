@@ -1126,6 +1126,7 @@ more consistent result (the minimal and maximal
 accuracy are quite close), although the average accuracy is lower than
 that of the $L_1$ case. 
 
+\newcolumntype{C}{>{\centering\arraybackslash}m{5em}}
 \begin{table}
 \resizebox{\textwidth}{!}{
 	\pgfplotstabletypeset[
@@ -1133,7 +1134,7 @@ that of the $L_1$ case.
 	every last row/.style={after row=\hline},
 	col sep=comma,
 	columns/Norm/.style={string type},
-	every column/.style={column type/.add={|}{}},
+	every column/.style={column type=|C},
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/mnist_w_wm_1_wm.csv}
 	}
@@ -1179,7 +1180,7 @@ experiments using the
 $L_\infty$ norm, we also noticed additional watermarks being removed
 beyond those that were targeted, but there the network's accuracy also
 tends to drop sharply as the number of removed watermarks increases (as indicated by the
-\emph{Max acc} column in Table~\ref{table:multipleWatermarks}).
+\emph{Maximal accuracy} column in Table~\ref{table:multipleWatermarks}).
 
 
 \begin{table}
@@ -1191,7 +1192,7 @@ tends to drop sharply as the number of removed watermarks increases (as indicate
 	every last row/.style={after row=\hline},
 	col sep=comma,
 	columns/Norm/.style={string type},
-	every column/.style={column type/.add={|}{}},
+	every column/.style={column type=|C},
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem3/mnist_w_wm_summary.csv}
 	}
@@ -1205,7 +1206,7 @@ tends to drop sharply as the number of removed watermarks increases (as indicate
 	every last row/.style={after row=\hline},
 	col sep=comma,
 	columns/Norm/.style={string type},
-	every column/.style={column type/.add={|}{}},
+	every column/.style={column type=|C},
 	every last column/.style={column type/.add={}{|}}
 	]{../data/results/problem4/mnist_w_wm_summary.csv}
 	}
