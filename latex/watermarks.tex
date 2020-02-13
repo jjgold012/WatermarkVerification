@@ -1070,7 +1070,7 @@ that, at least in the $L_\infty$ case, removing all watermarks renders
 the network quite useless. We thus conclude that using $100$
 watermarks is sufficient for this particular network.
 
-We noticed that when removing a set of watermarks it is some time the case that other watermarks will be removed as well without intention. This indicate some correlation in the way the network classify watermarks. When removing watermarks using the $L_1$ norm the number of totally removed watermarks can get to up to $80$ (out of $100$ watermarks in total) without any significant reduce in the network accuracy.
+We noticed that when removing a set of watermarks it is some time the case that other watermarks will be removed as well without intention. This indicate some correlation in the way the network classify watermarks. When removing watermarks using the $L_1$ norm the total number of removed watermarks can get to up to $80$ (out of $100$ watermarks in total) without any significant reduce in the network accuracy. When using the $L_\infty$ the number of watermarks drop beyond the trageted watermarks but the accuracy also drops significantly as noted by the \emph{Max acc} column in Table~\ref{table:multipleWatermarks}.
 
 
 \begin{table}
