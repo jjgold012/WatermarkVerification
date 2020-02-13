@@ -612,18 +612,21 @@ difficult to solve.
 
 We illustrate this issue in Fig.~\ref{fig:optimizeAllLayers}, again using
 our running example from~\ref{fig:toyExample}. In the modified network
-depicted in the figure, $N'$, we keep the original
-weights of the DNN, but to each edge also add a variable,
-$w_1,\ldots,w_8$. In order to solve the minimization problem, we would
-need to minimize the $w_i$ variables (the exact expression to be minimized
-depends on the distance metric in use), but we would also need to
-ensure that the predicate $Q$ holds for $N'$, and this would involve
-solving non-convex, high-degree constraints.
+$N'$ that is depicted in the figure, we add to the edge weights from
+the original network fresh variables, 
+$w_1,\ldots,w_8$, that represent the modification to the network. In
+order to solve the minimal modification problem, we would
+need to find a minimal assignment for the $w_i$ variables
+such that the $N'$ satisfies the predicate $Q$
+(the exact expression to be minimized
+depends on the distance metric in use).
 
-For example, suppose $X=\{\langle 3, 4\rangle\}$, and that $Q(\langle
+To show that this minimization problem 
+involves solving non-convex, high-degree constraints, let 
+ $X=\{\langle 3, 4\rangle\}$ and $Q(\langle
 3,4\rangle)=v_{3,1}\geq v_{3,2}$. Recall that the original network
-classified $\langle 3,4\rangle$ as label 2, and so our goal here is to
-modify the network so that it classifies this point as label 1.
+assigned the label $2$ to point $\langle 3,4\rangle$, and so our goal here is to
+modify the network so that it classifies this point as $1$, instead.
 The expressions for $v_{3,1}$ and $v_{3,2}$ are:
 \begin{align*}
   v_{3,1}&=
@@ -636,7 +639,8 @@ The expressions for $v_{3,1}$ and $v_{3,2}$ are:
   +
   (1+w_8) \cdot \relu{}(3(2+w_2)+4(-1+w_4))
 \end{align*}
-For larger networks, these constraints would become significantly more complex.
+Both expressions are non-linear (due to the \relu{} functions) and
+non linear; and for larger networks, such constraints would become significantly more complex.
 
 \begin{figure}[htp]
 \begin{center}
@@ -680,11 +684,12 @@ For larger networks, these constraints would become significantly more complex.
 \end{figure}
 
 
-In order to mitigate this issue and render the DNN modification problem easier to
-solve for large networks, we focus on a restricted version of
+In order to mitigate this issue and render the DNN modification
+problem tractable 
+for large networks, we focus on a restricted version of
 the problem in which the changes in weights are
 limited to a \emph{single layer}. We argue that under this
-restriction, the DNN modification problem reduces into standard DNN
+restriction, the DNN modification problem reduces into the standard DNN
 verification problem. The intuition is as follows: let $N$ be a DNN,
 and let $W_i$ (for some fixed $i$, $2\leq i\leq n$) be the only weight matrix of $N$ that
 we wish to modify. Observe some fixed input point $x\in X$, and let
@@ -695,24 +700,36 @@ changes in assignment begin only in layer $i$, where it holds that
 \[
   V_i' = \relu{}(W_i'V'_{i-1}) = \relu{}((W_i+W_\epsilon)V'_{i-1})
 \]
-where $W_\epsilon$ represents the change in weights. We note that
+where $W_\epsilon$ represents the change in weights for layer $i$. We note that
 $W_i$ and $V'_{i-1}$ are fixed; the only variables here are the
 entries of $W_\epsilon$. This means that we can construct a new DNN,
-denoted $\bar{N}$, whose input neurons are the values of $W_\epsilon$,
+denoted $\bar{N}$, whose input neurons are the entires of $W_\epsilon$,
 followed by a layer that computes $\relu{}((W_i+W_\epsilon)V'_{i-1})$,
 and then feeds into layers $i+1,\ldots,n$ of the original network.
 
-%% Guy got here
-
 We again illustrate this using our running example --- see
-Fig.~\ref{fig:changeJustOneLayer}. The variable arethe entries of $W_\epsilon=[w_1,w_2,w_3,w_4]$ and the output of the network for input $V_1=(3,4)$ is:
-\\
-\begin{math}
-v_{3,1}=1\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+(-1)\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)\\
-v_{3,2}=(-1)\cdot\relu{}((1+w_1)\cdot 3+(-2+w_3)\cdot 4)+1\cdot\relu{}((2+w_2)\cdot 3+(-1+w_4)\cdot 4)
-\end{math}
-
-And for the $\norm{W_\epsilon}_1$ and $\norm{W_\epsilon}_\infty$ the constraint and the optimization problem are piecewise-linear. 
+Fig.~\ref{fig:changeJustOneLayer}. The figure depicts the network
+$\bar{N}$ constructed for the running example. The input neurons of
+$\bar{N}$ are the entries of
+$W_\epsilon=[w_1,w_2,w_3,w_4]$, and its outputs are
+\begin{align*}
+  &v_{3,1}= {\color{white}+}\relu{}(3(1+w_1)+4(-2+w_3))
+    -
+    \relu{}(3(2+w_2)+4(-1+w_4))
+  \\
+  &v_{3,2}= -\relu{}(3(1+w_1)+4(-2+w_3))
+    +
+    \relu{}(3(2+w_2)+4(-1+w_4))
+\end{align*}
+Which precisely represent the outputs of the modified network $N'$ for input
+$V_1=\langle 3,4 \rangle$. Again focusing on the DNN modification
+problem with $X=\{\langle 3, 4\rangle\}$, $Q(\langle
+3,4\rangle)=v_{3,1}\geq v_{3,2}$ and $\delta = 0.25$ in $L_\infty$
+norm, we could then pose a DNN verification query with input and
+output predicates:
+\[
+  P = TBD \qquad \qquad Q = v_{3,1}\geq v_{3,2}
+\]
 
 \begin{figure}[htp]
 \begin{center}
