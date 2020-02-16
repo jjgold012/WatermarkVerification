@@ -5,6 +5,7 @@ import utils
 from tensorflow import keras
 from pprint import pprint
 from csv import DictReader, DictWriter
+from gurobipy import *
 
 model_name = 'mnist.w.wm'
 MODELS_PATH = './Models'
@@ -35,38 +36,60 @@ MODELS_PATH = './Models'
 #     print(c)
 
 
-datafile1 = open('./data/results/problem3/{}.1.wm.csv'.format(model_name))
-datafile2 = open('./data/results/problem2/{}.csv'.format(model_name))
-file_reader = DictReader(datafile1)
-sat_vals1 = np.array([float(line['sat-epsilon']) for line in file_reader])
-file_reader = DictReader(datafile2)
-sat_vals2 = np.array([float(line['sat-epsilon']) for line in file_reader])
-predictions = np.load('./data/{}.prediction.npy'.format(model_name))
-predIndices = np.flip(np.sort(predictions, axis=1), axis=1)     
-first = predIndices[:,0] 
-second = predIndices[:,1]
-diff = first-second
-a = np.argsort(diff)
-a = set(a[:40])
-b = np.argsort(sat_vals1)
-b = set(b[:40])
-c = np.argsort(sat_vals2)
-c = set(c[:40])
-print(len(a.intersection(b)))
-print(len(a.intersection(c)))
-a = np.argsort(diff)
-a = set(a[40:60])
-b = np.argsort(sat_vals1)
-b = set(b[40:60])
-c = np.argsort(sat_vals2)
-c = set(c[40:60])
-print(len(a.intersection(b)))
-print(len(a.intersection(c)))
-a = np.argsort(diff)
-a = set(a[60:])
-b = np.argsort(sat_vals1)
-b = set(b[60:])
-c = np.argsort(sat_vals2)
-c = set(c[60:])
-print(len(a.intersection(b)))
-print(len(a.intersection(c)))
+# datafile1 = open('./data/results/problem3/{}.1.wm.csv'.format(model_name))
+# datafile2 = open('./data/results/problem2/{}.csv'.format(model_name))
+# file_reader = DictReader(datafile1)
+# sat_vals1 = np.array([float(line['sat-epsilon']) for line in file_reader])
+# file_reader = DictReader(datafile2)
+# sat_vals2 = np.array([float(line['sat-epsilon']) for line in file_reader])
+# predictions = np.load('./data/{}.prediction.npy'.format(model_name))
+# predIndices = np.flip(np.sort(predictions, axis=1), axis=1)     
+# first = predIndices[:,0] 
+# second = predIndices[:,1]
+# diff = first-second
+# a = np.argsort(diff)
+# a = set(a[:40])
+# b = np.argsort(sat_vals1)
+# b = set(b[:40])
+# c = np.argsort(sat_vals2)
+# c = set(c[:40])
+# print(len(a.intersection(b)))
+# print(len(a.intersection(c)))
+# a = np.argsort(diff)
+# a = set(a[40:60])
+# b = np.argsort(sat_vals1)
+# b = set(b[40:60])
+# c = np.argsort(sat_vals2)
+# c = set(c[40:60])
+# print(len(a.intersection(b)))
+# print(len(a.intersection(c)))
+# a = np.argsort(diff)
+# a = set(a[60:])
+# b = np.argsort(sat_vals1)
+# b = set(b[60:])
+# c = np.argsort(sat_vals2)
+# c = set(c[60:])
+# print(len(a.intersection(b)))
+# print(len(a.intersection(c)))
+
+
+model = Model("my model")
+w = model.addVars(4, lb=-GRB.INFINITY, ub=GRB.INFINITY)
+output = model.addVars(2, lb=-GRB.INFINITY, ub=GRB.INFINITY)
+epsilon = model.addVar(name="epsilon")
+model.setObjective(epsilon, GRB.MINIMIZE)
+for i in range(4):
+    model.addConstr(w[i], GRB.LESS_EQUAL, epsilon)
+    model.addConstr(w[i], GRB.GREATER_EQUAL, -1*epsilon)
+
+model.addConstr(2*(-1+w[2]), GRB.EQUAL, output[0])
+model.addConstr(2*(1+w[3]), GRB.EQUAL, output[1])
+model.addConstr(output[0], GRB.GREATER_EQUAL, output[1])
+        
+model.optimize()
+print(w)
+a = [w[i].x for i in range(4)]
+b = [output[i].x for i in range(2)]
+print(epsilon.x) 
+print(a) 
+print(b) 
