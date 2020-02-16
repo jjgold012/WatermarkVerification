@@ -309,7 +309,7 @@ computed as the maximum between $0$ and the weighted sum computed
 according to the values of nodes from
 the previous layer.
 
-More formally, let $N$ denote a DNN. We
+More formally, let $N$ be a DNN. We
 denote the number of layers in $N$ by $n$, and use $s_i$ to denote the
 dimension of layer $i$ (i.e., the number of neurons that it contains).
 Layer $1$ is the input layer, layer $n$ is the output layer, and
@@ -342,8 +342,8 @@ computed similarly, but without an activation function:
 \[
   V_n = W_n  V_{n-1} + B_n
 \]
-For simplicity, in the rest of the paper we assume that \ben{is this assumption correct? we biases in the toy example}
-the bias vector $B_i$ is always $0$.
+For simplicity, in the rest of the paper we assume that 
+the bias vector $B_i$ is $0$, unless otherwise stated.
 
 DNNs are often used as \emph{classifiers}, assigning to each input a
 label from a finite set of possible labels $L=\{l_1,\ldots,l_{s_n}\}$. In this case, each neuron
@@ -417,7 +417,7 @@ $V_1=\langle 3, 4 \rangle$ the second layer assignment is computed as
 \subsection{Neural Network Verification}
 
 
-Let $N$ denote a neural network, and let $P,Q$ denote predicates
+Let $N$ be a neural network, and let $P,Q$ be predicates
 that encode some constraints over the DNN's inputs and outputs, respectively.
 \emph{DNN verification}~\cite{HuKwWaWu17,KaBaDiJuKo17Reluplex} is a field that seeks to answer the question:
 does there exist an input $x$ to the DNN such that $P(x)$ and
