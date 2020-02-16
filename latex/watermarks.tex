@@ -126,12 +126,12 @@ existing DNN might occur is in \emph{patching}~\cite{SoTh19}: when a
 bug is discovered in an existing DNN, a user might wish to modify it
 in a way that removes the undesirable behavior, but which leaves
 unaffected as many of the DNN's other behaviors as possible. In these
-cases, retraining the DNN from scratch might produce a DNN that is
-very different from the original, and is thus undesirable; and other
-techniques, for modifying an existing DNN, may be used.
+cases, retraining the DNN might produce a DNN that is
+very different from the original, which is undesirable; and other
+techniques, for modifying an existing DNN without retraining, may be needed.
 
 These two examples, and others, share the same main characteristics: an
-existing DNN needs to be changed in a small way, which removes some
+existing DNN needs to be changed in a small way, which alters some
 behaviors but keeps others unchanged. Existing approaches for
 addressing this need are heuristic-based, and are not guaranteed to
 produce the desired results (e.g.,~\cite{KaLe18,KaFu18,SoTh19}).
@@ -152,17 +152,6 @@ use, our technique affords formal guarantees about the modified DNN
 --- specifically, that it is as close as possible to the original, and
 that it satisfies the specific constraints.
 
-
-%We also show how
-% our technique can be used to identify minimal changes to DNNs, e.g. in
-% the context of correcting their behaviors for certain inputs. The use
-% of verification in these contexts guarantees the soundness of our
-% approach.
-
-
-% The MLaaS paradigm holds great potential, but raises two issues that
-% must be addressed: \emph{authentication of ownership}, and
-% \emph{minimality of changes}.
 
 We demonstrate the applicability of our approach in two domains of interest:
 
@@ -204,7 +193,9 @@ to the DNN that simultaneously corrects the behavior on all of these
 points. After each iteration, the network is verified; and if
 the property is still violated, meaning that additional faulty inputs
 are discovered, these inputs are added to the list of
-points, and the process is repeated.
+points, and the process is repeated. When the process converges, we
+are guaranteed that we have found the minimal modification to the DNN
+that satisfies the property at hand.
 
 \medskip
 
@@ -224,10 +215,10 @@ The rest of this paper is organized as follows. In
 Section~\ref{sec:background} we provide the necessary background on
 DNNs, DNN watermarking, and DNN verification. Next, in
 Section~\ref{sec:verifyWatermarks} we introduce our technique for
-casting the minimal DNN modification problem into a DNN verification
+reducing the minimal DNN modification problem into a DNN verification
 problem. In Section~\ref{sec:applications} we describe how to apply 
 our technique in the context of watermark resilience and DNN patching.
-Section~\ref{sec:evaluation} describes our implementation and
+Section~\ref{sec:evaluation} then describes our implementation and
 evaluation of the approach.
 We discuss related work in Section~\ref{sec:relatedWork},
 and conclude in Section~\ref{sec:conclusion}.
