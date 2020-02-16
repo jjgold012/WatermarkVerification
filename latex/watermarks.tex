@@ -731,8 +731,8 @@ output predicates:
 \[
   P = \bigwedge_{i=1}^4-\delta \leq w_i \leq \delta \qquad \qquad Q = v_{3,1}\geq v_{3,2}
 \]
-The resulting DNN verification problem is SAT if and only if the DNN
-modification problem is SAT; and in that case, the satisfying
+The resulting DNN verification problem is \sat{} if and only if the DNN
+modification problem is \sat{}; and in that case, the satisfying
 assignment returned by the underlying verification engine can be used
 in constructing the modified DNN. As previously mentioned, a DNN
 \emph{minimal} modification query can be reduced to multiple DNN
@@ -860,7 +860,11 @@ In addition, if the distance metric in use is the $L_\infty$ norm,
 changing only the output layer renders the resulting DNN verification
 problem \emph{completely linear}. This means that it can then be solved using
 linear programming solvers~\cite{TjXiTe19}, which tend to scale better than other DNN
-verification tools.
+verification tools. In case $L_1$ norm is used, the problem still
+contains fewer neurons, but the absolute values that are introduced by
+the $L_1$ distance calculation prevent us from encoding it as a linear
+program. In that case, we apply DNN verification tools that support
+absolute values~\cite{KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}.
 
 In Fig.~\ref{fig:changeLastLayer} we demonstrate this case with our running example.
 Recall that for input $V_1=\langle 3,4\rangle$, the output of the
@@ -879,9 +883,12 @@ program that seeks to minimize the $L_\infty$ norm of the change:
 & v_{3,2}=0\cdot(-1+w_2)+2\cdot(1+w_4)\\
 & v_{3,1} > v_{3,2}
 \end{align*}
-One feasible solution to this LP is $w_3=1,w_4=-1$ and $w_1,w_2=0$.
+The optimal solution to this LP is $w_3=1,w_4=-1$ and $w_1,w_2=0$. 
+
+
 \guy{Is this the optimal solution?}
 \ben{I'm pretty sure it is optimal for both norms}
+\guy{Okay. Can you please use an LP solver to check? :)}
 \begin{figure}[htp]
 \begin{center}
 	  \def\layersep{3cm}
