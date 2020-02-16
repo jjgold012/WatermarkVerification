@@ -54,6 +54,9 @@
 \newcommand{\guy}[1]{\marginpar{\textcolor{orange}{Guy: #1}}}
 \newcommand{\ben}[1]{\marginpar{\textcolor{blue}{Ben: #1}}}
 
+\addtolength{\textheight}{0.3cm}
+
+
 \begin{document}
 
 \title{Minimal Modifications of Deep Neural Networks using Verification}
@@ -1097,7 +1100,8 @@ change to occur only in a single edge.
 
  
 \begin{figure}
-\centering
+  \centering
+  \scalebox{0.7}{
   \begin{subfigure}{0.4\linewidth}
   \includegraphics[width=\linewidth]{../data/results/problem3/last_layer_1_wm_example.pdf}
      \caption{$L_\infty$ distance}
@@ -1106,6 +1110,7 @@ change to occur only in a single edge.
     \includegraphics[width=\linewidth]{../data/results/problem2/last_layer_1_wm_example.pdf}
     \caption{$L_1$ distance}
   \end{subfigure}
+  }
   \caption{The minimal weight changes (to the output layer) required
     to remove a specific watermark. Positive change is colored red and
     negative change is colored blue. There are $1500$ edges feeding
@@ -1330,10 +1335,10 @@ verification problem, and can use many of the aforementioned tools and
 techniques as a backend.
 
 DNN watermarking is a general approach for marking DNNs that are to undergo
-changes, for which multiple methods have been proposed in recent years
+changes, for which multiple methods have been proposed 
 (e.g.,~\cite{AdBaPiKeWatermarking,ChRoKo18,LePeTr19,UcNaSaSa17,VeUsTaOcGa11}).
-Our technique can be applied in order to assess the
-performance of such watermarking approaches and compare them to each other.
+Our technique can be used in assessing and comparing the
+performance of such watermarking approaches.
 
 
 \section{Conclusion and Future Work}
