@@ -726,8 +726,7 @@ $V_1=\langle 3,4 \rangle$. Still focusing on the DNN modification
 problem with $X=\{\langle 3, 4\rangle\}$, $Q(N'(\langle
 3,4\rangle))=v_{3,1}\geq v_{3,2}$ and some $\delta> 0$ in $L_\infty$
 norm, we could then pose a DNN verification query with input and
-output predicates:
-\ben{Maybe saying a word about the $L_1$ norm being solvable as well?}
+output predicates (a similar encoding can be used for $L_1$ norm):
 \[
   P = \bigwedge_{i=1}^4-\delta \leq w_i \leq \delta \qquad \qquad Q = v_{3,1}\geq v_{3,2}
 \]
@@ -991,6 +990,12 @@ all $1\leq i \leq n$, and such that
 \section{Evaluation}
 \label{sec:evaluation}
 
+We evaluated our approach using a proof-of-concept implementation
+as a Python framework. We intend to make our code, and also the
+benchmarks described in this section, publicly available with the
+final version of the paper.
+
+
 \subsection{Watermark Removal}
 
 In order to apply our approach to measure the resilience of
@@ -1071,9 +1076,7 @@ watermarks are \emph{significantly} more difficult to remove than
 others; specifically, in the $L_\infty$ case, the more resilient
 watermarks were approximately $26\%$ more difficult to remove than
 others, and in the $L_1$ case --- about $67\%$ more
-difficult. \guy{TODO: Ben, please check these numbers with the raw
-  data. Also, can you check if the hardest benchmarks had larger gaps
-  between the winner and runner-up label?}
+difficult.
 This indicates a very wide range of watermark resilience; and
 a DNN trainer may wish to assess the resilience of each selected
 watermark before releasing the DNN.
@@ -1114,7 +1117,7 @@ In addition, we were also interested to see the effect of removing a
 watermark on the network's overall accuracy --- as it is likely to
 assume that a user seeking to remove watermarks will also attempt to
 maintain the network's original performance. After removing each
-benchmark, we used the MNIST dataset to measure the accuracy of the
+watermark, we used the MNIST dataset to measure the accuracy of the
 modified network, and compared it to the original network's accuracy. As it turns out, the
 results (depicted in Table~\ref{table:singleWatermark})
 vary widely between $L_1$ and $L_\infty$. We observe that using 
@@ -1142,10 +1145,6 @@ that of the $L_1$ case.
   shows the baseline accuracy rates.}
 \label{table:singleWatermark}
 \end{table}
-\guy{Please avoid abbreviations in the heading row; increase the row
-  height and use two lines. Please write $L_1$ and $L_\infty$ instead
-  of ``Infinity'' and ``One'', and move the ``Norm'' column to be 2nd
-  from the left. Similar changes needed in the other tables}
 
 \medskip\noindent \textbf{Removing Multiple Watermarks.}
 Next, we proceeded to modifying our DNN in a way that
@@ -1248,7 +1247,7 @@ described in Algorithm~\ref{alg:correctAcas}.
 \begin{algorithm}
 \caption{Repair Network ($N$,$\varphi$,$x_0$)}
 \begin{algorithmic}[1]
-  \State $S\leftarrow x_0$
+  \State $S\leftarrow \{x_0\}$
   \State $N'\leftarrow N$
   \While {True}
   \State Use verification to check whether $\varphi$ holds for $N'$
@@ -1264,7 +1263,7 @@ described in Algorithm~\ref{alg:correctAcas}.
 \label{alg:correctAcas}
 \end{algorithm}
 
-This process terminates either when $N$ is successfully modified such
+This process terminates when $N$ is successfully modified such
 that $\varphi$ holds. If it does not converge, the procedure may need
 to be terminated when a certain timeout values is reached.
 
@@ -1363,11 +1362,15 @@ to the original DNN as a whole. In addition, we plan to identify and  research a
 use cases, beyond watermark resilience and bug correction, where our technique
 could prove useful.
 
-\subsection*{Acknowledgments}
-The project was partially supported by grants from the Binational Science
-Foundation (2017662) and the Israel Science Foundation (683/18).
 
-\guy{TODO: Ask the Yossis for additional acks}
+%% Guy; commenting out for now, to save space. Need to reinstate this
+%% for final version.
+
+% \subsection*{Acknowledgments}
+% The project was partially supported by grants from the Binational Science
+% Foundation (2017662) and the Israel Science Foundation (683/18).
+
+% \guy{TODO: Ask the Yossis for additional acks}
 
 \bibliographystyle{abbrv}
 \bibliography{watermarks}
