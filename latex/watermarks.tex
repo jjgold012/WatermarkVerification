@@ -1022,7 +1022,7 @@ $N(x_i)$; an example appears in Fig.~\ref{fig:inputExample}.
      \caption{Watermark inputs.}
   \label{fig:noiseExample}
   \end{subfigure}
-  \caption{Inputs to our MNIST digit-recognition DNN. The inputs of the
+  \caption{Inputs to our MNIST digit-recognition DNN. The inputs on the
   left are standard, and are correctly classified by the network. The
   inputs on the right are the watermarks: the network was trained in a
   specialized way to make it assign those particular labels to those inputs.}
@@ -1162,18 +1162,18 @@ verification tool, we were able to find modifications
 that removed as many as all of the watermarks. In the $L_1$ case,
 performance became an issue, and so we focused on removing as many as
 5 watermarks simultaneously. The results are depicted in
-Table~\ref{table:multipleWatermarks}. We see that a few benchmarks can
+Table~\ref{table:multipleWatermarks}. We see that a few watermarks can
 still be removed while maintaining a reasonable level of accuracy; but
 that, at least in the $L_\infty$ case, removing all watermarks renders
 the network quite useless. We thus conclude that using these particular $100$
 watermarks is sufficient for this particular network.
 
 In our experiments we observed that often, removing a particular
-benchmark (or sets thereof) would result in the removal of other
-benchmarks, whose removal was not part of the experiment. This
+watermark (or sets thereof) would result in the removal of other
+watermarks, whose removal was not part of the experiment. This
 indicates some hidden dependencies between the watermarks.  For
 example, in one experiment where we removed $5$ watermarks using the
-$L_1$ norm, a total of $80$ (!) benchmarks were removed
+$L_1$ norm, a total of $80$ (!) watermarks were removed
 due to the modification (out of $100$ total watermarks),
 and without any significant reduction in the network accuracy. In
 experiments using the
