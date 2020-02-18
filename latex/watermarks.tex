@@ -842,20 +842,21 @@ significantly more difficult to solve. In
 Section~\ref{sec:outputLayer} we discuss a method for
 simplifying the process in some cases.
 
-Finally, we note that the restricted version of the problem, in which
-we only allow changing a single layer of network, is interesting in
+Finally, we note that the version of the problem in which
+we only allow changing a single layer of network is interesting in
 its own right. Specifically, variants of this approach are key in
 transfer learning~\cite{Gi15,GrDoDaMa14,WeVeWa07,YoClBeLi14} and
-natural language processing~\cite{DeChLeTo18,PeNeIvGaClLeZe18,SiZi14}.
-
+natural language processing~\cite{DeChLeTo18,PeNeIvGaClLeZe18,SiZi14},
+and have been shown to reduce overfitting with respect to the modification being
+made. Single-layer changes has also been shown to be an effective
+strategy when modifying  object recognition networks~\cite{ShAzSuCa14}.
 
 \subsection{Private Case: Modifying the DNN's Output Layer}
 \label{sec:outputLayer}
 
 Even when the DNN modification problem is limited to changes in a
 single layer of the DNN, the existence of many points in the set $X$
-can render the resulting DNN verification problem difficult to
-solve. However,  we observe that if the changes are limited to the \emph{output
+can render the resulting DNN verification problem difficult. However, if the changes are limited to the \emph{output
   layer} of the DNN, the resulting problem is typically easier to
 solve. Intuitively, the reason is that the deeper the layer that is being changed,
 the fewer neurons there are in the resulting DNN verification problem.
