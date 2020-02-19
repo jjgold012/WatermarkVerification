@@ -1272,11 +1272,7 @@ that $\varphi$ holds. If it does not converge, the procedure may need
 to be terminated when a certain timeout values is reached.
 
 When we ran Algorithm~\ref{alg:correctAcas} on our ACAS Xu DNN in
-question, it failed to terminate --- and we stopped it after $24$
-hours, \guy{Ben, do you know how long it took until the 3rd
-  counter-example was found? To adjust the timeout values...} \ben{about 4-5 days}  while it
-was attempting to fix the third counter-example. Thus, while we were
-unable to remove all violations of $\varphi$ from $N$, we did obtain a
+question, it failed to terminate --- we stopped it after several days, while it was attempting to verify $\varphi$ after the third modification was applied to the network. Thus, while we were unable to verify that all violations of $\varphi$ was removed from $N$, we did obtain a
 network in which at least some of the original violations no longer
 exist.  The results are depicted in
 Fig.~\ref{fig:lastLayerACASXU}. When we examined
