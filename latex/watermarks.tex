@@ -1319,14 +1319,21 @@ in question.
 
 DNN verification is an emerging field, with many recently-proposed
 tools and approaches. These include the use of SMT
-solving~\cite{HuKwWaWu17,KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou},
+solving~\cite{HuKwWaWu17,JaBaKa20,KaBaDiJuKo17Reluplex,KaHuIbJuLaLiShThWuZeDiKoBa19Marabou},
 LP and MILP solving~\cite{Ehlers2017,TjXiTe19}, symbolic interval
-propagation~\cite{WaPeWhYaJa18}, abstract
-interpretation~\cite{GeMiDrTsChVe18}, and many others
-(e.g.,~\cite{BuTuToKoMu18,DuJhSaTi18,LoMa17,NaKaRySaWa17,SiGePuVe19}).
+propagation~\cite{WaPeWhYaJa18}, abstraction based
+techniques~\cite{ElGoKa20,GeMiDrTsChVe18}, and many others
+(e.g.,~\cite{BuTuToKoMu18,DuJhSaTi18,KaBaKaSc19,KuKaGoJuBaKo18,LoMa17,NaKaRySaWa17,RuHuKw18,SiGePuVe19}).
 Our technique reduces the DNN minimal modification problem into a DNN
 verification problem, and can use many of the aforementioned tools and
-techniques as a backend.
+techniques as a backend. In addition, whereas most work to date has
+focused on verifying adversarial robustness
+properties~\cite{BaIoLaVyNoCr16,CaKaBaDi17,GoKaPaBa18,KaBaDiJuKo17Fvav},
+on verifying hybrid systems with DNN
+controllers~\cite{DuChSa19,SuKhSh19}, and on DNN
+simplification~\cite{GoFeMaBaKa20}, our work demonstrates that DNN
+verification engines are applicable also for analyzing the resilience
+of DNN watermarking schemes.
 
 DNN watermarking is a general approach for marking DNNs that are to undergo
 changes, for which multiple methods have been proposed 
@@ -1363,15 +1370,13 @@ use cases, beyond watermark resilience and bug correction, where our technique
 could prove useful.
 
 
-%% Guy; commenting out for now, to save space. Need to reinstate this
-%% for final version.
+\noindent
+\textbf{Acknowledgments.}
+The project was partially supported by grants from the Binational Science
+Foundation (2017662) and the Israel Science Foundation (683/18).
 
-% \subsection*{Acknowledgments}
-% The project was partially supported by grants from the Binational Science
-% Foundation (2017662) and the Israel Science Foundation (683/18).
 
 % \guy{TODO: Ask the Yossis for additional acks}
-
 \bibliographystyle{abbrv}
 \bibliography{watermarks}
 
@@ -1381,3 +1386,5 @@ could prove useful.
 %%% mode: latex
 %%% TeX-master: t
 %%% End:
+
+
