@@ -2,85 +2,85 @@ import numpy as np
 import matplotlib.pyplot as plt
 from csv import DictReader, DictWriter
 
-# from tensorflow import keras
-# mnist = keras.datasets.mnist
-# (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-# wm_images = np.load('./data/wm.set.npy')
-# wm_labels = np.loadtxt('./data/wm.labels.txt', dtype='int32')
-# # for i in range(4):
-# fig, ax = plt.subplots(2,2)
-# ax[0,0].imshow(wm_images[0], cmap='gray')
-# ax[0,0].set_title('Tagged as {}'.format(wm_labels[0]))
-# ax[0,0].get_xaxis().set_visible(False)
-# ax[0,0].get_yaxis().set_visible(False)
-# ax[0,1].imshow(wm_images[1], cmap='gray')
-# ax[0,1].set_title('Tagged as {}'.format(wm_labels[1]))
-# ax[0,1].get_xaxis().set_visible(False)
-# ax[0,1].get_yaxis().set_visible(False)
-# ax[1,0].imshow(wm_images[2], cmap='gray')
-# ax[1,0].set_title('Tagged as {}'.format(wm_labels[2]))
-# ax[1,0].get_xaxis().set_visible(False)
-# ax[1,0].get_yaxis().set_visible(False)
-# ax[1,1].imshow(wm_images[3], cmap='gray')
-# ax[1,1].set_title('Tagged as {}'.format(wm_labels[3]))
-# ax[1,1].get_xaxis().set_visible(False)
-# ax[1,1].get_yaxis().set_visible(False)
-# plt.savefig('./data/wm.pdf', format='pdf')
+from tensorflow import keras
+mnist = keras.datasets.mnist
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+wm_images = np.load('./data/wm.set.npy')
+wm_labels = np.loadtxt('./data/wm.labels.txt', dtype='int32')
+# for i in range(4):
+fig, ax = plt.subplots(2,2)
+ax[0,0].imshow(wm_images[0], cmap='gray')
+ax[0,0].set_title('Tagged as {}'.format(wm_labels[0]))
+ax[0,0].get_xaxis().set_visible(False)
+ax[0,0].get_yaxis().set_visible(False)
+ax[0,1].imshow(wm_images[1], cmap='gray')
+ax[0,1].set_title('Tagged as {}'.format(wm_labels[1]))
+ax[0,1].get_xaxis().set_visible(False)
+ax[0,1].get_yaxis().set_visible(False)
+ax[1,0].imshow(wm_images[2], cmap='gray')
+ax[1,0].set_title('Tagged as {}'.format(wm_labels[2]))
+ax[1,0].get_xaxis().set_visible(False)
+ax[1,0].get_yaxis().set_visible(False)
+ax[1,1].imshow(wm_images[3], cmap='gray')
+ax[1,1].set_title('Tagged as {}'.format(wm_labels[3]))
+ax[1,1].get_xaxis().set_visible(False)
+ax[1,1].get_yaxis().set_visible(False)
+plt.savefig('./data/wm.svg', format='svg')
 
-# plt.clf()
-# fig, ax = plt.subplots(2,2)
-# ax[0,0].imshow(test_images[0], cmap='gray')
-# ax[0,0].set_title('Tagged as {}'.format(test_labels[0]))
-# ax[0,0].get_xaxis().set_visible(False)
-# ax[0,0].get_yaxis().set_visible(False)
-# ax[0,1].imshow(test_images[1], cmap='gray')
-# ax[0,1].set_title('Tagged as {}'.format(test_labels[1]))
-# ax[0,1].get_xaxis().set_visible(False)
-# ax[0,1].get_yaxis().set_visible(False)
-# ax[1,0].imshow(test_images[2], cmap='gray')
-# ax[1,0].set_title('Tagged as {}'.format(test_labels[2]))
-# ax[1,0].get_xaxis().set_visible(False)
-# ax[1,0].get_yaxis().set_visible(False)
-# ax[1,1].imshow(test_images[3], cmap='gray')
-# ax[1,1].set_title('Tagged as {}'.format(test_labels[3]))
-# ax[1,1].get_xaxis().set_visible(False)
-# ax[1,1].get_yaxis().set_visible(False)
-# plt.savefig('./data/mnist.pdf', format='pdf')
-# plt.clf()
+plt.clf()
+fig, ax = plt.subplots(2,2)
+ax[0,0].imshow(test_images[0], cmap='gray')
+ax[0,0].set_title('Tagged as {}'.format(test_labels[0]))
+ax[0,0].get_xaxis().set_visible(False)
+ax[0,0].get_yaxis().set_visible(False)
+ax[0,1].imshow(test_images[1], cmap='gray')
+ax[0,1].set_title('Tagged as {}'.format(test_labels[1]))
+ax[0,1].get_xaxis().set_visible(False)
+ax[0,1].get_yaxis().set_visible(False)
+ax[1,0].imshow(test_images[2], cmap='gray')
+ax[1,0].set_title('Tagged as {}'.format(test_labels[2]))
+ax[1,0].get_xaxis().set_visible(False)
+ax[1,0].get_yaxis().set_visible(False)
+ax[1,1].imshow(test_images[3], cmap='gray')
+ax[1,1].set_title('Tagged as {}'.format(test_labels[3]))
+ax[1,1].get_xaxis().set_visible(False)
+ax[1,1].get_yaxis().set_visible(False)
+plt.savefig('./data/mnist.svg', format='svg')
+plt.clf()
 
-model_name = 'mnist.w.wm'
-vals_epsilon = {}
-vals_acc = {}
-x = [0,1,2,3,4,5,6,7,25,50,75,100]
-# x = [1,2,3,4,5,6,7,25,50,75,100]
-# x = [0,1,2,3,4,5,6,7]
-# x = [1,2,3,4,5,6,7]
-# x = [0,1,2,3,4,5]
-x_str = ','.join(map(str, x))
+# model_name = 'mnist.w.wm'
+# vals_epsilon = {}
+# vals_acc = {}
+# x = [0,1,2,3,4,5,6,7,25,50,75,100]
+# # x = [1,2,3,4,5,6,7,25,50,75,100]
+# # x = [0,1,2,3,4,5,6,7]
+# # x = [1,2,3,4,5,6,7]
+# # x = [0,1,2,3,4,5]
+# x_str = ','.join(map(str, x))
 
-out_file = open('./data/results/problem3/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
-out_file.write('Number of watermarks,Average change,Minimal change,Maximal change,Average accuracy,Minimal accuracy,Maximal accuracy\n')
+# out_file = open('./data/results/problem3/{}_summary.csv'.format(model_name.replace('.', '_')), 'w')
+# out_file.write('Number of watermarks,Average change,Minimal change,Maximal change,Average accuracy,Minimal accuracy,Maximal accuracy\n')
 
-for i in x:
-    datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))
-    file_reader = DictReader(datafile)
-    vals_acc[i] = np.array([float(line['test-accuracy']) for line in file_reader])
-    datafile.close()
-    if i == 0:
-        vals_epsilon[i] = 0
-    else:
-        datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
-        file_reader = DictReader(datafile)
-        vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
-        datafile.close()
-    out_file.write('{},{},{},{},{},{},{}\n'.format(i,
-                                                    np.average(vals_epsilon[i]),
-                                                    np.min(vals_epsilon[i]),
-                                                    np.max(vals_epsilon[i]),
-                                                    np.average(vals_acc[i]),
-                                                    np.min(vals_acc[i]),
-                                                    np.max(vals_acc[i])))
-out_file.close()
+# for i in x:
+#     datafile = open('./data/results/problem3/{}.{}.wm.accuracy.csv'.format(model_name, i))
+#     file_reader = DictReader(datafile)
+#     vals_acc[i] = np.array([float(line['test-accuracy']) for line in file_reader])
+#     datafile.close()
+#     if i == 0:
+#         vals_epsilon[i] = 0
+#     else:
+#         datafile = open('./data/results/problem3/{}.{}.wm.csv'.format(model_name, i))
+#         file_reader = DictReader(datafile)
+#         vals_epsilon[i] = np.array([float(line['sat-epsilon']) for line in file_reader])
+#         datafile.close()
+#     out_file.write('{},{},{},{},{},{},{}\n'.format(i,
+#                                                     np.average(vals_epsilon[i]),
+#                                                     np.min(vals_epsilon[i]),
+#                                                     np.max(vals_epsilon[i]),
+#                                                     np.average(vals_acc[i]),
+#                                                     np.min(vals_acc[i]),
+#                                                     np.max(vals_acc[i])))
+# out_file.close()
 
 
 # avrg_acc = np.array([np.average(vals_acc[i]) for i in x])
