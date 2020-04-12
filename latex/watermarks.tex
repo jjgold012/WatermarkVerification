@@ -184,8 +184,7 @@ potentially damaging its functionality in the process).
 
 We show how our proposed verification-based technique can be used to
 measure the resilience of watermarks within a DNN. Our approach can
-thus be used to assess individual DNNs before their release, and also to
-to compare and rank different watermarking schemes, according to
+thus be used to assess individual DNNs before their release, and also to compare and rank different watermarking schemes, according to
 the resilience of the watermarks that they produce.
 
 \medskip\noindent \textbf{Minimality of Changes.}
@@ -588,7 +587,7 @@ closest to $N$. This is formalized as follows:
   \emph{DNN minimal modification problem} is to find a new DNN $N'$
   that solves the DNN modification problem (for $N, X$ and $Q$), such that for every other
   $N''$ that solves the modification problem it holds that
-  $\norm{N'-N}\leq \norm{N''-N}$.
+  $\norm{N'-N}_L\leq \norm{N''-N}_L$.
 \end{definition}
 We observe that given a decision procedure for solving the modification
 problem, solving the minimal modification problem can be performed by
@@ -699,7 +698,7 @@ where $W_\epsilon$ represents the change in weights for layer $i$. We note that
 $W_i$ and $V'_{i-1}$ are fixed; the only variables here are the
 entries of $W_\epsilon$. This means that, for this particular input
 point $x$,  we can construct a new DNN,
-denoted $\bar{N}$, whose input neurons are the entires of $W_\epsilon$,
+denoted $\bar{N}$, whose input neurons are the entries of $W_\epsilon$,
 followed by a layer that computes $\relu{}((W_i+W_\epsilon)V'_{i-1})$,
 and then feeds into layers $i+1,\ldots,n$ of the original network.
 

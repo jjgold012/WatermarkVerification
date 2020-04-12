@@ -18,7 +18,7 @@ def visualize(epsilons, title="figure 1"):
             name = '{}_{}'.format(1, i)
             nn.add_node(name,   
                         lable=i,
-                        pos=(1, -i*10 - 5),
+                        pos=(1, -i*15 - 7.5),
                         size=200
                         )
         # adding out_edges (no need to iterate over output layer)
@@ -78,11 +78,11 @@ def visualize(epsilons, title="figure 1"):
                                 # ticks=[np.around(i,3) for i in np.linspace(-maxWeight, maxWeight, 5)],
                                 ticks=np.around(np.array([np.fix(i) for i in np.linspace(-maxWeight*1000, maxWeight*1000, 3)])/1000, 3),
                                 )
-        plt.savefig('./latex/images/ACASXU_2_9_3_vals.pdf', format='pdf')
+        plt.savefig('./latex/images/mnist_w_wm_infty.svg', format='svg')
         plt.show()
 
-# epsilons = np.load('./data/results/problem3/mnist.w.wm.1.wm.vals.npy')
+epsilons = np.load('./data/results/problem3/mnist.w.wm.1.wm.vals.npy')
 # epsilons = np.load('./data/results/problem2/mnist.w.wm.vals.npy')
-epsilons = np.load('../NetworkCorrection/data/ACASXU_2_9_3.vals.npy')
+# epsilons = np.load('../NetworkCorrection/data/ACASXU_2_9_all3.vals.npy')
 
-visualize(epsilons)
+visualize(epsilons[0])
