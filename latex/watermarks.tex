@@ -591,7 +591,7 @@ closest to $N$. This is formalized as follows:
 \end{definition}
 We observe that given a decision procedure for solving the modification
 problem, solving the minimal modification problem can be performed by
-repeatedly invoking that procedure as part of a binary search.
+repeatedly invoking that procedure as part of a of a search over the real numbers (Bisection method), each time limiting the norm of the difference between the modified network and the original network.
 
 \subsection{Minimal Modifications as DNN Verification}
 
@@ -732,9 +732,10 @@ problem with $X=\{\langle 3, 4\rangle\}$, $Q(N'(\langle
 3,4\rangle))=v_{3,1}\geq v_{3,2}$ and some $\delta> 0$ in $L_\infty$
 norm, we could then pose a DNN verification query with input and
 output predicates (a similar encoding can be used for $L_1$ norm):
-\[
-  P = \bigwedge_{i=1}^4-\delta \leq w_i \leq \delta \qquad \qquad Q = v_{3,1}\geq v_{3,2}
-\]
+\begin{equation}
+P = \bigwedge_{i=1}^4-\delta \leq w_i \leq \delta \qquad \qquad Q = v_{3,1}\geq v_{3,2}
+\label{eq:infinityNormConstraint}
+\end{equation}  
 The resulting DNN verification problem is \sat{} if and only if the DNN
 modification problem is \sat{}; and in that case, the satisfying
 assignment returned by the underlying verification engine can be used
@@ -878,9 +879,10 @@ original network  was $V_3=\langle -2,2 \rangle$; and suppose we wish
 to modify the network so that $v_{3,1}$ becomes greater than $v_{3,2}$.
 We can compute that $V_2=\langle 0,2\rangle$, and then define a linear
 program that seeks to minimize the $L_\infty$ norm of the change:
+\begin{figure}[h]
 \begin{align*}
 \text{Minimize}:\quad & M \\
-  \text{Subject to}:\quad &M\geq 0\\
+\text{Subject to}:\quad &M\geq 0\\
 & -M \leq w_1\leq M \\
 & -M \leq w_2\leq M \\
 & -M \leq w_3\leq M \\
@@ -889,7 +891,10 @@ program that seeks to minimize the $L_\infty$ norm of the change:
 & v_{3,2}=0\cdot(-1+w_2)+2\cdot(1+w_4)\\
 & v_{3,1} > v_{3,2}
 \end{align*}
-The optimal solution to this LP is $w_3=1,w_4=-1$ and $w_1,w_2=0$. 
+\caption{The constraint for the $L_\infty$ norm are as defined in \ref{eq:infinityNormConstraint}. The optimal solution to this LP is $w_3=1,w_4=-1$ and $w_1,w_2=0$.}
+\end{figure}
+
+
 
 
 \begin{figure}[htp]
