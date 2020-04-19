@@ -132,9 +132,9 @@ existing DNN might occur is in \emph{patching}~\cite{SoTh19}: when a
 bug is discovered in an existing DNN, a user might wish to modify it
 in a way that removes the undesirable behavior, but which leaves
 unaffected as many of the DNN's other behaviors as possible. In these
-cases, retraining the DNN might produce a DNN that is
-very different from the original, which is undesirable; and other
-techniques, for modifying an existing DNN without retraining, may be needed.
+cases, retraining the DNN might produce a DNN that is very different
+from the original, which is undesirable; and so techniques for
+modifying an existing DNN without retraining may be preferable.
 
 These two examples, and others, share the same main characteristics: an
 existing DNN needs to be changed in a small way, which alters some
@@ -147,7 +147,7 @@ on \emph{neural network
   verification}~\cite{HuKwWaWu17,KaBaDiJuKo17Reluplex}. DNN
 verification is an emerging field, aimed at proving DNN correctness.
 Existing techniques allow users to specify properties that involve the
-DNN's inputs and outputs, and then they either prove that these properties hold
+DNN's inputs and outputs, and then either prove that these properties hold
 or provide a counter-example. Here, we show how to reduce the problem
 of making changes to the DNN itself into a DNN verification
 problem. Specifically, we propose a method for constructing a new DNN,
@@ -156,7 +156,7 @@ and only if the original DNN can be modified in the desired way. Due
 to the soundness of the underlying DNN verification techniques that we
 use, our technique affords formal guarantees about the modified DNN
 --- specifically, that it is as close as possible to the original, and
-that it satisfies the specific constraints.
+that it satisfies the specified constraints.
 
 
 We demonstrate the applicability of our approach in two domains of interest:
@@ -305,7 +305,7 @@ time. Eventually, the values of the output layer are computed, and
 these constitute the network's output.  The value of each hidden node
 in the network is computed by calculating a weighted sum of node
 values from the preceding layer, and then applying a non-linear
-\emph{activation function}~\cite{FoBeCu16}.  For simplicity, we focus
+\emph{activation function}~\cite{FoBeCu16} to this weighted sum.  For simplicity, we focus
 here on the Rectified Linear Unit (ReLU) activation
 function~\cite{NaHi10}, although our technique is directly applicable
 to additional functions as well.  When the ReLU activation function,
@@ -356,7 +356,7 @@ in the output layer corresponds to one possible label, and the label
 whose neuron is assigned the highest value is the label to which the
 input is classified. Thus, an input $V_1$ is classified to label $l_i$
 if and only if $v_{n,i}>v_{n,j}$ for every $j\neq i$ (draws are
-resolved arbitrarily). We sometimes use the alternative phrasing,
+resolved arbitrarily). We sometimes use the equivalent phrasing,
 \[
   N(V_1) = \argmax_{1\leq i\leq s_n}\{v_{n,i}\}
 \]
@@ -447,7 +447,8 @@ difficult, and has been shown to be NP-complete even when restricted
 to simple cases~\cite{KaBaDiJuKo17Reluplex} (networks with
 piecewise-linear activation functions, and properties $P$ and $Q$ that
 are conjunctions of linear constraints). Consequently, most existing approaches
-have limited scalability, and are highly sensitive to DNN size.
+have limited scalability, and are highly sensitive to the size of the
+DNN being verified.
 
 
 \section{Minimal DNN Modification as a Verification Problem}
@@ -458,9 +459,9 @@ have limited scalability, and are highly sensitive to DNN size.
 In all DNN verification approaches to date (to the best of our
 knowledge), the goal is to verify a fixed DNN. In other words, $N$ is
 given, and a particular input $x_0$ is sought that satisfies certain constraints.
-The novelty of our approach is in changing this definition, fixing
-the input point $x_0$ (or multiple inputs) and searching for a
-\emph{different DNN} $N$ such that certain conditions hold.
+The novelty of our approach is in changing this definition: we assume
+that the input point $x_0$ (or multiple inputs) are given, and search for a
+\emph{different DNN} $N$ such that certain constraints hold.
 More formally, we define the problem as follows:
 
 \begin{definition}\textbf{The DNN Modification Problem.}
@@ -502,7 +503,7 @@ between each two corresponding edge weights as the $L$-norm of the difference be
 Fig.~\ref{fig:toyExampleModified} shows how these definitions are applied
 to our toy example from Fig.~\ref{fig:toyExample}. Network $N^2$ is
 obtained from the original network, $N^1$, by slightly modifying its
-edge weights but maintain the same layer structure. The distance
+edge weights while maintaining the same layered structure. The distance
 between these DNNs is:
 
 \begin{align*}
@@ -589,16 +590,18 @@ closest to $N$. This is formalized as follows:
   $N''$ that solves the modification problem it holds that
   $\norm{N'-N}_L\leq \norm{N''-N}_L$.
 \end{definition}
-We observe that given a decision procedure for solving the modification
-problem, solving the minimal modification problem can be performed by
-repeatedly invoking that procedure as part of a of a search over the real numbers (Bisection method), each time limiting the norm of the difference between the modified network and the original network.
+We observe that given a decision procedure for solving the
+modification problem, solving the minimal modification problem can be
+performed (up to some small tolerance) by repeatedly invoking that
+procedure as part of a binary search, each time limiting the norm of
+the difference between the modified network and the original network.
 
 \subsection{Minimal Modifications as DNN Verification}
 
 A straightforward approach for solving the minimal DNN modification
 problem is to cast it as an optimization problem, and use an
 off-the-shelf optimization tool. Specifically, the goal would be to
-minimize $\norm{N^1-N^2}_L$, while maintaining the constraint
+minimize $\norm{N-N'}_L$, while maintaining the constraint
 $Q(N'(x_1),\ldots, N'(x_n))$. Unfortunately, such an optimization
 problem is highly non-convex and high-dimensional, and is hence very
 difficult to solve.
@@ -614,13 +617,13 @@ such that the $N'$ satisfies the predicate $Q$
 (the exact expression to be minimized
 depends on the distance metric in use).
 
-To show that this minimization problem 
-involves solving non-convex, high-degree constraints, let 
- $X=\{\langle 3, 4\rangle\}$ and $Q(N'(\langle
-3,4\rangle))=v_{3,1}\geq v_{3,2}$. Recall that the original network
-assigned the label $2$ to point $\langle 3,4\rangle$, and so our goal here is to
-modify the network so that it classifies this point as $1$, instead.
-The expressions for $v_{3,1}$ and $v_{3,2}$ are:
+To show that this minimization problem involves solving non-convex,
+high-degree constraints, let $X=\{\langle 3, 4\rangle\}$ and
+$Q(N'(\langle 3,4\rangle))=v_{3,1}\geq v_{3,2}$. Recall that the
+original network assigned the label $2$ to point $\langle 3,4\rangle$,
+and so our goal here is to modify the network so that it classifies
+this point to label $1$, instead.  The expressions for $v_{3,1}$ and
+$v_{3,2}$ are:
 \begin{align*}
   v_{3,1}&=
   (1+w_5)\cdot  \relu{}(3(1+w_1)+4(-2+w_3))
@@ -835,15 +838,15 @@ solved using this technique as well.
 In the previous example, we reduced the DNN modification problem into
 the DNN verification problem for a set $X$ that contained a
 \emph{single point}. The reduction when $X$ contains multiple points
-is similar; we simply duplicate the DNN that we construct $n$ times, creating a
-copy for each $x\in X$, and treat the result as one big DNN that is
-passed to the underlying verification engine. This allows us to solve the problem
-simultaneously for the multiple points. However, because DNN
-verification is NP-complete in the size of the DNN being
-verified~\cite{KaBaDiJuKo17Reluplex}, this renders the problem
-significantly more difficult to solve. In
-Section~\ref{sec:outputLayer} we discuss a method for
-simplifying the process in some cases.
+is similar; we simply duplicate the DNN that we construct $n$ times,
+creating a copy for each $x\in X$, and treat the result as one big DNN
+that is passed to the underlying verification engine. This allows us
+to solve the problem simultaneously for the multiple points. However,
+because DNN verification is NP-complete and becomes exponentially more
+complex as the size of the DNN increases~\cite{KaBaDiJuKo17Reluplex},
+this renders the problem significantly more difficult to solve. In
+Section~\ref{sec:outputLayer} we discuss a method for simplifying the
+process in some cases.
 
 Finally, we note that the version of the problem in which
 we only allow changing a single layer of network is interesting in
@@ -851,7 +854,7 @@ its own right. Specifically, variants of this approach are key in
 transfer learning~\cite{Gi15,GrDoDaMa14,WeVeWa07,YoClBeLi14} and
 natural language processing~\cite{DeChLeTo18,PeNeIvGaClLeZe18,SiZi14},
 and have been shown to reduce overfitting with respect to the modification being
-made. Single-layer changes has also been shown to be an effective
+made. Single-layer changes have also been shown to be an effective
 strategy when modifying  object recognition networks~\cite{ShAzSuCa14}.
 
 \subsection{Private Case: Modifying the DNN's Output Layer}
@@ -873,28 +876,15 @@ the $L_1$ distance calculation prevent us from encoding it as a linear
 program. In that case, we apply DNN verification tools that support
 absolute values~\cite{KaHuIbJuLaLiShThWuZeDiKoBa19Marabou}.
 
-In Fig.~\ref{fig:changeLastLayer} we demonstrate this case with our running example.
+In Fig.~\ref{fig:changeLastLayer} we demonstrate modifying the DNN's
+output layer, using our running example.
 Recall that for input $V_1=\langle 3,4\rangle$, the output of the
 original network  was $V_3=\langle -2,2 \rangle$; and suppose we wish
-to modify the network so that $v_{3,1}$ becomes greater than $v_{3,2}$.
-We can compute that $V_2=\langle 0,2\rangle$, and then define a linear
-program that seeks to minimize the $L_\infty$ norm of the change:
-\begin{figure}[h]
-\begin{align*}
-\text{Minimize}:\quad & M \\
-\text{Subject to}:\quad &M\geq 0\\
-& -M \leq w_1\leq M \\
-& -M \leq w_2\leq M \\
-& -M \leq w_3\leq M \\
-& -M \leq w_4\leq M \\
-& v_{3,1}=0\cdot(1+w_1)+2\cdot(-1+w_3)\\
-& v_{3,2}=0\cdot(-1+w_2)+2\cdot(1+w_4)\\
-& v_{3,1} > v_{3,2}
-\end{align*}
-\caption{The constraint for the $L_\infty$ norm are as defined in \ref{eq:infinityNormConstraint}. The optimal solution to this LP is $w_3=1,w_4=-1$ and $w_1,w_2=0$.}
-\end{figure}
-
-
+to modify the network so that $v_{3,1}$ becomes greater than
+$v_{3,2}$. In Fig.~\ref{fig:lpEncoding} we show how to solve the
+resulting minimal modification problem, using $L_\infty$ norm, by
+encoding it as a linear program. Observe that this encoding uses the
+fact that $V_2=\langle 0,2\rangle$.
 
 
 \begin{figure}[htp]
@@ -937,6 +927,26 @@ program that seeks to minimize the $L_\infty$ norm of the change:
     \end{center}
 \end{figure}
 
+
+\begin{figure}[h]
+\begin{align*}
+\text{Minimize}:\quad & M \\
+\text{Subject to}:\quad &M\geq 0\\
+& -M \leq w_1\leq M \\
+& -M \leq w_2\leq M \\
+& -M \leq w_3\leq M \\
+& -M \leq w_4\leq M \\
+& v_{3,1}=0\cdot(1+w_1)+2\cdot(-1+w_3)\\
+& v_{3,2}=0\cdot(-1+w_2)+2\cdot(1+w_4)\\
+& v_{3,1} \geq v_{3,2}
+\end{align*}
+\caption{Encoding the minimal modification problem (for the $L_\infty$
+  norm) as a linear program. The constraints are those 
+  defined in Eq.~\ref{eq:infinityNormConstraint}. An optimal solution to
+  this linear program is
+  $w_3=1,w_4=-1$ and $w_1,w_2=0$.}
+\label{fig:lpEncoding}
+\end{figure}
 
 
 \section{Applications}
