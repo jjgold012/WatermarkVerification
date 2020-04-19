@@ -594,7 +594,10 @@ We observe that given a decision procedure for solving the
 modification problem, solving the minimal modification problem can be
 performed (up to some small tolerance) by repeatedly invoking that
 procedure as part of a binary search, each time limiting the norm of
-the difference between the modified network and the original network.
+the difference between the modified network and the original
+network. If the underlying decision procedure is sound and complete,
+it follows that this method for solving the minimal modification
+problem is also sound and complete.
 
 \subsection{Minimal Modifications as DNN Verification}
 
@@ -1014,6 +1017,7 @@ as a Python framework. We intend to make our code, and also the
 benchmarks described in this section, publicly available with the
 final version of the paper.
 
+%% TODO: change this
 
 \subsection{Watermark Removal}
 
@@ -1162,7 +1166,7 @@ that of the $L_1$ case.
 	}
 \caption{Changes to the DNN's accuracy after removing a single
   watermark. The experiments were performed for each of the
-  100 watermarks, individually, and then summarized. The first row
+  100 watermarks, individually, and then aggregated the results. The first row
   shows the baseline accuracy rates.}
 \label{table:singleWatermark}
 \end{table}
@@ -1198,7 +1202,7 @@ experiments using the
 $L_\infty$ norm, we also noticed additional watermarks being removed
 beyond those that were targeted, but there the network's accuracy also
 tends to drop sharply as the number of removed watermarks increases (as indicated by the
-\emph{Maximal accuracy} column in Table~\ref{table:multipleWatermarks}).
+\emph{maximal accuracy} column in Table~\ref{table:multipleWatermarks}).
 
 
 \begin{table}
@@ -1270,7 +1274,7 @@ described in Algorithm~\ref{alg:correctAcas}.
 \begin{algorithmic}[1]
   \State $S\leftarrow \{x_0\}$
   \State $N'\leftarrow N$
-  \While {True}
+  \While {true}
   \State Use verification to check whether $\varphi$ holds for $N'$
   \If {$\varphi$ holds for $N'$}
     \State\Return $N'$
@@ -1284,9 +1288,10 @@ described in Algorithm~\ref{alg:correctAcas}.
 \label{alg:correctAcas}
 \end{algorithm}
 
-This process terminates when $N$ is successfully modified such
-that $\varphi$ holds. If it does not converge, the procedure may need
-to be terminated when a certain timeout values is reached.
+The loop in Algorithm~\ref{alg:correctAcas} terminates when $N$ is
+successfully modified such that $\varphi$ holds. If the loop does not
+converge, the procedure may need to be terminated when a certain
+timeout values is reached.
 
 When we ran Algorithm~\ref{alg:correctAcas} on our ACAS Xu DNN in
 question, it failed to terminate --- we stopped it after several days, while it was attempting to verify $\varphi$ after the third modification was applied to the network. Thus, while we were unable to verify that all violations of $\varphi$ was removed from $N$, we did obtain a
