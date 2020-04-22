@@ -1071,7 +1071,7 @@ results are depicted in Fig.~\ref{fig:minSingle}.
 \begin{figure}[htp]
   \centering
   \begin{subfigure}{0.4\linewidth}
-    \includegraphics[width=\linewidth]{./images/mnist_w_wm_infinty_sorted.pdf}
+    \includegraphics[width=\linewidth]{./images/mnist_w_wm_infinity_sorted.pdf}
      \caption{$L_\infty$ distance}
   	\label{fig:minSingleLP}
   \end{subfigure}
@@ -1160,7 +1160,7 @@ that of the $L_1$ case.
 	columns/Norm/.style={string type},
 	every column/.style={column type=|C},
 	every last column/.style={column type/.add={}{|}}
-	]{../data/results/mnist_w_wm_1_wm.csv}
+	]{./tables/mnist_w_wm_1_wm.csv}
 	}
 \caption{Changes to the DNN's accuracy after removing a single
   watermark. The experiments were performed for each of the
@@ -1214,7 +1214,7 @@ tends to drop sharply as the number of removed watermarks increases (as indicate
 	columns/Norm/.style={string type},
 	every column/.style={column type=|C},
 	every last column/.style={column type/.add={}{|}}
-	]{../data/results/problem3/mnist_w_wm_summary.csv}
+	]{./tables/mnist_w_wm_infinity_summary.csv}
 	}
 \caption{Changes in accuracy when solving for minimal $L_\infty$ change.}
 \end{subtable}
@@ -1228,7 +1228,7 @@ tends to drop sharply as the number of removed watermarks increases (as indicate
 	columns/Norm/.style={string type},
 	every column/.style={column type=|C},
 	every last column/.style={column type/.add={}{|}}
-	]{../data/results/problem4/mnist_w_wm_summary.csv}
+	]{./tables/mnist_w_wm_one_summary.csv}
 	}
 \caption{Changes in accuracy when solving for minimal $L_1$ change.}
 \end{subtable}
