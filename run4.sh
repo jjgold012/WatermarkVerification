@@ -5,9 +5,12 @@
 #SBATCH --mem-per-cpu=4096
 #SBATCH --mail-type=BEGIN,END,FAIL          # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=jjgold@cs.huji.ac.il    # Where to send mail	
-#SBATCH --array=1-5
+#SBATCH --array=0-99
 
 export PYTHONPATH=$PYTHONPATH:"$(dirname "$(pwd)")"/Marabou
 
-python3 WatermarkVerification4.py --model mnist.w.wm --num_of_inputs $SLURM_ARRAY_TASK_ID --epsilon_max 300 --start 0 --finish 99
+start=$(($SLURM_ARRAY_TASK_ID*10))
+finish=$((start+9))
+
+python3 WatermarkVerification4.py --model mnist.w.wm --num_of_inputs 5 --epsilon_max 300 --start $start --finish $finish
 
